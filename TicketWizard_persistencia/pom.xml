@@ -10,5 +10,21 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>com.mycompany.ticketwizard_persistencia.TicketWizard_persistencia</exec.mainClass>
-    </properties>
+    </properties>   
+    
+     
+      <dependencies>
+        <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
+<dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>9.0.0</version>
+</dependency>
+
+
+
+        
+    </dependencies>
+       
+         
 </project>
