@@ -5,11 +5,12 @@
 package interfaces;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  *
  * @author pauli
  */
 public interface IConexion {
-    public Connection crearConexion();
+    public Connection crearConexion() throws SQLException;
 }

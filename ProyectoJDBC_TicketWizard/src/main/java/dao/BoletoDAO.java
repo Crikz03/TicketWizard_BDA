@@ -4,6 +4,7 @@
  */
 package dao;
 
+import excepciones.PersistenciaException;
 import interfaces.IBoletoDAO;
 import interfaces.IConexion;
 import java.sql.Connection;
@@ -13,12 +14,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import objetos.Boleto;
+import utilidades.EstadoAdquisicion;
 
 /**
  *
  * @author pauli
  */
-public class BoletoDAO implements IBoletoDAO{
+public class BoletoDAO implements IBoletoDAO {
 
     private IConexion conexion;
 
@@ -26,7 +28,7 @@ public class BoletoDAO implements IBoletoDAO{
         this.conexion = conexion;
     }
 
-    public boolean agregar(Boleto boleto) {
+    public boolean agregar(Boleto boleto) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
             String insertar = "INSERT INTO Boletos(num_serie, fila, asiento, precio, estado_adquisicion, id_usuario, id_evento) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -36,51 +38,48 @@ public class BoletoDAO implements IBoletoDAO{
             agregar.setString(2, boleto.getFila());
             agregar.setString(3, boleto.getAsiento());
             agregar.setDouble(4, boleto.getPrecio());
-            agregar.setString(5, boleto.getEstadoAdquisicion());
+            agregar.setObject(5, boleto.getEstadoAdquisicion());
             agregar.setInt(6, boleto.getIdUsuario());
             agregar.setInt(7, boleto.getIdEvento());
 
             agregar.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new PersistenciaException("No se pudo agregar el boleto con id: " + boleto.getIdBoleto());
         }
         return true;
     }
 
-    public boolean eliminar(int id) {
+    public boolean eliminar(int id) throws PersistenciaException {
         String eliminarBoleto = "DELETE FROM Boletos WHERE id_boleto = ?";
         try (Connection bd = conexion.crearConexion(); PreparedStatement eliminar = bd.prepareStatement(eliminarBoleto)) {
             eliminar.setInt(1, id);
             eliminar.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new PersistenciaException("No se pudo eliminar el boleto con id: " + id);
         }
         return true;
     }
 
-    public boolean actualizar(Boleto boleto) {
+    public boolean actualizar(Boleto boleto) throws PersistenciaException {
         String actualizarBoleto = "UPDATE Boletos SET num_serie = ?, fila = ?, asiento = ?, precio = ?, estado_adquisicion = ?, id_usuario = ?, id_evento = ? WHERE id_boleto = ?";
         try (Connection bd = conexion.crearConexion(); PreparedStatement actualizar = bd.prepareStatement(actualizarBoleto)) {
             actualizar.setString(1, boleto.getNumSerie());
             actualizar.setString(2, boleto.getFila());
             actualizar.setString(3, boleto.getAsiento());
             actualizar.setDouble(4, boleto.getPrecio());
-            actualizar.setString(5, boleto.getEstadoAdquisicion());
+            actualizar.setObject(5, boleto.getEstadoAdquisicion());
             actualizar.setInt(6, boleto.getIdUsuario());
             actualizar.setInt(7, boleto.getIdEvento());
             actualizar.setInt(8, boleto.getIdBoleto());
 
             actualizar.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new PersistenciaException("No se pudo actualizar el boleto con id: " + boleto.getIdBoleto());
         }
         return true;
     }
 
-    public Boleto consultar(int id) {
+    public Boleto consultar(int id) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
             String buscarBoleto = "SELECT * FROM Boletos WHERE id_boleto = ?";
@@ -95,18 +94,18 @@ public class BoletoDAO implements IBoletoDAO{
                 b.setFila(resultado.getString("fila"));
                 b.setAsiento(resultado.getString("asiento"));
                 b.setPrecio(resultado.getDouble("precio"));
-                b.setEstadoAdquisicion(resultado.getString("estado_adquisicion"));
+                b.setEstadoAdquisicion((EstadoAdquisicion) resultado.getObject("estado_adquisicion"));
                 b.setIdUsuario(resultado.getInt("id_usuario"));
                 b.setIdEvento(resultado.getInt("id_evento"));
                 return b;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new PersistenciaException("No se pudo consultar el boleto con id: " + id);
         }
         return null;
     }
 
-    public List<Boleto> consultar() {
+    public List<Boleto> consultar() throws PersistenciaException {
         List<Boleto> listaBoletos = new ArrayList<>();
         String consultarBoletos = "SELECT * FROM Boletos";
         try (Connection bd = conexion.crearConexion(); PreparedStatement consulta = bd.prepareStatement(consultarBoletos); ResultSet resultados = consulta.executeQuery()) {
@@ -117,19 +116,18 @@ public class BoletoDAO implements IBoletoDAO{
                 b.setFila(resultados.getString("fila"));
                 b.setAsiento(resultados.getString("asiento"));
                 b.setPrecio(resultados.getDouble("precio"));
-                b.setEstadoAdquisicion(resultados.getString("estado_adquisicion"));
+                b.setEstadoAdquisicion((EstadoAdquisicion) resultados.getObject("estado_adquisicion"));
                 b.setIdUsuario(resultados.getInt("id_usuario"));
                 b.setIdEvento(resultados.getInt("id_evento"));
                 listaBoletos.add(b);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new PersistenciaException("No se pudo encontrar los boletos");
         }
         return listaBoletos;
     }
 
-   
-    public boolean comprarBoleto(int idBoleto, String numSerie, double precio, String estadoAdquisicion, int idUsuario) {
+    public boolean comprarBoleto(int idBoleto, String numSerie, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
             String procedimiento = "{CALL ComprarBoleto(?, ?, ?, ?, ?)}";
@@ -138,7 +136,7 @@ public class BoletoDAO implements IBoletoDAO{
             stmt.setInt(1, idBoleto);
             stmt.setString(2, numSerie);
             stmt.setDouble(3, precio);
-            stmt.setString(4, estadoAdquisicion);
+            stmt.setObject(4, estadoAdquisicion);
             stmt.setInt(5, idUsuario);
 
             stmt.executeUpdate();
