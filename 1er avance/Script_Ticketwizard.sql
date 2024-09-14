@@ -66,9 +66,9 @@ BEGIN
     UPDATE Usuarios
     SET saldo = saldo + NEW.monto
     WHERE id_usuario = NEW.id_usuario;
-END;
+END //
 
-DELIMITER //
+DELIMITER ;
 
 DELIMITER //
 
@@ -100,7 +100,7 @@ BEGIN
 
     -- Insertar la transacción en la tabla Transacciones
     INSERT INTO Transacciones (num_transaccion, monto, fecha_hora_adquisicion, id_usuario, id_boleto)
-    VALUES (v_num_transaccion, p_precio, GETDATE(),p_id_usuario, p_id_boleto);
-END;
+    VALUES (v_num_transaccion, p_precio, NOW(),p_id_usuario, p_id_boleto);
+END//
 
-DELIMITER //
+DELIMITER ;

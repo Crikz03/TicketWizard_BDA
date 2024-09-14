@@ -4,6 +4,7 @@
  */
 package interfaces;
 
+import excepciones.PersistenciaException;
 import java.util.List;
 import objetos.Usuario;
 
@@ -13,14 +14,12 @@ import objetos.Usuario;
  */
 public interface IUsuarioDAO {
 
-    boolean actualizar(Usuario usuario);
+    boolean actualizar(Usuario usuario) throws PersistenciaException;
 
-    boolean agregar(Usuario usuario);
+    boolean agregar(Usuario usuario) throws PersistenciaException;
 
-    List<Usuario> consultar();
+    List<Usuario> consultar() throws PersistenciaException;
 
-    Usuario consultar(int id);
+    Usuario consultar(int id) throws PersistenciaException;
 
-    boolean eliminar(int id);
-    
 }

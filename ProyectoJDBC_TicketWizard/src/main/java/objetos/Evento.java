@@ -4,14 +4,17 @@
  */
 package objetos;
 
+import java.sql.Date;
+
 /**
  *
  * @author pauli
  */
 public class Evento {
+
     private int idEvento;
     private String nombre;
-    private String fecha;
+    private Date fecha;
     private String localidad;
     private int capacidad;
     private String venue;
@@ -21,8 +24,16 @@ public class Evento {
     }
 
     // Constructor con parámetros
-    public Evento(int idEvento, String nombre, String fecha, String localidad, int capacidad, String venue) {
+    public Evento(int idEvento, String nombre, Date fecha, String localidad, int capacidad, String venue) {
         this.idEvento = idEvento;
+        this.nombre = nombre;
+        this.fecha = fecha;
+        this.localidad = localidad;
+        this.capacidad = capacidad;
+        this.venue = venue;
+    }
+
+    public Evento(String nombre, Date fecha, String localidad, int capacidad, String venue) {
         this.nombre = nombre;
         this.fecha = fecha;
         this.localidad = localidad;
@@ -47,11 +58,11 @@ public class Evento {
         this.nombre = nombre;
     }
 
-    public String getFecha() {
+    public Date getFecha() {
         return fecha;
     }
 
-    public void setFecha(String fecha) {
+    public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
 
@@ -78,4 +89,19 @@ public class Evento {
     public void setVenue(String venue) {
         this.venue = venue;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Evento{");
+        sb.append("idEvento=").append(idEvento);
+        sb.append(", nombre=").append(nombre);
+        sb.append(", fecha=").append(fecha);
+        sb.append(", localidad=").append(localidad);
+        sb.append(", capacidad=").append(capacidad);
+        sb.append(", venue=").append(venue);
+        sb.append('}');
+        return sb.toString();
+    }
+
 }
