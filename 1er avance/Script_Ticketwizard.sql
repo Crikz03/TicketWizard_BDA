@@ -4,22 +4,16 @@ use ticketwizard;
 
 CREATE TABLE Usuarios (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_completo VARCHAR(255) NOT NULL,
+    nombres VARCHAR(255) NOT NULL,
+    apellidoPaterno VARCHAR (255) NOT NULL,
+    apellidoMaterno VARCHAR (255),
     correo VARCHAR(100) UNIQUE NOT NULL,
-    domicilio VARCHAR(255),
-    edad INT,
-    fecha_nacimiento DATE,
-    saldo DECIMAL(10, 2) DEFAULT 0.00
-)AUTO_INCREMENT = 1;
-
-
-CREATE TABLE Domicilios (
-    id_domicilio INT AUTO_INCREMENT PRIMARY KEY,
     calle VARCHAR(255),
     numero_exterior VARCHAR(10),
     colonia VARCHAR(100),
-    id_usuario INT,
-    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
+    edad INT,
+    fecha_nacimiento DATE,
+    saldo DECIMAL(10, 2) DEFAULT 0.00
 )AUTO_INCREMENT = 1;
 
 CREATE TABLE Eventos (
@@ -32,12 +26,13 @@ CREATE TABLE Eventos (
 )AUTO_INCREMENT = 1;
 
 CREATE TABLE Transacciones (
-    id_transaccion INT AUTO_INCREMENT PRIMARY KEY,
-    num_transaccion VARCHAR(20) UNIQUE NOT NULL,
+    num_transaccion INT AUTO_INCREMENT PRIMARY KEY,
     monto DECIMAL(10, 2) NOT NULL,
+    comision DECIMAL (10,2),
+    tiempo_limite TIME,
     tipo ENUM ('saldo','compra'),
-    fecha_hora_adquisicion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    id_usuario INT,
+    fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_usuario INT NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
 )AUTO_INCREMENT = 1;
 
@@ -50,11 +45,17 @@ CREATE TABLE Boletos (
     estado_adquisicion ENUM('reventa', 'directo') NOT NULL,
     id_usuario INT, 
     id_evento INT, 
-    id_transaccion INT,
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario),
-    FOREIGN KEY (id_transaccion) REFERENCES Transacciones(id_transaccion),
     FOREIGN KEY (id_evento) REFERENCES Eventos(id_evento)
 )AUTO_INCREMENT = 1;
+
+CREATE TABLE Detalles_BoletoTransaccion (
+id_boleto INT,
+num_transaccion INT,
+estado ENUM ('Completado','Pendiente','Cancelado'),
+FOREIGN KEY (id_boleto) REFERENCES Boletos(id_boleto),
+FOREIGN KEY (num_transaccion) REFERENCES Transacciones(num_transaccion)
+)
 
 DELIMITER //
 
