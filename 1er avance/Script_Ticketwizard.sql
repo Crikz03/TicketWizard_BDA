@@ -8,7 +8,7 @@ CREATE TABLE Usuarios (
     apellidoPaterno VARCHAR (255) NOT NULL,
     apellidoMaterno VARCHAR (255),
     correo VARCHAR(100) UNIQUE NOT NULL,
-    contrasena VARCHAR(20) NOT NULL,
+    contrasena VARCHAR(255) NOT NULL,
     calle VARCHAR(255),
     numero_exterior VARCHAR(10),
     colonia VARCHAR(100),
