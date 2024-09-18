@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import objetos.Transaccion;
+import objetos.Usuario;
 import utilidades.TipoTransaccion;
 
 /**
@@ -122,4 +123,20 @@ public class TransaccionDAO implements ITransaccionDAO {
         }
         return listaTransacciones;
     }
+
+    public boolean agregarSaldo(Usuario usuario, double monto) throws PersistenciaException {
+        String sql = "INSERT INTO Transacciones (id_usuario, monto) VALUES (?, ?)";
+
+        try (PreparedStatement ps = conexion.crearConexion().prepareStatement(sql)) {
+            ps.setInt(1, usuario.getIdUsuario());
+            ps.setDouble(2, monto);
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("No se pudo agregar el saldo a la cuenta con id: " + usuario.getIdUsuario());
+        }
+        return true;
+    }
+    
+    
 }

@@ -20,6 +20,14 @@ public interface IUsuarioDAO {
 
     List<Usuario> consultar() throws PersistenciaException;
 
+    Usuario consultarPorCorreo(String correo) throws PersistenciaException;
+
     Usuario consultar(int id) throws PersistenciaException;
+
+    boolean existeCorreo(String correo) throws PersistenciaException;
+    
+    double obtenerSaldoActual(int idUsuario) throws PersistenciaException;
+    
+    boolean puedeAgregarSaldo(Usuario usuario, double montoAgregar) throws PersistenciaException;
 
 }

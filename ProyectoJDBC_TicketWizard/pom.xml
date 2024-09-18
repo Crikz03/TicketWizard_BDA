@@ -20,10 +20,16 @@
     <artifactId>mysql-connector-j</artifactId>
     <version>9.0.0</version>
 </dependency>
-
-
-
-        
-    </dependencies>
+            <dependency>
+                  <groupId>at.favre.lib</groupId>
+                  <artifactId>bcrypt</artifactId>
+                  <version>0.10.2</version>
+            </dependency>
+            <dependency>
+                  <groupId>com.toedter</groupId>
+                  <artifactId>jcalendar</artifactId>
+                  <version>1.4</version>
+            </dependency>
+      </dependencies>
     <name>ProyectoJDBC_TicketWizard</name>
 </project>
