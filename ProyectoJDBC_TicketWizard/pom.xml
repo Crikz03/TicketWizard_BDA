@@ -29,7 +29,6 @@
                   <version>1.4</version>
             </dependency>
       </dependencies>
-    </dependencies>
     <name>ProyectoJDBC_TicketWizard</name>
  <build>
         <plugins>
