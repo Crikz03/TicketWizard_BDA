@@ -4,7 +4,7 @@
  */
 package objetos;
 
-import java.sql.Date;
+import java.util.Date;
 
 /**
  *
@@ -17,6 +17,7 @@ public class Usuario {
     private String apellidoPaterno;
     private String apellidoMaterno;
     private String correo;
+    private String contrasena;
     private String calle;
     private String numeroExterior;
     private String colonia;
@@ -29,12 +30,13 @@ public class Usuario {
     }
 
     // Constructor con parámetros
-    public Usuario(int idUsuario, String nombres, String apellidoPaterno, String apellidoMaterno, String correo, String calle, String numeroExterior, String colonia, int edad, Date fechaNacimiento, double saldo) {
+    public Usuario(int idUsuario, String nombres, String apellidoPaterno, String apellidoMaterno, String correo, String contrasena, String calle, String numeroExterior, String colonia, int edad, Date fechaNacimiento, double saldo) {
         this.idUsuario = idUsuario;
         this.nombres = nombres;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.correo = correo;
+        this.contrasena = contrasena;
         this.calle = calle;
         this.numeroExterior = numeroExterior;
         this.colonia = colonia;
@@ -43,11 +45,12 @@ public class Usuario {
         this.saldo = saldo;
     }
 
-    public Usuario(String nombres, String apellidoPaterno, String apellidoMaterno, String correo, String calle, String numeroExterior, String colonia, int edad, Date fechaNacimiento, double saldo) {
+    public Usuario(String nombres, String apellidoPaterno, String apellidoMaterno, String correo, String contrasena, String calle, String numeroExterior, String colonia, int edad, Date fechaNacimiento, double saldo) {
         this.nombres = nombres;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.correo = correo;
+        this.contrasena = contrasena;
         this.calle = calle;
         this.numeroExterior = numeroExterior;
         this.colonia = colonia;
@@ -96,6 +99,15 @@ public class Usuario {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
+    }
+    
 
     public String getCalle() {
         return calle;

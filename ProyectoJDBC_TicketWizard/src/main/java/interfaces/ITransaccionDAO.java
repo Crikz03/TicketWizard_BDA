@@ -7,6 +7,7 @@ package interfaces;
 import excepciones.PersistenciaException;
 import java.util.List;
 import objetos.Transaccion;
+import objetos.Usuario;
 
 /**
  *
@@ -23,5 +24,7 @@ public interface ITransaccionDAO {
     Transaccion consultar(int num_transaccion) throws PersistenciaException;
 
     boolean eliminar(int num_transaccion) throws PersistenciaException;
+    
+    boolean agregarSaldo(Usuario usuario, double monto) throws PersistenciaException;
 
 }

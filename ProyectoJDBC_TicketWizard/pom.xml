@@ -11,8 +11,6 @@
         <maven.compiler.target>21</maven.compiler.target>
         <exec.mainClass>com.mycompany.ticketwizard_persistencia.TicketWizard_persistencia</exec.mainClass>
     </properties>   
-    
-     
       <dependencies>
         <!-- https://mvnrepository.com/artifact/com.mysql/mysql-connector-j -->
 <dependency>
@@ -20,11 +18,18 @@
     <artifactId>mysql-connector-j</artifactId>
     <version>9.0.0</version>
 </dependency>
-
-
-        
+            <dependency>
+                  <groupId>at.favre.lib</groupId>
+                  <artifactId>bcrypt</artifactId>
+                  <version>0.10.2</version>
+            </dependency>
+            <dependency>
+                  <groupId>com.toedter</groupId>
+                  <artifactId>jcalendar</artifactId>
+                  <version>1.4</version>
+            </dependency>
+      </dependencies>
     </dependencies>
-    
     <name>ProyectoJDBC_TicketWizard</name>
  <build>
         <plugins>
