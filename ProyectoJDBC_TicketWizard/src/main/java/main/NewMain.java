@@ -38,7 +38,8 @@ public class NewMain {
                 "Centro", // Colonia
                 33, // Edad
                 fechaNacimiento, // Fecha de Nacimiento
-                100.0 // Saldo
+                100.0, // Saldo
+                false //administrador
         );
 
         // Crear la conexión a la base de datos

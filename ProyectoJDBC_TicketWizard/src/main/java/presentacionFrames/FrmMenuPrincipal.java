@@ -116,7 +116,11 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblEventos = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        btnTransacciones = new javax.swing.JButton();
+        btnMisBoletos = new javax.swing.JButton();
+        btnBoletosVenta = new javax.swing.JButton();
+        btnDatosUsuario = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -127,9 +131,7 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Nombre de usuario");
 
-        bSaldo.setBackground(new java.awt.Color(255, 255, 255));
         bSaldo.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        bSaldo.setForeground(new java.awt.Color(0, 0, 0));
         bSaldo.setText("Saldo");
         bSaldo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -137,12 +139,9 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
             }
         });
 
-        bInicio.setBackground(new java.awt.Color(255, 255, 255));
         bInicio.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        bInicio.setForeground(new java.awt.Color(0, 0, 0));
         bInicio.setText("Inicio");
 
-        tblEventos.setBackground(new java.awt.Color(255, 255, 255));
         tblEventos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         tblEventos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -160,10 +159,30 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
         jLabel2.setText("Eventos");
 
-        jButton2.setBackground(new java.awt.Color(255, 255, 255));
-        jButton2.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(0, 0, 0));
-        jButton2.setText("Modo administrador");
+        btnTransacciones.setText("Transacciones");
+        btnTransacciones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTransaccionesActionPerformed(evt);
+            }
+        });
+
+        btnMisBoletos.setText("Mis boletos");
+        btnMisBoletos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMisBoletosActionPerformed(evt);
+            }
+        });
+
+        btnBoletosVenta.setText("Boletos en venta");
+        btnBoletosVenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBoletosVentaActionPerformed(evt);
+            }
+        });
+
+        btnDatosUsuario.setText("Mis datos");
+
+        jButton1.setText("Comprar boletos");
 
         javax.swing.GroupLayout panel2Layout = new javax.swing.GroupLayout(panel2);
         panel2.setLayout(panel2Layout);
@@ -173,40 +192,49 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
                 .addGap(44, 44, 44)
                 .addGroup(panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel2Layout.createSequentialGroup()
-                        .addGroup(panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(bInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(bSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(bInicio, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                            .addComponent(bSaldo, javax.swing.GroupLayout.DEFAULT_SIZE, 135, Short.MAX_VALUE)
+                            .addComponent(btnTransacciones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnMisBoletos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnBoletosVenta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnDatosUsuario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(84, 84, 84)
                         .addGroup(panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 637, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 16, Short.MAX_VALUE))
-                    .addGroup(panel2Layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2)))
-                .addContainerGap())
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 637, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(22, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(50, 50, 50))
         );
         panel2Layout.setVerticalGroup(
             panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel2Layout.createSequentialGroup()
-                .addGroup(panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel2Layout.createSequentialGroup()
-                        .addGap(49, 49, 49)
-                        .addComponent(jLabel1))
-                    .addGroup(panel2Layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(49, 49, 49)
+                .addComponent(jLabel1)
                 .addGap(31, 31, 31)
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
                 .addGroup(panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel2Layout.createSequentialGroup()
                         .addComponent(bInicio)
-                        .addGap(81, 81, 81)
-                        .addComponent(bSaldo))
+                        .addGap(18, 18, 18)
+                        .addComponent(btnTransacciones)
+                        .addGap(37, 37, 37)
+                        .addComponent(btnMisBoletos)
+                        .addGap(37, 37, 37)
+                        .addComponent(btnBoletosVenta)
+                        .addGap(59, 59, 59)
+                        .addComponent(bSaldo)
+                        .addGap(61, 61, 61)
+                        .addComponent(btnDatosUsuario))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 406, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(71, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addContainerGap(42, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panel1Layout = new javax.swing.GroupLayout(panel1);
@@ -244,11 +272,28 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         Forms.cargarForm(new FrmAgregarSaldo (usuarioLoggeado), this);
     }//GEN-LAST:event_bSaldoActionPerformed
 
+    private void btnTransaccionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTransaccionesActionPerformed
+        Forms.cargarForm(new FrmTransacciones (usuarioLoggeado), this);
+    }//GEN-LAST:event_btnTransaccionesActionPerformed
+
+    private void btnMisBoletosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMisBoletosActionPerformed
+        Forms.cargarForm(new FrmBoletosAdquiridos(usuarioLoggeado), this);
+        
+    }//GEN-LAST:event_btnMisBoletosActionPerformed
+
+    private void btnBoletosVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBoletosVentaActionPerformed
+        Forms.cargarForm(new FrmBoletosVenta(usuarioLoggeado), this);
+    }//GEN-LAST:event_btnBoletosVentaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bInicio;
     private javax.swing.JButton bSaldo;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnBoletosVenta;
+    private javax.swing.JButton btnDatosUsuario;
+    private javax.swing.JButton btnMisBoletos;
+    private javax.swing.JButton btnTransacciones;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;

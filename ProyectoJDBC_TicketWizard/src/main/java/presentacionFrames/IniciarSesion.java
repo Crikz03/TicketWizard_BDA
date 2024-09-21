@@ -218,7 +218,13 @@ public class IniciarSesion extends javax.swing.JFrame {
     }
 
     private void iniciarSesion(final Usuario usuario) {
+        
+        if(usuario.getAdministrador()==true){
+            Forms.cargarForm(new FrmAdministrador(usuario), this);
+        }else{
+        
         Forms.cargarForm(new FrmMenuPrincipal(usuario), this);
+        }
     }
 
     /**

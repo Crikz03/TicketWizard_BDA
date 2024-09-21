@@ -14,8 +14,12 @@ CREATE TABLE Usuarios (
     colonia VARCHAR(100),
     edad INT,
     fecha_nacimiento DATE,
-    saldo DECIMAL(10, 2) DEFAULT 0.00
+    saldo DECIMAL(10, 2) DEFAULT 0.00,
+    administrador BOOLEAN NOT NULL
 )AUTO_INCREMENT = 1;
+
+INSERT INTO Usuarios(nombres, apellidoPaterno, correo, contrasena, administrador)VALUES
+('Administrador', '1', 'administrador@gmail.com', '$2a$12$LkPgVwFRDDyIpjz/9wHwBOvt5Nh4eArowAifZRslIg4dg5s6cd21.', true);
 
 CREATE TABLE Eventos (
     id_evento INT AUTO_INCREMENT PRIMARY KEY,

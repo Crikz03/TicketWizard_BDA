@@ -31,7 +31,7 @@ public class UsuarioDAO implements IUsuarioDAO {
     public boolean agregar(Usuario usuario) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
-            String insertar = "INSERT INTO Usuarios(nombres,apellidoPaterno,apellidoMaterno, correo,contrasena, calle,numero_exterior,colonia, edad, fecha_nacimiento, saldo) VALUES (?, ?, ?, ?, ?, ?,?,?,?,?,?)";
+            String insertar = "INSERT INTO Usuarios(nombres,apellidoPaterno,apellidoMaterno, correo,contrasena, calle,numero_exterior,colonia, edad, fecha_nacimiento, saldo, administrador) VALUES (?, ?, ?, ?, ?, ?,?,?,?,?,?, false)";
             PreparedStatement agregar = bd.prepareStatement(insertar);
 
             String hashedPassword = Encriptacion.encriptarPassword(usuario.getContrasena());
@@ -49,6 +49,7 @@ public class UsuarioDAO implements IUsuarioDAO {
             java.sql.Date sqlDate = new java.sql.Date(usuario.getFechaNacimiento().getTime());
             agregar.setDate(10, sqlDate);
             agregar.setDouble(11, usuario.getSaldo());
+
 
             agregar.executeUpdate();
         } catch (SQLException e) {
@@ -70,12 +71,18 @@ public class UsuarioDAO implements IUsuarioDAO {
             actualizar.setString(7, usuario.getNumeroExterior());
             actualizar.setString(8, usuario.getColonia());
             actualizar.setInt(9, usuario.getEdad());
+            
 
             java.sql.Date sqlDate = new java.sql.Date(usuario.getFechaNacimiento().getTime());
 
             actualizar.setDate(10, sqlDate);
             actualizar.setDouble(11, usuario.getSaldo());
-            actualizar.setInt(12, usuario.getIdUsuario());
+            
+            actualizar.setBoolean(12, usuario.getAdministrador());
+                        
+            actualizar.setInt(13, usuario.getIdUsuario());
+            
+            
 
             actualizar.executeUpdate();
         } catch (SQLException e) {
@@ -106,6 +113,7 @@ public class UsuarioDAO implements IUsuarioDAO {
                 u.setEdad(resultado.getInt("edad"));
                 u.setFechaNacimiento(resultado.getDate("fecha_nacimiento"));
                 u.setSaldo(resultado.getDouble("saldo"));
+                u.setAdministrador(resultado.getBoolean("administrador"));
                 return u;
             }
         } catch (SQLException e) {
@@ -136,6 +144,7 @@ public class UsuarioDAO implements IUsuarioDAO {
                 u.setEdad(resultado.getInt("edad"));
                 u.setFechaNacimiento(resultado.getDate("fecha_nacimiento"));
                 u.setSaldo(resultado.getDouble("saldo"));
+                u.setAdministrador(resultado.getBoolean("administrador"));
                 return u;
             }
         } catch (SQLException e) {
@@ -162,6 +171,7 @@ public class UsuarioDAO implements IUsuarioDAO {
                 u.setEdad(resultados.getInt("edad"));
                 u.setFechaNacimiento(resultados.getDate("fecha_nacimiento"));
                 u.setSaldo(resultados.getDouble("saldo"));
+                u.setAdministrador(resultados.getBoolean("administrador"));
                 listaUsuarios.add(u);
             }
         } catch (SQLException e) {

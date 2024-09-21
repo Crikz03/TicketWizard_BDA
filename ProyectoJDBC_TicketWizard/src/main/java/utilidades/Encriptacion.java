@@ -28,6 +28,7 @@ public class Encriptacion {
     }
 
     public static boolean verificarPasswordConHash(String password, String hashedPassword) {
+        char[] prueba=password.toCharArray();
         BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), hashedPassword);
         return result.verified;
     }
