@@ -4,17 +4,15 @@
  */
 package presentacionFrames;
 
-import conexion.ConexionBD;
-import dao.EventoDAO;
-import excepciones.PersistenciaException;
-import interfaces.IConexion;
-import interfaces.IEventoDAO;
+import dtos.EventoDTO;
+import dtos.UsuarioDTO;
+import excepciones.NegocioException;
+import interfaces.IEventoBO;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
-import objetos.Evento;
-import objetos.Usuario;
+import negocio.EventoBO;
 import utilidades.Forms;
 
 /**
@@ -23,31 +21,25 @@ import utilidades.Forms;
  */
 public class FrmMenuPrincipal extends javax.swing.JFrame {
 
-    private Usuario usuarioLoggeado;
-    private IEventoDAO eventodao;
-    private IConexion conexionbd;
+    private UsuarioDTO usuarioLoggeado;
+    private IEventoBO eventobo;
 
     /**
      * Creates new form FrmMenuPrincipal
      */
-    public FrmMenuPrincipal(Usuario usuarioLoggeado) {
+    public FrmMenuPrincipal(UsuarioDTO usuarioLoggeado) {
         initComponents();
         this.usuarioLoggeado = usuarioLoggeado;
-        this.conexionbd = new ConexionBD();
-        this.eventodao = new EventoDAO(conexionbd);
-
-        if (usuarioLoggeado != null) {
-            jLabel1.setText(usuarioLoggeado.getNombres() + " " + usuarioLoggeado.getApellidoPaterno());
-        }
-        
+        this.eventobo = new EventoBO();
         this.cargarMetodosIniciales();
     }
-    
-     private void cargarMetodosIniciales() {
-        this.cargarProductosEnTabla();
+
+    private void cargarMetodosIniciales() {
+        this.cargarEventosEnTabla();
+        this.cargarNombreUsuario();
     }
 
-    private void llenarTablaProductos(List<Evento> eventoLista) {
+    private void llenarTablaEventos(List<EventoDTO> eventoLista) {
         DefaultTableModel modeloTabla = (DefaultTableModel) this.tblEventos.getModel();
 
         if (modeloTabla.getRowCount() > 0) {
@@ -70,15 +62,15 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
     }
 
     private void actualizarTabla() {
-        List<Evento> listaEventos = null;
+        List<EventoDTO> listaEventos = null;
         try {
-            listaEventos = eventodao.consultar();
-        } catch (PersistenciaException ex) {
+            listaEventos = eventobo.consultar();
+        } catch (NegocioException ex) {
             Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
         DefaultTableModel model = (DefaultTableModel) this.tblEventos.getModel();
         model.setRowCount(0);
-        for (Evento evento : listaEventos) {
+        for (EventoDTO evento : listaEventos) {
             Object[] fila = {
                 evento.getNombre(),
                 evento.getFecha(),
@@ -89,14 +81,20 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         }
     }
 
-    private void cargarProductosEnTabla() {
-        List<Evento> eventos = null;
+    private void cargarEventosEnTabla() {
+        List<EventoDTO> eventos = null;
         try {
-            eventos = this.eventodao.consultar();
-        } catch (PersistenciaException ex) {
+            eventos = this.eventobo.consultar();
+        } catch (NegocioException ex) {
             Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
-        this.llenarTablaProductos(eventos);
+        this.llenarTablaEventos(eventos);
+    }
+
+    private void cargarNombreUsuario() {
+        if (usuarioLoggeado != null) {
+            jLabel1.setText(usuarioLoggeado.getNombres() + " " + usuarioLoggeado.getApellidoPaterno());
+        }
     }
 
     /**
@@ -141,6 +139,11 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
 
         bInicio.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
         bInicio.setText("Inicio");
+        bInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bInicioActionPerformed(evt);
+            }
+        });
 
         tblEventos.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         tblEventos.setModel(new javax.swing.table.DefaultTableModel(
@@ -181,8 +184,18 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         });
 
         btnDatosUsuario.setText("Mis datos");
+        btnDatosUsuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDatosUsuarioActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("Comprar boletos");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel2Layout = new javax.swing.GroupLayout(panel2);
         panel2.setLayout(panel2Layout);
@@ -269,21 +282,33 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bSaldoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSaldoActionPerformed
-        Forms.cargarForm(new FrmAgregarSaldo (usuarioLoggeado), this);
+        Forms.cargarForm(new FrmAgregarSaldo(usuarioLoggeado), this);
     }//GEN-LAST:event_bSaldoActionPerformed
 
     private void btnTransaccionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTransaccionesActionPerformed
-        Forms.cargarForm(new FrmTransacciones (usuarioLoggeado), this);
+        Forms.cargarForm(new FrmTransacciones(usuarioLoggeado), this);
     }//GEN-LAST:event_btnTransaccionesActionPerformed
 
     private void btnMisBoletosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMisBoletosActionPerformed
         Forms.cargarForm(new FrmBoletosAdquiridos(usuarioLoggeado), this);
-        
+
     }//GEN-LAST:event_btnMisBoletosActionPerformed
 
     private void btnBoletosVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBoletosVentaActionPerformed
         Forms.cargarForm(new FrmBoletosVenta(usuarioLoggeado), this);
     }//GEN-LAST:event_btnBoletosVentaActionPerformed
+
+    private void btnDatosUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDatosUsuarioActionPerformed
+        Forms.cargarForm(new FrmDatosUsuario(usuarioLoggeado), this);
+    }//GEN-LAST:event_btnDatosUsuarioActionPerformed
+
+    private void bInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bInicioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_bInicioActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        Forms.cargarForm(new FrmComprarBoletos(usuarioLoggeado), this);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -4,41 +4,33 @@
  */
 package presentacionFrames;
 
-import conexion.ConexionBD;
-import dao.TransaccionDAO;
-import dao.UsuarioDAO;
-import interfaces.IConexion;
-import interfaces.ITransaccionDAO;
-import interfaces.IUsuarioDAO;
-import objetos.Usuario;
+import dtos.UsuarioDTO;
+import interfaces.ITransaccionBO;
+import interfaces.IUsuarioBO;
+import negocio.TransaccionBO;
+import negocio.UsuarioBO;
+import utilidades.Forms;
 
 /**
  *
  * @author pauli
  */
 public class FrmBoletosAdquiridos extends javax.swing.JFrame {
-
-    private Usuario usuarioLoggeado;
-    private IConexion conexionbd;
-    private ITransaccionDAO tDAO;
-    private IUsuarioDAO uDAO;
+    
+    private UsuarioDTO usuarioLoggeado;
+    private ITransaccionBO transaccionbo;
+    private IUsuarioBO usuariobo;
 
     /**
      * Creates new form FrmBoletosAdquiridos
      */
-    public FrmBoletosAdquiridos(Usuario usuarioLoggeado) {
+    public FrmBoletosAdquiridos(UsuarioDTO usuarioLoggeado) {
         initComponents();
         this.usuarioLoggeado = usuarioLoggeado;
-        this.conexionbd = new ConexionBD();
-        this.tDAO = new TransaccionDAO(conexionbd);
-        this.uDAO = new UsuarioDAO(conexionbd);
+        this.transaccionbo = new TransaccionBO();
+        this.usuariobo = new UsuarioBO();
     }
-    /**
-     * Creates new form FrmBoletosAdquiridos
-     */
-    public FrmBoletosAdquiridos() {
-        initComponents();
-    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -73,6 +65,11 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         jButton1.setText("Vender Boleto");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -103,40 +100,10 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmBoletosAdquiridos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmBoletosAdquiridos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmBoletosAdquiridos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmBoletosAdquiridos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        Forms.cargarForm(new FrmVenderBoleto(usuarioLoggeado), this);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmBoletosAdquiridos().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

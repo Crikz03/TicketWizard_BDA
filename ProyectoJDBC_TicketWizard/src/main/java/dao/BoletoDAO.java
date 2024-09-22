@@ -127,23 +127,4 @@ public class BoletoDAO implements IBoletoDAO {
         return listaBoletos;
     }
 
-    public boolean comprarBoleto(int idBoleto, String numSerie, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario) throws PersistenciaException {
-        try {
-            Connection bd = conexion.crearConexion();
-            String procedimiento = "{CALL ComprarBoleto(?, ?, ?, ?, ?)}";
-            PreparedStatement stmt = bd.prepareStatement(procedimiento);
-
-            stmt.setInt(1, idBoleto);
-            stmt.setString(2, numSerie);
-            stmt.setDouble(3, precio);
-            stmt.setObject(4, estadoAdquisicion);
-            stmt.setInt(5, idUsuario);
-
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
 }

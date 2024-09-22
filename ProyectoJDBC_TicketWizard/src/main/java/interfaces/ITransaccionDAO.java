@@ -22,6 +22,8 @@ public interface ITransaccionDAO {
     List<Transaccion> consultar() throws PersistenciaException;
 
     Transaccion consultar(int num_transaccion) throws PersistenciaException;
+    
+    List<Transaccion> consultarIdUsuario(int idUsuario) throws PersistenciaException;
 
     boolean eliminar(int num_transaccion) throws PersistenciaException;
     

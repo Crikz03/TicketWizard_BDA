@@ -91,8 +91,9 @@ public class TransaccionDAO implements ITransaccionDAO {
                 t.setMonto(resultado.getDouble("monto"));
                 t.setComision(resultado.getDouble("comision"));
                 t.setTiempoLimite(resultado.getTime("tiempo_limite"));
-                t.setTipo((TipoTransaccion) resultado.getObject("tipo"));
-                t.setFecha(resultado.getDate("fecha"));
+                String tipoTransaccionStr = resultado.getString("tipo");
+                t.setTipo(TipoTransaccion.valueOf(tipoTransaccionStr));
+                t.setFecha(resultado.getDate("fecha_hora"));
                 t.setIdUsuario(resultado.getInt("id_usuario"));
                 return t;
             }
@@ -113,8 +114,9 @@ public class TransaccionDAO implements ITransaccionDAO {
                 t.setMonto(resultados.getDouble("monto"));
                 t.setComision(resultados.getDouble("comision"));
                 t.setTiempoLimite(resultados.getTime("tiempo_limite"));
-                t.setTipo((TipoTransaccion) resultados.getObject("tipo"));
-                t.setFecha(resultados.getDate("fecha"));
+                String tipoTransaccionStr = resultados.getString("tipo");
+                t.setTipo(TipoTransaccion.valueOf(tipoTransaccionStr));
+                t.setFecha(resultados.getDate("fecha_hora"));
                 t.setIdUsuario(resultados.getInt("id_usuario"));
                 listaTransacciones.add(t);
             }
@@ -124,12 +126,40 @@ public class TransaccionDAO implements ITransaccionDAO {
         return listaTransacciones;
     }
 
+    @Override
+    public List<Transaccion> consultarIdUsuario(int idUsuario) throws PersistenciaException {
+        List<Transaccion> listaTransacciones = new ArrayList<>();
+        String buscarTransaccion = "SELECT * FROM Transacciones WHERE id_usuario = ?";
+        try (Connection bd = conexion.crearConexion(); PreparedStatement busqueda = bd.prepareStatement(buscarTransaccion)) {
+            busqueda.setInt(1, idUsuario);
+            ResultSet resultados = busqueda.executeQuery();
+
+            while (resultados.next()) {
+                Transaccion t = new Transaccion();
+                t.setNumTransaccion(resultados.getInt("num_transaccion"));
+                t.setMonto(resultados.getDouble("monto"));
+                t.setComision(resultados.getDouble("comision"));
+                t.setTiempoLimite(resultados.getTime("tiempo_limite"));
+                String tipoTransaccionStr = resultados.getString("tipo");
+                t.setTipo(TipoTransaccion.valueOf(tipoTransaccionStr));
+                t.setFecha(resultados.getDate("fecha_hora"));
+                t.setIdUsuario(resultados.getInt("id_usuario"));
+                listaTransacciones.add(t);
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException("No se pudo encontrar la trasaccion del usuario con id: " + idUsuario);
+        }
+        return listaTransacciones;
+    }
+
     public boolean agregarSaldo(Usuario usuario, double monto) throws PersistenciaException {
-        String sql = "INSERT INTO Transacciones (id_usuario, monto) VALUES (?, ?)";
+        String sql = "INSERT INTO Transacciones (id_usuario, monto, tipo) VALUES (?, ?, ?)";
 
         try (PreparedStatement ps = conexion.crearConexion().prepareStatement(sql)) {
             ps.setInt(1, usuario.getIdUsuario());
             ps.setDouble(2, monto);
+            ps.setString(3, TipoTransaccion.saldo.name());
+
             ps.executeUpdate();
 
         } catch (SQLException e) {
@@ -137,6 +167,5 @@ public class TransaccionDAO implements ITransaccionDAO {
         }
         return true;
     }
-    
-    
+
 }

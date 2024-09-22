@@ -4,17 +4,13 @@
  */
 package presentacionFrames;
 
-import conexion.ConexionBD;
-import dao.TransaccionDAO;
-import dao.UsuarioDAO;
-import excepciones.PersistenciaException;
-import interfaces.IConexion;
-import interfaces.ITransaccionDAO;
-import interfaces.IUsuarioDAO;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import dtos.UsuarioDTO;
+import excepciones.NegocioException;
+import interfaces.ITransaccionBO;
+import interfaces.IUsuarioBO;
 import javax.swing.JOptionPane;
-import objetos.Usuario;
+import negocio.TransaccionBO;
+import negocio.UsuarioBO;
 
 /**
  *
@@ -22,20 +18,18 @@ import objetos.Usuario;
  */
 public class FrmAgregarSaldo extends javax.swing.JFrame {
 
-    private Usuario usuarioLoggeado;
-    private IConexion conexionbd;
-    private ITransaccionDAO tDAO;
-    private IUsuarioDAO uDAO;
+    private UsuarioDTO usuarioLoggeado;
+    private ITransaccionBO transaccionbo;
+    private IUsuarioBO usuariobo;
 
     /**
      * Creates new form FrmAgregarSaldo
      */
-    public FrmAgregarSaldo(Usuario usuarioLoggeado) {
+    public FrmAgregarSaldo(UsuarioDTO usuarioLoggeado) {
         initComponents();
         this.usuarioLoggeado = usuarioLoggeado;
-        this.conexionbd = new ConexionBD();
-        this.tDAO = new TransaccionDAO(conexionbd);
-        this.uDAO = new UsuarioDAO(conexionbd);
+        this.transaccionbo = new TransaccionBO();
+        this.usuariobo = new UsuarioBO();
         this.mostrarSaldo();
     }
 
@@ -97,7 +91,7 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(167, 167, 167)
                         .addComponent(jlabelsaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 382, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(182, Short.MAX_VALUE))
+                .addContainerGap(109, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,7 +128,11 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
             double cantidad = Double.parseDouble(input);
 
             if (cantidad > 0) {
-                tDAO.agregarSaldo(usuarioLoggeado, cantidad);
+                try {
+                    transaccionbo.agregarSaldo(usuarioLoggeado, cantidad);
+                } catch (NegocioException ex) {
+                    JOptionPane.showMessageDialog(this, "No se ha podido agregar el saldo a la cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
                 mostrarSaldo();
                 JOptionPane.showMessageDialog(this, "Saldo agregado exitosamente.");
             } else {
@@ -142,9 +140,8 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Ingrese una cantidad válida.", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (PersistenciaException ex) {
-            Logger.getLogger(FrmAgregarSaldo.class.getName()).log(Level.SEVERE, null, ex);
         }
+
 
     }//GEN-LAST:event_bAgregaActionPerformed
 
@@ -159,9 +156,9 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
 
     private void mostrarSaldo() {
         try {
-            double saldo = uDAO.obtenerSaldoActual(usuarioLoggeado.getIdUsuario());
+            double saldo = usuariobo.obtenerSaldoActual(usuarioLoggeado.getIdUsuario());
             jlabelsaldo.setText("Saldo actual: " + saldo);
-        } catch (PersistenciaException e) {
+        } catch (NegocioException e) {
             JOptionPane.showMessageDialog(this, "Error al obtener el saldo.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
