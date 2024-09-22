@@ -4,13 +4,15 @@
  */
 package presentacionFrames;
 
-import conexion.ConexionBD;
-import dao.TransaccionDAO;
-import dao.UsuarioDAO;
-import interfaces.IConexion;
-import interfaces.ITransaccionDAO;
-import interfaces.IUsuarioDAO;
-import objetos.Usuario;
+import dtos.TransaccionDTO;
+import dtos.UsuarioDTO;
+import excepciones.NegocioException;
+import interfaces.ITransaccionBO;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import negocio.TransaccionBO;
 
 /**
  *
@@ -18,27 +20,55 @@ import objetos.Usuario;
  */
 public class FrmTransacciones extends javax.swing.JFrame {
 
-    
-    private Usuario usuarioLoggeado;
-    private IConexion conexionbd;
-    private ITransaccionDAO tDAO;
-    private IUsuarioDAO uDAO;
+    private UsuarioDTO usuarioLoggeado;
+    private ITransaccionBO transaccionbo;
 
     /**
      * Creates new form FrmTransacciones
      */
-    public FrmTransacciones(Usuario usuarioLoggeado) {
+    public FrmTransacciones(UsuarioDTO usuarioLoggeado) {
         initComponents();
         this.usuarioLoggeado = usuarioLoggeado;
-        this.conexionbd = new ConexionBD();
-        this.tDAO = new TransaccionDAO(conexionbd);
-        this.uDAO = new UsuarioDAO(conexionbd);
-        
-    }/**
-     * Creates new form FrmTransacciones
-     */
-    public FrmTransacciones() {
-        initComponents();
+        this.transaccionbo = new TransaccionBO();
+        this.cargarMetodosIniciales();
+
+    }
+
+    private void cargarMetodosIniciales() {
+        this.cargarEventosEnTabla();
+    }
+
+    private void llenarTablaEventos(List<TransaccionDTO> transaccionLista) {
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.tlbTransacciones.getModel();
+
+        if (modeloTabla.getRowCount() > 0) {
+            for (int i = modeloTabla.getRowCount() - 1; i > -1; i--) {
+                modeloTabla.removeRow(i);
+            }
+        }
+
+        if (transaccionLista != null) {
+            transaccionLista.forEach(row -> {
+                Object[] fila = new Object[5];
+                fila[0] = row.getNumTransaccion();
+                fila[1] = row.getTipo();
+                fila[2] = row.getMonto();
+                fila[3] = new SimpleDateFormat("dd/MM/yyyy").format(row.getFecha());
+                fila[4] = new SimpleDateFormat("HH:mm:ss").format(row.getFecha());
+
+                modeloTabla.addRow(fila);
+            });
+        }
+    }
+
+    private void cargarEventosEnTabla() {
+        List<TransaccionDTO> transacciones = null;
+        try {
+            transacciones = this.transaccionbo.consultarIdUsuario(usuarioLoggeado.getIdUsuario());
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(this, "No se han podido cargar las transacciones del usuario con id: " + usuarioLoggeado.getIdUsuario(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        this.llenarTablaEventos(transacciones);
     }
 
     /**
@@ -52,14 +82,14 @@ public class FrmTransacciones extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tlbTransacciones = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setText("Transacciones");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tlbTransacciones.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -70,7 +100,7 @@ public class FrmTransacciones extends javax.swing.JFrame {
                 "Num Transaccion", "Tipo", "Monto", "Fecha", "Hora"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tlbTransacciones);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -98,44 +128,10 @@ public class FrmTransacciones extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmTransacciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmTransacciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmTransacciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmTransacciones.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmTransacciones().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tlbTransacciones;
     // End of variables declaration//GEN-END:variables
 }

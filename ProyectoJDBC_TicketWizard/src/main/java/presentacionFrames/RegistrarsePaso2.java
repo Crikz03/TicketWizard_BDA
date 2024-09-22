@@ -4,17 +4,13 @@
  */
 package presentacionFrames;
 
-import conexion.ConexionBD;
-import dao.UsuarioDAO;
-import excepciones.PersistenciaException;
-import interfaces.IConexion;
-import interfaces.IUsuarioDAO;
+import dtos.UsuarioDTO;
+import excepciones.NegocioException;
+import interfaces.IUsuarioBO;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import objetos.Usuario;
+import negocio.UsuarioBO;
 import utilidades.Forms;
 
 /**
@@ -23,18 +19,16 @@ import utilidades.Forms;
  */
 public class RegistrarsePaso2 extends javax.swing.JFrame {
 
-    private Usuario usuarioRegistrando;
-    private IConexion conexionbd;
-    private IUsuarioDAO uDAO;
+    private UsuarioDTO usuarioRegistrando;
+    private IUsuarioBO usuariobo;
 
     /**
      * Creates new form Registrarse
      */
-    public RegistrarsePaso2(Usuario usuarioRegistrando) {
+    public RegistrarsePaso2(UsuarioDTO usuarioRegistrando) {
         initComponents();
         this.usuarioRegistrando = usuarioRegistrando;
-        this.conexionbd = new ConexionBD();
-        this.uDAO = new UsuarioDAO(conexionbd);
+        this.usuariobo = new UsuarioBO();
     }
 
     /**
@@ -208,11 +202,7 @@ public class RegistrarsePaso2 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void bRegistrarseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bRegistrarseActionPerformed
-        try {
-            this.terminarRegistro();
-        } catch (PersistenciaException ex) {
-            Logger.getLogger(RegistrarsePaso2.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.terminarRegistro();
     }//GEN-LAST:event_bRegistrarseActionPerformed
 
     private void txtCorreoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCorreoActionPerformed
@@ -227,50 +217,59 @@ public class RegistrarsePaso2 extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtRepeContraseñaActionPerformed
 
-    private void terminarRegistro() throws PersistenciaException {
+    private void terminarRegistro() {
 
         Date mFecha = jDateChooser1.getDate();
+        try {
+            if (txtCorreo.getText().isEmpty() || txtContraseña.getPassword().length == 0 || txtRepeContraseña.getPassword().length == 0 || mFecha == null) {
+                JOptionPane.showMessageDialog(this, "Por favor, completa todos los campos.", "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-        if (txtCorreo.getText().isEmpty() || txtContraseña.getPassword().length == 0 || txtRepeContraseña.getPassword().length == 0 || mFecha == null) {
-            JOptionPane.showMessageDialog(this, "Por favor, completa todos los campos.", "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
-            return;
+            if (!txtContraseña.getText().equals(txtRepeContraseña.getText())) {
+                JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.", "Error de contraseña", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(mFecha);
+            int añoNacimiento = cal.get(Calendar.YEAR);
+            int añoActual = Calendar.getInstance().get(Calendar.YEAR);
+            int edad = añoActual - añoNacimiento;
+
+            usuarioRegistrando.setCorreo(txtCorreo.getText());
+            usuarioRegistrando.setContrasena(txtContraseña.getText());
+            java.sql.Date fechaSQL = new java.sql.Date(mFecha.getTime());
+            usuarioRegistrando.setFechaNacimiento(fechaSQL);
+
+            usuarioRegistrando.setEdad(edad);
+            usuarioRegistrando.setCalle("");
+            usuarioRegistrando.setColonia("");
+            usuarioRegistrando.setNumeroExterior("");
+            usuarioRegistrando.setSaldo(0.0);
+
+            if (usuariobo.existeCorreo(usuarioRegistrando.getCorreo())) {
+                JOptionPane.showMessageDialog(this, "El correo ya está registrado. Por favor, use otro.", "Error!", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            this.guardarUsuario();
+            
+            JOptionPane.showMessageDialog(this, "Exito!, se ha creado tu usuario correctamente.");
+
+            this.regresarALogin();
+        } catch (NegocioException e) {
+            JOptionPane.showMessageDialog(this, "Ha ocurrido un error durante la operacion, intentelo denuevo", "Error!", JOptionPane.ERROR_MESSAGE);
         }
-
-        if (!txtContraseña.getText().equals(txtRepeContraseña.getText())) {
-            JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.", "Error de contraseña", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(mFecha);
-        int añoNacimiento = cal.get(Calendar.YEAR);
-        int añoActual = Calendar.getInstance().get(Calendar.YEAR);
-        int edad = añoActual - añoNacimiento;
-
-        usuarioRegistrando.setCorreo(txtCorreo.getText());
-        usuarioRegistrando.setContrasena(txtContraseña.getText());
-        java.sql.Date fechaSQL = new java.sql.Date(mFecha.getTime());
-        usuarioRegistrando.setFechaNacimiento(fechaSQL);
-
-        usuarioRegistrando.setEdad(edad);
-        usuarioRegistrando.setCalle("");
-        usuarioRegistrando.setColonia("");
-        usuarioRegistrando.setNumeroExterior("");
-        usuarioRegistrando.setSaldo(0.0);
-
-        if (uDAO.existeCorreo(usuarioRegistrando.getCorreo())) {
-            JOptionPane.showMessageDialog(this, "El correo ya está registrado. Por favor, use otro.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        this.guardarUsuario();
-
-        this.regresarALogin();
 
     }
 
-    private void guardarUsuario() throws PersistenciaException {
-        this.uDAO.agregar(usuarioRegistrando);
+    private void guardarUsuario() {
+        try {
+            this.usuariobo.agregar(usuarioRegistrando);
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(this, "El usuairo no ha podido registrarse correctamente.","Error!", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void regresarALogin() {

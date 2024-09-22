@@ -4,15 +4,11 @@
  */
 package presentacionFrames;
 
-import conexion.ConexionBD;
-import dao.UsuarioDAO;
-import excepciones.PersistenciaException;
-import interfaces.IConexion;
-import interfaces.IUsuarioDAO;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import dtos.UsuarioDTO;
+import excepciones.NegocioException;
+import interfaces.IUsuarioBO;
 import javax.swing.JOptionPane;
-import objetos.Usuario;
+import negocio.UsuarioBO;
 import utilidades.Dialogos;
 import utilidades.Encriptacion;
 import utilidades.Forms;
@@ -23,16 +19,14 @@ import utilidades.Forms;
  */
 public class IniciarSesion extends javax.swing.JFrame {
 
-    private IConexion conexionbd;
-    private IUsuarioDAO uDAO;
+    private IUsuarioBO usuariobo;
 
     /**
      * Creates new form IniciarSesion
      */
     public IniciarSesion() {
         initComponents();
-        this.conexionbd = new ConexionBD();
-        this.uDAO = new UsuarioDAO(conexionbd);
+        this.usuariobo = new UsuarioBO();
     }
 
     /**
@@ -184,46 +178,47 @@ public class IniciarSesion extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            this.intentarIniciarSesion();
-        } catch (PersistenciaException ex) {
-            Logger.getLogger(IniciarSesion.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.intentarIniciarSesion();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jLRegistrarseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLRegistrarseMouseClicked
         Forms.cargarForm(new RegistrarsePaso1(), this);
     }//GEN-LAST:event_jLRegistrarseMouseClicked
 
-    private void intentarIniciarSesion() throws PersistenciaException {
-        if (txtCorreo.getText().isEmpty() || new String(txtContraseña.getPassword()).isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos.", "Campos vacíos", JOptionPane.ERROR_MESSAGE);
+    private void intentarIniciarSesion() {
+        try {
+            if (txtCorreo.getText().isEmpty() || new String(txtContraseña.getPassword()).isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Por favor, complete todos los campos.", "Campos vacíos", JOptionPane.ERROR_MESSAGE);
+            }
+
+            UsuarioDTO usuario = usuariobo.consultarPorCorreo(txtCorreo.getText());
+
+            if (usuario == null) {
+                Dialogos.mostrarMensajeError(rootPane, "Credenciales no validas.");
+                return;
+            }
+            String intentoPassword = new String(txtContraseña.getPassword());
+            boolean isPasswordValida = Encriptacion.verificarPasswordConHash(intentoPassword, usuario.getContrasena());
+
+            if (!isPasswordValida) {
+                Dialogos.mostrarMensajeError(rootPane, "Credenciales no validas.");
+                return;
+            }
+
+            this.iniciarSesion(usuario);
+        } catch (NegocioException e) {
+            JOptionPane.showMessageDialog(null, "No ha sido posible realizar el inicio de sesion, intentelo denuevo.", "Error!", JOptionPane.ERROR_MESSAGE);
         }
 
-        Usuario usuario = uDAO.consultarPorCorreo(txtCorreo.getText());
-
-        if (usuario == null) {
-            Dialogos.mostrarMensajeError(rootPane, "Credenciales no validas.");
-            return;
-        }
-        String intentoPassword = new String(txtContraseña.getPassword());
-        boolean isPasswordValida = Encriptacion.verificarPasswordConHash(intentoPassword, usuario.getContrasena());
-
-        if (!isPasswordValida) {
-            Dialogos.mostrarMensajeError(rootPane, "Credenciales no validas.");
-            return;
-        }
-
-        this.iniciarSesion(usuario);
     }
 
-    private void iniciarSesion(final Usuario usuario) {
-        
-        if(usuario.getAdministrador()==true){
+    private void iniciarSesion(final UsuarioDTO usuario) {
+
+        if (usuario.isAdministrador() == true) {
             Forms.cargarForm(new FrmAdministrador(usuario), this);
-        }else{
-        
-        Forms.cargarForm(new FrmMenuPrincipal(usuario), this);
+        } else {
+
+            Forms.cargarForm(new FrmMenuPrincipal(usuario), this);
         }
     }
 

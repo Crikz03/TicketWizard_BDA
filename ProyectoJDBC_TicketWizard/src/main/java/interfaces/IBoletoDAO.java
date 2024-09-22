@@ -7,7 +7,6 @@ package interfaces;
 import excepciones.PersistenciaException;
 import java.util.List;
 import objetos.Boleto;
-import utilidades.EstadoAdquisicion;
 
 /**
  *
@@ -25,6 +24,5 @@ public interface IBoletoDAO {
 
     List<Boleto> consultar() throws PersistenciaException;
 
-    boolean comprarBoleto(int idBoleto, String numSerie, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario) throws PersistenciaException;
-
+   
 }

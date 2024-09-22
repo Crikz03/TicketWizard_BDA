@@ -4,21 +4,18 @@
  */
 package presentacionFrames;
 
-import conexion.ConexionBD;
-import dao.EventoDAO;
-import dao.TransaccionDAO;
-import dao.UsuarioDAO;
-import excepciones.PersistenciaException;
-import interfaces.IConexion;
-import interfaces.IEventoDAO;
-import interfaces.ITransaccionDAO;
-import interfaces.IUsuarioDAO;
+import dtos.EventoDTO;
+import dtos.UsuarioDTO;
+import excepciones.NegocioException;
+import interfaces.IEventoBO;
+import interfaces.ITransaccionBO;
+import interfaces.IUsuarioBO;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
-import objetos.Evento;
-import objetos.Usuario;
+import negocio.EventoBO;
+import negocio.UsuarioBO;
 
 /**
  *
@@ -26,35 +23,30 @@ import objetos.Usuario;
  */
 public class FrmAsignarBoletos extends javax.swing.JFrame {
 
-    private Usuario usuarioLoggeado;
-    private IEventoDAO eventodao;
-    private IConexion conexionbd;
-    
-    
-    private ITransaccionDAO tDAO;
-    private IUsuarioDAO uDAO;
+    private UsuarioDTO usuarioLoggeado;
+    private IEventoBO eventobo;
+
+    private ITransaccionBO transaccionbo;
+    private IUsuarioBO usuariobo;
 
     /**
      * Creates new form FrmAgregarSaldo
      */
-    public FrmAsignarBoletos(Usuario usuarioLoggeado) {
+    public FrmAsignarBoletos(UsuarioDTO usuarioLoggeado) {
         initComponents();
         this.usuarioLoggeado = usuarioLoggeado;
-        this.conexionbd = new ConexionBD();
-        this.eventodao = new EventoDAO(conexionbd);
+        this.eventobo = new EventoBO();
+        this.usuariobo = new UsuarioBO();
 
-        if (usuarioLoggeado != null) {
-            jLabel1.setText(usuarioLoggeado.getNombres() + " " + usuarioLoggeado.getApellidoPaterno());
-        }
-        
         this.cargarMetodosIniciales();
     }
-    
-     private void cargarMetodosIniciales() {
-        this.cargarProductosEnTabla();
+
+    private void cargarMetodosIniciales() {
+        this.cargarEventosEnTabla();
+        this.cargarNombreUsuario();
     }
 
-    private void llenarTablaProductos(List<Evento> eventoLista) {
+    private void llenarTablaProductos(List<EventoDTO> eventoLista) {
         DefaultTableModel modeloTabla = (DefaultTableModel) this.tblEventos.getModel();
 
         if (modeloTabla.getRowCount() > 0) {
@@ -77,15 +69,15 @@ public class FrmAsignarBoletos extends javax.swing.JFrame {
     }
 
     private void actualizarTabla() {
-        List<Evento> listaEventos = null;
+        List<EventoDTO> listaEventos = null;
         try {
-            listaEventos = eventodao.consultar();
-        } catch (PersistenciaException ex) {
+            listaEventos = eventobo.consultar();
+        } catch (NegocioException ex) {
             Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
         DefaultTableModel model = (DefaultTableModel) this.tblEventos.getModel();
         model.setRowCount(0);
-        for (Evento evento : listaEventos) {
+        for (EventoDTO evento : listaEventos) {
             Object[] fila = {
                 evento.getNombre(),
                 evento.getFecha(),
@@ -96,15 +88,22 @@ public class FrmAsignarBoletos extends javax.swing.JFrame {
         }
     }
 
-    private void cargarProductosEnTabla() {
-        List<Evento> eventos = null;
+    private void cargarEventosEnTabla() {
+        List<EventoDTO> eventos = null;
         try {
-            eventos = this.eventodao.consultar();
-        } catch (PersistenciaException ex) {
+            eventos = this.eventobo.consultar();
+        } catch (NegocioException ex) {
             Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.llenarTablaProductos(eventos);
     }
+
+    private void cargarNombreUsuario() {
+        if (usuarioLoggeado != null) {
+            jLabel1.setText(usuarioLoggeado.getNombres() + " " + usuarioLoggeado.getApellidoPaterno());
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -178,41 +177,6 @@ public class FrmAsignarBoletos extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmAsignarBoletos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmAsignarBoletos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmAsignarBoletos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmAsignarBoletos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                
-               // new FrmAsignarBoletos().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
