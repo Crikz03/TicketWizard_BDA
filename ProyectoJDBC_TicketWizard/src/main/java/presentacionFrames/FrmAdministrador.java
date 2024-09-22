@@ -206,44 +206,58 @@ public class FrmAdministrador extends javax.swing.JFrame {
 
     private void txtFilasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFilasKeyReleased
         actualizarCapacidad();
+        validarEnterosFilas();
     }//GEN-LAST:event_txtFilasKeyReleased
 
     private void txtAsientosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAsientosKeyReleased
         actualizarCapacidad();
+        validarEnterosAsientos();
     }//GEN-LAST:event_txtAsientosKeyReleased
 
     private void crearEvento() {
         eventoCreando = new EventoDTO();
         Date mFecha = jDateChooser1.getDate();
         try {
+
+            // Inicializamos una bandera para identificar si hay campos vacíos
+            boolean hayCamposVacios = false;
+            StringBuilder camposFaltantes = new StringBuilder("Por favor, completa los siguientes campos:\n");
+
+            // Verificar cada campo
             if (txtNombre.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, ingresa el nombre del evento.", "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (mFecha == null) {
-                JOptionPane.showMessageDialog(this, "Por favor, ingresa la fecha del evento.", "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (txtLocalidad.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, ingresa la localidad del evento.", "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            if (txtVenue.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, ingresa el venue del evento.", "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            if (txtFilas.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, ingresa el numero de filas para el evento.", "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (txtAsientos.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Por favor, ingresa el numero de asientos por fila para el evento.", "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
-                return;
+                camposFaltantes.append("- Nombre del evento\n");
+                hayCamposVacios = true;
             }
 
-            
+            if (mFecha == null) {
+                camposFaltantes.append("- Fecha del evento\n");
+                hayCamposVacios = true;
+            }
+
+            if (txtLocalidad.getText().isEmpty()) {
+                camposFaltantes.append("- Localidad del evento\n");
+                hayCamposVacios = true;
+            }
+
+            if (txtVenue.getText().isEmpty()) {
+                camposFaltantes.append("- Venue del evento\n");
+                hayCamposVacios = true;
+            }
+
+            if (txtFilas.getText().isEmpty()) {
+                camposFaltantes.append("- Número de filas\n");
+                hayCamposVacios = true;
+            }
+
+            if (txtAsientos.getText().isEmpty()) {
+                camposFaltantes.append("- Número de asientos por fila\n");
+                hayCamposVacios = true;
+            }
+
+            // Si hay al menos un campo vacío, mostramos el mensaje
+            if (hayCamposVacios) {
+                JOptionPane.showMessageDialog(this, camposFaltantes.toString(), "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
+            }
 
             Calendar cal = Calendar.getInstance();
             cal.setTime(mFecha);
@@ -256,17 +270,16 @@ public class FrmAdministrador extends javax.swing.JFrame {
             eventoCreando.setFecha(fechaSQL);
             eventoCreando.setLocalidad(txtLocalidad.getText());
             eventoCreando.setVenue(txtVenue.getText());
-            
+
             this.actualizarCapacidad();
-        
-           
+
             if (eventobo.existeEvento(eventoCreando.getNombre())) {
                 JOptionPane.showMessageDialog(this, "El nombre del evento ya está registrado. Por favor, use otro.", "Error!", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             this.guardarEvento();
-            
+
             JOptionPane.showMessageDialog(this, "Exito!, se ha creado el evento correctamente.");
 
             this.limpiarTextbox();
@@ -280,22 +293,73 @@ public class FrmAdministrador extends javax.swing.JFrame {
         try {
             this.eventobo.agregar(eventoCreando);
         } catch (NegocioException ex) {
-            JOptionPane.showMessageDialog(this, "El usuairo no ha podido registrarse correctamente.","Error!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "El usuairo no ha podido registrarse correctamente.", "Error!", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private void actualizarCapacidad() {
-    try {
-        int filas = Integer.parseInt(txtFilas.getText());
-        int asientos = Integer.parseInt(txtAsientos.getText());
-        int capacidad = filas * asientos;
-        labelCapacidad.setText(String.valueOf(capacidad));
-        eventoCreando.setCapacidad(capacidad); // Actualizar el objeto eventoCreando
-    } catch (NumberFormatException ex) {
-        // Si el usuario no ha ingresado números válidos, puedes manejarlo aquí
-        labelCapacidad.setText("0");  // Muestra 0 si los valores no son válidos
+        try {
+            int filas = Integer.parseInt(txtFilas.getText());
+            int asientos = Integer.parseInt(txtAsientos.getText());
+            int capacidad = filas * asientos;
+            labelCapacidad.setText(String.valueOf(capacidad));
+            eventoCreando.setCapacidad(capacidad); // Actualizar el objeto eventoCreando
+        } catch (NumberFormatException ex) {
+            // Si el usuario no ha ingresado números válidos, puedes manejarlo aquí
+            labelCapacidad.setText("0");  // Muestra 0 si los valores no son válidos
+        }
     }
+
+    private boolean validarEnterosFilas() {
+    boolean hayCamposVacios = false;
+    StringBuilder camposFaltantes = new StringBuilder("Por favor, completa los siguientes campos:\n");
+
+    // Validación del campo de filas
+    if (txtFilas.getText().isEmpty()) {
+        camposFaltantes.append("- Número de filas\n");
+        hayCamposVacios = true;
+    } else {
+        try {
+            Integer.parseInt(txtFilas.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingresa un número válido para el número de filas.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            return false; // Indicar que la validación falló
+        }
+    }
+
+    // Mostrar mensaje si hay campos vacíos
+    if (hayCamposVacios) {
+        JOptionPane.showMessageDialog(this, camposFaltantes.toString(), "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
+        return false; // Indicar que la validación falló
+    }
+
+    return true; // Indicar que la validación fue exitosa
 }
-    
+private boolean validarEnterosAsientos() {
+    boolean hayCamposVacios = false;
+    StringBuilder camposFaltantes = new StringBuilder("Por favor, completa los siguientes campos:\n");
+
+    // Validación del campo de filas
+    if (txtAsientos.getText().isEmpty()) {
+        camposFaltantes.append("- Número de filas\n");
+        hayCamposVacios = true;
+    } else {
+        try {
+            Integer.parseInt(txtAsientos.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingresa un número válido para el número de filas.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            return false; // Indicar que la validación falló
+        }
+    }
+
+    // Mostrar mensaje si hay campos vacíos
+    if (hayCamposVacios) {
+        JOptionPane.showMessageDialog(this, camposFaltantes.toString(), "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
+        return false; // Indicar que la validación falló
+    }
+
+    return true; // Indicar que la validación fue exitosa
+}
     /**
      * Limpia los campos de texto.
      */
@@ -307,14 +371,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
         txtFilas.setText("");
         txtAsientos.setText("");
     }
-    
 
-
-    
-    
-    
-    
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAsignarBoletos;
