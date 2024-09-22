@@ -23,5 +23,7 @@ public interface IEventoBO {
     List<EventoDTO> consultar() throws NegocioException;
 
     EventoDTO consultar(int id) throws NegocioException;
+    
+    boolean existeEvento(String nombre) throws NegocioException;
 
 }

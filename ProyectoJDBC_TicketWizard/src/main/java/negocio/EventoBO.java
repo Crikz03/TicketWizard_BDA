@@ -84,5 +84,14 @@ public class EventoBO implements IEventoBO {
             throw new NegocioException("No se pudo consultar el evento con id: " + id);
         }
     }
+    
+    @Override
+    public boolean existeEvento(String nombre) throws NegocioException {
+        try {
+            return eventodao.existeEvento(nombre);
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No existe el nombre de evento.");
+        }
+    }
 
 }

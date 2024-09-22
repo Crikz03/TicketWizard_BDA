@@ -4,6 +4,7 @@
  */
 package interfaces;
 
+
 import excepciones.PersistenciaException;
 import java.util.List;
 import objetos.Evento;
@@ -23,5 +24,7 @@ public interface IEventoDAO {
     Evento consultar(int id) throws PersistenciaException;
 
     boolean eliminar(int id) throws PersistenciaException;
+    
+    boolean existeEvento(String nombre) throws PersistenciaException;
 
 }

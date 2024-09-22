@@ -117,4 +117,21 @@ public class EventoDAO implements IEventoDAO {
         }
         return listaEventos;
     }
+    
+     public boolean existeEvento(String nombre) throws PersistenciaException {
+        try {
+            Connection bd = conexion.crearConexion();
+            String query = "SELECT COUNT(*) FROM Eventos WHERE nombre = ?";
+            PreparedStatement consulta = bd.prepareStatement(query);
+            consulta.setString(1, nombre);
+
+            ResultSet resultado = consulta.executeQuery();
+            if (resultado.next()) {
+                return resultado.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al verificar si el evento existe.");
+        }
+        return false;
+    }
 }
