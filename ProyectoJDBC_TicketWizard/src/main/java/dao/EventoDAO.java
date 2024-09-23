@@ -134,4 +134,29 @@ public class EventoDAO implements IEventoDAO {
         }
         return false;
     }
+     
+     public Evento consultarPorNombre(String nombre) throws PersistenciaException {
+    String buscarEvento = "SELECT * FROM Eventos WHERE nombre = ?";
+    try (Connection bd = conexion.crearConexion();
+         PreparedStatement busqueda = bd.prepareStatement(buscarEvento)) {
+
+        busqueda.setString(1, nombre);
+        ResultSet resultado = busqueda.executeQuery();
+
+        if (resultado.next()) {
+            Evento evento = new Evento();
+            evento.setIdEvento(resultado.getInt("id_evento"));
+            evento.setNombre(resultado.getString("nombre"));
+            evento.setFecha(resultado.getDate("fecha"));
+            evento.setLocalidad(resultado.getString("localidad"));
+            evento.setCapacidad(resultado.getInt("capacidad"));
+            evento.setVenue(resultado.getString("venue"));
+            return evento;
+        } else {
+            throw new PersistenciaException("No se encontró el evento con nombre: " + nombre);
+        }
+    } catch (SQLException e) {
+        throw new PersistenciaException("Error al consultar el evento con nombre: " + nombre, e);
+    }
+}
 }

@@ -26,4 +26,6 @@ public interface IEventoBO {
     
     boolean existeEvento(String nombre) throws NegocioException;
 
+    EventoDTO consultarPorNombre(String nombre) throws NegocioException;
+
 }

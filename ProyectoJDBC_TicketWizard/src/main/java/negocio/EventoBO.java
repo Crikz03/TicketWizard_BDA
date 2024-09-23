@@ -84,13 +84,36 @@ public class EventoBO implements IEventoBO {
             throw new NegocioException("No se pudo consultar el evento con id: " + id);
         }
     }
-    
+
     @Override
     public boolean existeEvento(String nombre) throws NegocioException {
         try {
             return eventodao.existeEvento(nombre);
         } catch (PersistenciaException e) {
             throw new NegocioException("No existe el nombre de evento.");
+        }
+    }
+
+    public EventoDTO consultarPorNombre(String nombre) throws NegocioException {
+        try {
+            // Validación: verificar si el nombre no es vacío o nulo
+            if (nombre == null || nombre.trim().isEmpty()) {
+                throw new NegocioException("El nombre del evento no puede estar vacío.");
+            }
+
+            // Llamada al método del DAO para consultar por nombre
+            Evento evento = eventodao.consultarPorNombre(nombre);
+
+            // Validación adicional: verificar si se encontró el evento
+            if (evento == null) {
+                throw new NegocioException("No se encontró un evento con el nombre: " + nombre);
+            }
+
+            // Convertir el evento a DTO antes de retornarlo
+            return ConvertidorGeneral.convertidorEntidad(evento, EventoDTO.class);
+        } catch (PersistenciaException e) {
+            // Manejo de excepciones relacionadas con la persistencia
+            throw new NegocioException("Error al consultar el evento en la capa de negocio.", e);
         }
     }
 

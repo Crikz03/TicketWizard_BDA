@@ -27,4 +27,6 @@ public interface IEventoDAO {
     
     boolean existeEvento(String nombre) throws PersistenciaException;
 
+    Evento consultarPorNombre(String nombre) throws PersistenciaException;
+
 }

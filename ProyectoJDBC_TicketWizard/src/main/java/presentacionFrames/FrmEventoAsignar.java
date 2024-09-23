@@ -4,17 +4,53 @@
  */
 package presentacionFrames;
 
+import dtos.AsientoDTO;
+import dtos.EventoDTO;
+import dtos.UsuarioDTO;
+import excepciones.NegocioException;
+import excepciones.PersistenciaException;
+import interfaces.IAsientoBO;
+import interfaces.IEventoBO;
+import interfaces.ITransaccionBO;
+import interfaces.IUsuarioBO;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import javax.swing.JOptionPane;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import negocio.AsientoBO;
+import negocio.EventoBO;
+import negocio.UsuarioBO;
+import objetos.Asiento;
+import utilidades.Forms;
+
 /**
  *
  * @author pauli
  */
 public class FrmEventoAsignar extends javax.swing.JFrame {
 
+    private UsuarioDTO usuarioLoggeado;
+    private IEventoBO eventobo;
+    private ITransaccionBO transaccionbo;
+    private IUsuarioBO usuariobo;
+    private IAsientoBO asientobo;
+
     /**
-     * Creates new form FrmEventoAsignar
+     * Creates new form FrmAgregarSaldo
      */
-    public FrmEventoAsignar() {
+    public FrmEventoAsignar(UsuarioDTO usuarioLoggeado) {
         initComponents();
+        this.usuarioLoggeado = usuarioLoggeado;
+        this.eventobo = new EventoBO();
+        this.usuariobo = new UsuarioBO();
+        this.asientobo = new AsientoBO();
+        llenarComboBoxEventos();
+
     }
 
     /**
@@ -27,30 +63,29 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        labelFecha = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        tblAsientos = new javax.swing.JTable();
+        btnGuardar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tblUsuarios = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
+        btnRegresar = new javax.swing.JButton();
+        comboBoxEventos = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Evento:");
 
-        jLabel2.setText("Nombre Evento");
-
         jLabel3.setText("Fecha:");
 
-        jLabel4.setText("FechaEvento");
+        labelFecha.setText("FechaEvento");
 
         jLabel5.setText("Seleccionar asientos:");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblAsientos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -61,11 +96,16 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
                 "Select", "Fila", "Asiento"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblAsientos);
 
-        jButton1.setText("Guardar");
+        btnGuardar.setText("Guardar");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tblUsuarios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null},
@@ -73,12 +113,26 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
                 {null, null}
             },
             new String [] {
-                "Select", "Usuario"
+                "IdUsusario", "Usuario"
             }
         ));
-        jScrollPane2.setViewportView(jTable2);
+        jScrollPane2.setViewportView(tblUsuarios);
 
         jLabel8.setText("Seleccionar usuario:");
+
+        btnRegresar.setText("Regresar");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
+
+        comboBoxEventos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        comboBoxEventos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboBoxEventosActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -93,8 +147,10 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
                             .addComponent(jLabel1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel4)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(labelFecha)
+                                .addGap(16, 16, 16))
+                            .addComponent(comboBoxEventos, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -111,21 +167,22 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
                                         .addGap(0, 0, Short.MAX_VALUE))
                                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jButton1)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addContainerGap(225, Short.MAX_VALUE))
+                                .addComponent(btnGuardar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnRegresar)))))
+                .addGap(225, 225, 225))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(51, 51, 51)
+                .addGap(48, 48, 48)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jLabel2))
+                    .addComponent(comboBoxEventos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel4))
+                    .addComponent(labelFecha))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
@@ -135,25 +192,284 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(44, 44, 44)
-                .addComponent(jButton1)
-                .addContainerGap(97, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnGuardar)
+                    .addComponent(btnRegresar))
+                .addContainerGap(94, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
+    private void comboBoxEventosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboBoxEventosActionPerformed
+        String eventoSeleccionado = (String) comboBoxEventos.getSelectedItem();
+        actualizarFechaEvento();
+        cargarUsuariosEnTabla();
+
+        // Obtener la lista de AsientoDTO según el evento seleccionado
+        List<AsientoDTO> asientos = obtenerAsientosPorEvento(eventoSeleccionado);
+
+        // Crear un nuevo modelo de tabla con los AsientoDTO obtenidos
+        AsientoTableModel tableModel = new AsientoTableModel(asientos);
+        tblAsientos.setModel(tableModel); // Suponiendo que jTable1 es tu tabla
+        tblAsientos.repaint(); // Actualiza la tabla
+
+    }//GEN-LAST:event_comboBoxEventosActionPerformed
+
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+        Forms.cargarForm(new FrmAdministrador(usuarioLoggeado), this);
+    }//GEN-LAST:event_btnRegresarActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        // Obtener el ID del usuario seleccionado
+        int rowIndex = tblUsuarios.getSelectedRow();
+        if (rowIndex == -1) {
+            // No se ha seleccionado un usuario, muestra un mensaje
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona un usuario.");
+            return;
+        }
+
+        int idUsuario = (int) tblUsuarios.getValueAt(rowIndex, 0); // Suponiendo que el ID de usuario está en la primera columna
+
+        // Recoger los asientos seleccionados
+        List<AsientoDTO> asientosSeleccionados = new ArrayList<>();
+        AsientoTableModel model = (AsientoTableModel) tblAsientos.getModel();
+
+        int idEvento = -1; // Inicializa la variable idEvento
+        String eventoSeleccionado = (String) comboBoxEventos.getSelectedItem();
+        if (eventoSeleccionado != null) {
+            try {
+                List<EventoDTO> eventos = eventobo.consultar(); // Obtener la lista de eventos nuevamente
+                for (EventoDTO evento : eventos) {
+                    if (evento.getNombre().equals(eventoSeleccionado)) {
+                        // Actualiza el idEvento con el ID del evento encontrado
+                        idEvento = evento.getIdEvento();
+                        break; // Sale del bucle una vez que encuentra el evento
+                    }
+                }
+            } catch (NegocioException e) {
+                e.printStackTrace(); // Manejo de errores
+            }
+        }
+
+// Verifica si se encontró un idEvento válido antes de continuar
+        if (idEvento != -1) {
+            for (int i = 0; i < model.getRowCount(); i++) {
+                if (model.getValueAt(i, 0) != null && (Boolean) model.getValueAt(i, 0)) { // Verifica si está seleccionado
+                    AsientoDTO asiento = new AsientoDTO(
+                            model.getValueAt(i, 1).toString(), // fila
+                            Integer.parseInt(model.getValueAt(i, 2).toString()), // asiento
+                            idEvento, // Usa el idEvento que obtuviste
+                            idUsuario, // Asignar ID del usuario
+                            true // Estado seleccionado
+                    );
+                    asientosSeleccionados.add(asiento);
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontró el evento seleccionado.");
+        }
+
+        // Guardar los asientos seleccionados 
+        try {
+            List<Asiento> asientos = new ArrayList<>();
+            for (AsientoDTO dto : asientosSeleccionados) {
+                Asiento asiento = new Asiento();
+                // Asigna los valores de dto a asiento
+                asiento.setFila(dto.getFila());
+                asiento.setAsiento(dto.getAsiento());
+                asiento.setIdUsuario(dto.getIdUsuario());
+                asiento.setIdEvento(dto.getIdEvento());
+                asientos.add(asiento);
+            }
+
+            
+            asientobo.asignarAsientos(asientos);
+            JOptionPane.showMessageDialog(this, "Asientos asignados exitosamente.");
+            // Obtener la lista de AsientoDTO según el evento seleccionado
+        List<AsientoDTO> asientosActuales = obtenerAsientosPorEvento(eventoSeleccionado);
+
+        // Crear un nuevo modelo de tabla con los AsientoDTO obtenidos
+        AsientoTableModel tableModel = new AsientoTableModel(asientosActuales);
+        tblAsientos.setModel(tableModel); // Suponiendo que jTable1 es tu tabla
+        tblAsientos.repaint(); // Actualiza la tabla
+        } catch (PersistenciaException ex) {
+            Logger.getLogger(FrmEventoAsignar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    // Método para llenar el comboBox con los eventos
+    private void llenarComboBoxEventos() {
+        try {
+            List<EventoDTO> eventos = eventobo.consultar();  // Llama al método consultar() para obtener los eventos
+
+            // Limpiar cualquier elemento previo en el comboBox
+            comboBoxEventos.removeAllItems();
+
+            // Llenar el comboBox con los nombres de los eventos
+            for (EventoDTO evento : eventos) {
+                comboBoxEventos.addItem(evento.getNombre());  // Asegúrate de que EventoDTO tenga el método getNombre()
+            }
+        } catch (NegocioException e) {
+            e.printStackTrace(); // Manejo de errores, puedes mostrar un mensaje al usuario
+        }
+    }
+
+    private void actualizarFechaEvento() {
+        String eventoSeleccionado = (String) comboBoxEventos.getSelectedItem();
+
+        if (eventoSeleccionado != null) {
+            try {
+                List<EventoDTO> eventos = eventobo.consultar(); // Obtener la lista de eventos nuevamente
+                for (EventoDTO evento : eventos) {
+                    if (evento.getNombre().equals(eventoSeleccionado)) {
+                        // Actualiza el JLabel con la fecha del evento seleccionado
+                        labelFecha.setText(evento.getFecha().toString()); // Ajusta el formato según lo necesites
+                        break; // Sale del bucle una vez que encuentra el evento
+                    }
+                }
+            } catch (NegocioException e) {
+                e.printStackTrace(); // Manejo de errores
+            }
+        }
+    }
+
+    public class AsientoTableModel extends AbstractTableModel {
+
+        private String[] columnNames = {"Select", "Fila", "Asiento"};
+        private List<AsientoDTO> asientos;
+
+        public AsientoTableModel(List<AsientoDTO> asientos) {
+            this.asientos = asientos;
+        }
+
+        @Override
+        public int getRowCount() {
+            return asientos.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public Object getValueAt(int row, int col) {
+            AsientoDTO asiento = asientos.get(row);
+            switch (col) {
+                case 0:
+                    return asiento.isSelected(); // estado del checkbox
+                case 1:
+                    return asiento.getFila();    // fila
+                case 2:
+                    return asiento.getAsiento();  // número de asiento
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public void setValueAt(Object value, int row, int col) {
+            AsientoDTO asiento = asientos.get(row);
+            if (col == 0) {
+                asiento.setSelected((Boolean) value); // actualizar el estado del checkbox
+            }
+            fireTableCellUpdated(row, col);
+        }
+
+        @Override
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        @Override
+        public Class<?> getColumnClass(int c) {
+            return (c == 0) ? Boolean.class : String.class; // La primera columna es un booleano
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex == 0; // Solo la primera columna es editable
+        }
+    }
+
+    private List<AsientoDTO> obtenerAsientosPorEvento(String eventoSeleccionado) {
+        try {
+            EventoDTO evento = eventobo.consultarPorNombre(eventoSeleccionado);
+            if (evento != null) {
+                List<AsientoDTO> asientos =asientobo.consultarPorEvento(evento.getIdEvento());
+                
+                return asientos.stream().filter(asiento -> asiento.getIdUsuario() == 0).collect(Collectors.toList());
+            }
+        } catch (NegocioException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    //Tabla usuarios
+    private void llenarTablaProductos(List<UsuarioDTO> usuarioLista) {
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.tblUsuarios.getModel();
+
+        if (modeloTabla.getRowCount() > 0) {
+            for (int i = modeloTabla.getRowCount() - 1; i > -1; i--) {
+                modeloTabla.removeRow(i);
+            }
+        }
+
+        if (usuarioLista != null) {
+            usuarioLista.forEach(row -> {
+                Object[] fila = new Object[2];
+                fila[0] = row.getIdUsuario();
+                fila[1] = row.getNombres() + " " + row.getApellidoPaterno() + " " + row.getApellidoMaterno();
+
+                modeloTabla.addRow(fila);
+            });
+        }
+    }
+
+    private void actualizarTablaUsuarios() {
+        List<UsuarioDTO> listaUsuarios = null;
+        try {
+            listaUsuarios = usuariobo.consultar();
+        } catch (NegocioException ex) {
+            Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        DefaultTableModel model = (DefaultTableModel) this.tblUsuarios.getModel();
+        model.setRowCount(0);
+        for (UsuarioDTO usuario : listaUsuarios) {
+            Object[] fila = {
+                usuario.getIdUsuario(),
+                usuario.getNombres() + " " + usuario.getApellidoPaterno() + " " + usuario.getApellidoMaterno()
+
+            };
+            model.addRow(fila);
+        }
+    }
+
+    private void cargarUsuariosEnTabla() {
+        List<UsuarioDTO> usuarios = null;
+        try {
+            usuarios = this.usuariobo.consultar();
+        } catch (NegocioException ex) {
+            Logger.getLogger(FrmEventoAsignar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.llenarTablaProductos(usuarios);
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnRegresar;
+    private javax.swing.JComboBox<String> comboBoxEventos;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
+    private javax.swing.JLabel labelFecha;
+    private javax.swing.JTable tblAsientos;
+    private javax.swing.JTable tblUsuarios;
     // End of variables declaration//GEN-END:variables
 }

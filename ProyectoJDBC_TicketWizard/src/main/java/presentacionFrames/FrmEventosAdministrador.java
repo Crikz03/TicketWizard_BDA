@@ -16,12 +16,13 @@ import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import negocio.EventoBO;
 import negocio.UsuarioBO;
+import utilidades.Forms;
 
 /**
  *
  * @author pauli
  */
-public class FrmAsignarBoletos extends javax.swing.JFrame {
+public class FrmEventosAdministrador extends javax.swing.JFrame {
 
     private UsuarioDTO usuarioLoggeado;
     private IEventoBO eventobo;
@@ -32,7 +33,7 @@ public class FrmAsignarBoletos extends javax.swing.JFrame {
     /**
      * Creates new form FrmAgregarSaldo
      */
-    public FrmAsignarBoletos(UsuarioDTO usuarioLoggeado) {
+    public FrmEventosAdministrador(UsuarioDTO usuarioLoggeado) {
         initComponents();
         this.usuarioLoggeado = usuarioLoggeado;
         this.eventobo = new EventoBO();
@@ -43,7 +44,7 @@ public class FrmAsignarBoletos extends javax.swing.JFrame {
 
     private void cargarMetodosIniciales() {
         this.cargarEventosEnTabla();
-        this.cargarNombreUsuario();
+
     }
 
     private void llenarTablaProductos(List<EventoDTO> eventoLista) {
@@ -98,11 +99,7 @@ public class FrmAsignarBoletos extends javax.swing.JFrame {
         this.llenarTablaProductos(eventos);
     }
 
-    private void cargarNombreUsuario() {
-        if (usuarioLoggeado != null) {
-            jLabel1.setText(usuarioLoggeado.getNombres() + " " + usuarioLoggeado.getApellidoPaterno());
-        }
-    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -114,18 +111,19 @@ public class FrmAsignarBoletos extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnRegresar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblEventos = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("Asignar Boletos");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel1.setText("Eventos");
 
-        jButton1.setText("Abrir Evento");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnRegresar.setText("Regresar");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnRegresarActionPerformed(evt);
             }
         });
 
@@ -147,16 +145,16 @@ public class FrmAsignarBoletos extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(121, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 497, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(btnRegresar))
                 .addGap(106, 106, 106))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(49, 49, 49)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -166,20 +164,20 @@ public class FrmAsignarBoletos extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 301, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
-                .addContainerGap(26, Short.MAX_VALUE))
+                .addComponent(btnRegresar)
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+        Forms.cargarForm(new FrmAdministrador(usuarioLoggeado), this);
+    }//GEN-LAST:event_btnRegresarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnRegresar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblEventos;

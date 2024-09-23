@@ -4,14 +4,17 @@
  */
 package presentacionFrames;
 
+import dtos.AsientoDTO;
 import dtos.EventoDTO;
 import dtos.UsuarioDTO;
 import excepciones.NegocioException;
+import interfaces.IAsientoBO;
 import interfaces.IEventoBO;
 import interfaces.IUsuarioBO;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import negocio.AsientoBO;
 import negocio.EventoBO;
 import negocio.UsuarioBO;
 import utilidades.Forms;
@@ -20,12 +23,15 @@ import utilidades.Forms;
  *
  * @author pauli
  */
+
 public class FrmAdministrador extends javax.swing.JFrame {
 
     private UsuarioDTO usuarioLoggeado;
     private IEventoBO eventobo;
     private IUsuarioBO usuariobo;
     private EventoDTO eventoCreando;
+    private IAsientoBO asientobo;
+    private AsientoDTO asientosCreando;
 
     /**
      * Creates new form FrmBoletosAdquiridos
@@ -35,6 +41,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.eventobo = new EventoBO();
         this.usuariobo = new UsuarioBO();
+        this.asientobo = new AsientoBO();
     }
 
     /**
@@ -64,6 +71,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
         txtAsientos = new javax.swing.JTextField();
         labelCapacidad = new javax.swing.JLabel();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        btnCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -113,6 +121,8 @@ public class FrmAdministrador extends javax.swing.JFrame {
             }
         });
 
+        btnCancelar.setText("Cancelar");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -137,7 +147,10 @@ public class FrmAdministrador extends javax.swing.JFrame {
                             .addComponent(jLabel8))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnGuardarEvento)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnGuardarEvento)
+                                .addGap(58, 58, 58)
+                                .addComponent(btnCancelar))
                             .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtLocalidad, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -184,7 +197,9 @@ public class FrmAdministrador extends javax.swing.JFrame {
                             .addComponent(jLabel8)
                             .addComponent(labelCapacidad))
                         .addGap(18, 18, 18)
-                        .addComponent(btnGuardarEvento)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnGuardarEvento)
+                            .addComponent(btnCancelar))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                         .addComponent(btnAsignarBoletos)
                         .addGap(26, 26, 26))
@@ -197,7 +212,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAsignarBoletosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarBoletosActionPerformed
-        Forms.cargarForm(new FrmAsignarBoletos(usuarioLoggeado), this);
+        Forms.cargarForm(new FrmEventoAsignar(usuarioLoggeado), this);
     }//GEN-LAST:event_btnAsignarBoletosActionPerformed
 
     private void btnGuardarEventoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarEventoActionPerformed
@@ -257,32 +272,35 @@ public class FrmAdministrador extends javax.swing.JFrame {
             // Si hay al menos un campo vacío, mostramos el mensaje
             if (hayCamposVacios) {
                 JOptionPane.showMessageDialog(this, camposFaltantes.toString(), "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
+            } else {
+
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(mFecha);
+                int añoNacimiento = cal.get(Calendar.YEAR);
+                int añoActual = Calendar.getInstance().get(Calendar.YEAR);
+                int edad = añoActual - añoNacimiento;
+
+                eventoCreando.setNombre(txtNombre.getText());
+                java.sql.Date fechaSQL = new java.sql.Date(mFecha.getTime());
+                eventoCreando.setFecha(fechaSQL);
+                eventoCreando.setLocalidad(txtLocalidad.getText());
+                eventoCreando.setVenue(txtVenue.getText());
+
+                this.actualizarCapacidad();
+
+                if (eventobo.existeEvento(eventoCreando.getNombre())) {
+                    JOptionPane.showMessageDialog(this, "El nombre del evento ya está registrado. Por favor, use otro.", "Error!", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                this.guardarEvento();
+                EventoDTO evento = this.eventobo.consultarPorNombre(txtNombre.getText());
+                asientobo.crearAsientos(Integer.parseInt(txtFilas.getText()), Integer.parseInt(txtAsientos.getText()), evento.getIdEvento());
+
+                JOptionPane.showMessageDialog(this, "Exito!, se ha creado el evento correctamente.");
+
+                Forms.cargarForm(new FrmEventosAdministrador(usuarioLoggeado), this);
             }
-
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(mFecha);
-            int añoNacimiento = cal.get(Calendar.YEAR);
-            int añoActual = Calendar.getInstance().get(Calendar.YEAR);
-            int edad = añoActual - añoNacimiento;
-
-            eventoCreando.setNombre(txtNombre.getText());
-            java.sql.Date fechaSQL = new java.sql.Date(mFecha.getTime());
-            eventoCreando.setFecha(fechaSQL);
-            eventoCreando.setLocalidad(txtLocalidad.getText());
-            eventoCreando.setVenue(txtVenue.getText());
-
-            this.actualizarCapacidad();
-
-            if (eventobo.existeEvento(eventoCreando.getNombre())) {
-                JOptionPane.showMessageDialog(this, "El nombre del evento ya está registrado. Por favor, use otro.", "Error!", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            this.guardarEvento();
-
-            JOptionPane.showMessageDialog(this, "Exito!, se ha creado el evento correctamente.");
-
-            this.limpiarTextbox();
         } catch (NegocioException e) {
             JOptionPane.showMessageDialog(this, "Ha ocurrido un error durante la operacion, intentelo denuevo", "Error!", JOptionPane.ERROR_MESSAGE);
         }
@@ -297,18 +315,21 @@ public class FrmAdministrador extends javax.swing.JFrame {
         }
     }
 
+ 
+
+
     private void actualizarCapacidad() {
-        try {
-            int filas = Integer.parseInt(txtFilas.getText());
-            int asientos = Integer.parseInt(txtAsientos.getText());
-            int capacidad = filas * asientos;
-            labelCapacidad.setText(String.valueOf(capacidad));
-            eventoCreando.setCapacidad(capacidad); // Actualizar el objeto eventoCreando
-        } catch (NumberFormatException ex) {
-            // Si el usuario no ha ingresado números válidos, puedes manejarlo aquí
-            labelCapacidad.setText("0");  // Muestra 0 si los valores no son válidos
-        }
+    try {
+        int filas = Integer.parseInt(txtFilas.getText());
+        int asientos = Integer.parseInt(txtAsientos.getText());
+        int capacidad = filas * asientos;
+        labelCapacidad.setText(String.valueOf(capacidad));
+        eventoCreando.setCapacidad(capacidad); // Actualizar el objeto eventoCreando
+    } catch (NumberFormatException ex) {
+        // Si el usuario no ha ingresado números válidos, puedes manejarlo aquí
+        labelCapacidad.setText("0");  // Muestra 0 si los valores no son válidos
     }
+}
 
     private boolean validarEnterosFilas() {
     boolean hayCamposVacios = false;
@@ -335,7 +356,8 @@ public class FrmAdministrador extends javax.swing.JFrame {
 
     return true; // Indicar que la validación fue exitosa
 }
-private boolean validarEnterosAsientos() {
+
+    private boolean validarEnterosAsientos() {
     boolean hayCamposVacios = false;
     StringBuilder camposFaltantes = new StringBuilder("Por favor, completa los siguientes campos:\n");
 
@@ -360,21 +382,23 @@ private boolean validarEnterosAsientos() {
 
     return true; // Indicar que la validación fue exitosa
 }
+
     /**
      * Limpia los campos de texto.
      */
     public void limpiarTextbox() {
-        txtNombre.setText("");
-        jDateChooser1.setDate(null);
-        txtLocalidad.setText("");
-        txtVenue.setText("");
-        txtFilas.setText("");
-        txtAsientos.setText("");
-    }
+    txtNombre.setText("");
+    jDateChooser1.setDate(null);
+    txtLocalidad.setText("");
+    txtVenue.setText("");
+    txtFilas.setText("");
+    txtAsientos.setText("");
+}
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAsignarBoletos;
+    private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnGuardarEvento;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
