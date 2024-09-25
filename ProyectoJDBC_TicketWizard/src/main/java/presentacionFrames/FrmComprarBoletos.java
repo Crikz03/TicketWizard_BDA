@@ -4,7 +4,11 @@
  */
 package presentacionFrames;
 
+import dtos.AsientoDTO;
+import dtos.EventoDTO;
 import dtos.UsuarioDTO;
+import java.util.List;
+import javax.swing.table.AbstractTableModel;
 
 /**
  *
@@ -13,13 +17,71 @@ import dtos.UsuarioDTO;
 public class FrmComprarBoletos extends javax.swing.JFrame {
 
     private UsuarioDTO usuarioLoggeado;
+    private EventoDTO eventodto;
 
     /**
      * Creates new form FrmComprarBoletos
      */
-    public FrmComprarBoletos(UsuarioDTO usuarioLoggeado) {
+    public FrmComprarBoletos(UsuarioDTO usuarioLoggeado, EventoDTO eventodto) {
         initComponents();
         this.usuarioLoggeado = usuarioLoggeado;
+        this.eventodto = eventodto;
+        this.cargarDatosIniciales();
+    }
+
+    public class AsientoTableModel extends AbstractTableModel {
+
+        private String[] columnNames = {"Select", "Fila", "Asiento", "Precio"}; // Nueva columna de precio
+        private List<AsientoDTO> asientos;
+
+        public AsientoTableModel(List<AsientoDTO> asientos) {
+            this.asientos = asientos;
+        }
+
+        @Override
+        public int getRowCount() {
+            return asientos.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public Object getValueAt(int row, int col) {
+            AsientoDTO asiento = asientos.get(row);
+            switch (col) {
+                case 0:
+                    return asiento.isSelected(); // estado del checkbox
+                case 1:
+                    return asiento.getFila();    // fila
+                case 2:
+                    return asiento.getAsiento();  // número de asiento
+
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        @Override
+        public Class<?> getColumnClass(int c) {
+            return (c == 0) ? Boolean.class : String.class; // La primera columna es un booleano
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex == 0; // Solo la primera columna es editable
+        }
+    }
+
+    private void cargarDatosIniciales() {
+        this.cargarDatosEvento();
     }
 
     /**
@@ -141,6 +203,11 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void cargarDatosEvento() {
+        jLabel2.setText(eventodto.getNombre());
+        jLabel4.setText(eventodto.getFecha().toString());
+
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
