@@ -61,7 +61,7 @@ num_transaccion INT,
 estado ENUM ('Completado','Pendiente','Cancelado'),
 FOREIGN KEY (id_boleto) REFERENCES Boletos(id_boleto),
 FOREIGN KEY (num_transaccion) REFERENCES Transacciones(num_transaccion)
-)
+);
 
 DELIMITER //
 
@@ -83,19 +83,14 @@ CREATE PROCEDURE ComprarBoleto (
     IN p_num_serie CHAR(8),
     IN p_precio DECIMAL(10, 2),
     IN p_estado_adquisicion ENUM('reventa', 'directo'),
+    IN p_tipo ENUM('saldo', 'compra'),
     IN p_id_usuario INT
 )
 BEGIN
-    DECLARE v_num_transaccion VARCHAR(50);
+    DECLARE v_num_transaccion INT;
     
     -- Construir el número de transacción usando id_boleto, id_usuario y la fecha actual (solo año, mes y día)
-    SET v_num_transaccion = CONCAT(
-        p_id_boleto, 
-        '-', 
-        p_id_usuario, 
-        '-', 
-        DATE_FORMAT(NOW(), '%Y%m%d')
-    );
+    SET v_num_transaccion = (SELECT COALESCE(MAX(num_transaccion), 0) + 1 FROM Transacciones);
 
     -- Actualizar el boleto existente
     UPDATE Boletos
@@ -105,8 +100,13 @@ BEGIN
     WHERE id_boleto = p_id_boleto;
 
     -- Insertar la transacción en la tabla Transacciones
-    INSERT INTO Transacciones (num_transaccion, monto, fecha_hora_adquisicion, id_usuario, id_boleto)
-    VALUES (v_num_transaccion, p_precio, NOW(),p_id_usuario, p_id_boleto);
+    INSERT INTO Transacciones (num_transaccion, monto, tipo, id_usuario)
+    VALUES (v_num_transaccion, p_precio, p_tipo, p_id_usuario);
+
+    -- Insertar el detalle de la transacción en Detalles_BoletoTransaccion
+    INSERT INTO Detalles_BoletoTransaccion (id_boleto, num_transaccion, estado)
+    VALUES (p_id_boleto, v_num_transaccion, 'Completado');
 END//
+
 
 DELIMITER ;

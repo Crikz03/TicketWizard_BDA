@@ -4,7 +4,25 @@
  */
 package presentacionFrames;
 
+import dtos.BoletoDTO;
+import dtos.EventoDTO;
 import dtos.UsuarioDTO;
+import excepciones.NegocioException;
+import interfaces.IBoletoBO;
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import negocio.BoletoBO;
+import utilidades.EstadoAdquisicion;
+import utilidades.TipoTransaccion;
 
 /**
  *
@@ -13,13 +31,137 @@ import dtos.UsuarioDTO;
 public class FrmComprarBoletos extends javax.swing.JFrame {
 
     private UsuarioDTO usuarioLoggeado;
+    private EventoDTO eventodto;
+    private IBoletoBO boletobo;
+    private List<BoletoDTO> boletosDisponibles;
 
     /**
      * Creates new form FrmComprarBoletos
      */
-    public FrmComprarBoletos(UsuarioDTO usuarioLoggeado) {
+    public FrmComprarBoletos(UsuarioDTO usuarioLoggeado, EventoDTO eventodto) {
         initComponents();
         this.usuarioLoggeado = usuarioLoggeado;
+        this.eventodto = eventodto;
+        this.boletobo = new BoletoBO();
+        this.cargarDatosIniciales();
+        // Establecer el modelo de la tabla
+        jTable1.setModel(new BoletoTableModel(boletosDisponibles));
+        jTable1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        // Agregar el listener de selección
+        jTable1.getSelectionModel().addListSelectionListener(e -> actualizarTotal());
+        jTable1.getColumnModel().getSelectionModel().addListSelectionListener(e -> actualizarTotal());
+
+    }
+
+    public class BoletoTableModel extends AbstractTableModel {
+
+        private String[] columnNames = {"Select", "Fila", "Asiento", "Precio"};
+        private List<BoletoDTO> boletos;
+
+        public BoletoTableModel(List<BoletoDTO> boletos) {
+            this.boletos = boletos;
+        }
+
+        @Override
+        public int getRowCount() {
+            return boletos.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return columnNames.length;
+        }
+
+        @Override
+        public Object getValueAt(int row, int col) {
+            BoletoDTO boleto = boletos.get(row);
+            switch (col) {
+                case 0:
+                    return boleto.isSelected();
+                case 1:
+                    return boleto.getFila();
+                case 2:
+                    return boleto.getAsiento();
+                case 3:
+                    return String.format("%.2f", boleto.getPrecio()); // Formatea el precio con dos decimales
+                default:
+                    return null;
+            }
+        }
+
+        @Override
+        public void setValueAt(Object value, int row, int col) {
+            BoletoDTO boleto = boletos.get(row);
+            if (col == 0) {
+                boleto.setSelected((Boolean) value); // actualizar el estado del checkbox
+                fireTableCellUpdated(row, col); // Notificar que se ha actualizado la celda
+                // Llama a actualizarTotal desde el frame
+                FrmComprarBoletos.this.actualizarTotal(); // Asegúrate de que esté accesible
+            }
+        }
+
+        @Override
+        public String getColumnName(int col) {
+            return columnNames[col];
+        }
+
+        @Override
+        public Class<?> getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
+        }
+
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return columnIndex == 0;
+        }
+    }
+
+    private void cargarBoletosDisponibles() {
+        try {
+            boletosDisponibles = boletobo.consultarPorEvento(eventodto.getIdEvento());
+            // Filtra boletos que aún no han sido adquiridos
+            boletosDisponibles = boletosDisponibles.stream()
+                    .filter(boleto -> boleto.getIdUsuario() == 0)
+                    .collect(Collectors.toList());
+
+            // Usa BoletoTableModel en lugar de DefaultTableModel
+            jTable1.setModel(new BoletoTableModel(boletosDisponibles));
+
+            // Configura el renderizador para la columna de precio (si es necesario)
+            TableColumn precioColumn = jTable1.getColumnModel().getColumn(3);
+            precioColumn.setCellRenderer(new DefaultTableCellRenderer() {
+                @Override
+                public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                    if (value instanceof Double) {
+                        value = String.format("%.2f", value);
+                    }
+                    return super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                }
+            });
+        } catch (NegocioException ex) {
+            JOptionPane.showMessageDialog(this, "No se han podido cargar los boletos disponibles!", "Error!", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void actualizarTotal() {
+        int boletosSeleccionados = 0;
+        double total = 0.0;
+
+        for (BoletoDTO boleto : boletosDisponibles) {
+            if (boleto.isSelected()) { // Asegúrate de que este método esté funcionando
+                boletosSeleccionados++;
+                total += boleto.getPrecio();
+            }
+        }
+
+        jLabel8.setText("Num de boletos: " + boletosSeleccionados);
+        jLabel9.setText("Total: " + total);
+    }
+
+    private void cargarDatosIniciales() {
+        this.cargarDatosEvento();
+        this.cargarBoletosDisponibles();
     }
 
     /**
@@ -38,7 +180,7 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnCompra = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -56,20 +198,32 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Select", "Fila", "Asiento"
+                "Select", "Fila", "Asiento", "Precio"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Double.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         jLabel5.setText("Seleccionar asientos:");
 
-        jButton1.setText("Comprar");
+        btnCompra.setText("Comprar");
+        btnCompra.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCompraActionPerformed(evt);
+            }
+        });
 
         jLabel6.setText("Num de boletos:");
 
@@ -84,31 +238,35 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(128, 128, 128)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(5, 5, 5)
+                        .addGap(128, 128, 128)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel5)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(btnCompra)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel7)
+                                            .addComponent(jLabel6))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel8)
+                                            .addComponent(jLabel9)))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel6))
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel1))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel8)
-                                    .addComponent(jLabel9)))))
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel4)))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel4))))
-                .addContainerGap(144, Short.MAX_VALUE))
+                        .addGap(55, 55, 55)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(111, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,16 +292,55 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
                     .addComponent(jLabel7)
                     .addComponent(jLabel9))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(btnCompra)
                 .addGap(42, 42, 42))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompraActionPerformed
+        List<BoletoDTO> boletosSeleccionados = new ArrayList<>();
+        for (BoletoDTO boleto : boletosDisponibles) {
+            if (boleto.isSelected()) {
+                boletosSeleccionados.add(boleto);
+            }
+        }
+
+        if (boletosSeleccionados.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona al menos un boleto.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        for (BoletoDTO boleto : boletosSeleccionados) {
+            String numSerie = this.generarNumSerie();
+            double precio = boleto.getPrecio();
+            int idUsuario = usuarioLoggeado.getIdUsuario(); // Asumiendo que tienes un método para obtener el ID del usuario
+
+            try {
+                boolean exito = boletobo.comprarBoleto(boleto.getIdBoleto(), numSerie, precio, EstadoAdquisicion.directo, TipoTransaccion.compra, idUsuario);
+                if (exito) {
+                    JOptionPane.showMessageDialog(this, "Boleto comprado exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al comprar el boleto.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NegocioException e) {
+                JOptionPane.showMessageDialog(this, "Ocurrió un error al procesar la compra: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        // Actualiza la interfaz de usuario según sea necesario, como limpiar selecciones o actualizar la tabla
+        actualizarTotal();
+    }//GEN-LAST:event_btnCompraActionPerformed
+
+    private void cargarDatosEvento() {
+        jLabel2.setText(eventodto.getNombre());
+        jLabel4.setText(eventodto.getFecha().toString());
+
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnCompra;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -156,4 +353,8 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
+private String generarNumSerie() {
+        // Genera un número de serie de acuerdo a tu lógica
+        return String.format("%08d", new Random().nextInt(100000000)); // Ejemplo simple
+    }
 }

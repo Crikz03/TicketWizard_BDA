@@ -23,6 +23,7 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
 
     private UsuarioDTO usuarioLoggeado;
     private IEventoBO eventobo;
+    private List<EventoDTO> eventos = null;
 
     /**
      * Creates new form FrmMenuPrincipal
@@ -82,7 +83,6 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
     }
 
     private void cargarEventosEnTabla() {
-        List<EventoDTO> eventos = null;
         try {
             eventos = this.eventobo.consultar();
         } catch (NegocioException ex) {
@@ -118,7 +118,6 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         btnMisBoletos = new javax.swing.JButton();
         btnBoletosVenta = new javax.swing.JButton();
         btnDatosUsuario = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -157,6 +156,11 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
                 "Evento", "Fecha", "Localidad", "Venue"
             }
         ));
+        tblEventos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblEventosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblEventos);
 
         jLabel2.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
@@ -190,13 +194,6 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Comprar boletos");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout panel2Layout = new javax.swing.GroupLayout(panel2);
         panel2.setLayout(panel2Layout);
         panel2Layout.setHorizontalGroup(
@@ -218,10 +215,6 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 637, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(22, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(50, 50, 50))
         );
         panel2Layout.setVerticalGroup(
             panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -245,9 +238,7 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
                         .addGap(61, 61, 61)
                         .addComponent(btnDatosUsuario))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 406, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addContainerGap(75, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panel1Layout = new javax.swing.GroupLayout(panel1);
@@ -306,9 +297,15 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_bInicioActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Forms.cargarForm(new FrmComprarBoletos(usuarioLoggeado), this);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void tblEventosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblEventosMouseClicked
+        int row = tblEventos.getSelectedRow();
+        if (row >= 0) {
+
+            EventoDTO eventoSeleccionado = eventos.get(row);
+
+            Forms.cargarForm(new FrmComprarBoletos(usuarioLoggeado, eventoSeleccionado), this);
+        }
+    }//GEN-LAST:event_tblEventosMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -318,7 +315,6 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton btnDatosUsuario;
     private javax.swing.JButton btnMisBoletos;
     private javax.swing.JButton btnTransacciones;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;

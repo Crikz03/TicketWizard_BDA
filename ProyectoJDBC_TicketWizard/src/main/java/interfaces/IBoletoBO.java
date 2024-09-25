@@ -10,6 +10,7 @@ import excepciones.PersistenciaException;
 import java.util.List;
 import objetos.Boleto;
 import utilidades.EstadoAdquisicion;
+import utilidades.TipoTransaccion;
 
 /**
  * Interfaz para la gestión de boletos en el sistema. Define los métodos
@@ -51,7 +52,6 @@ public interface IBoletoBO {
      * @throws NegocioException si ocurre un error durante la operación de
      * negocio
      */
-
     boolean actualizar(BoletoDTO boleto) throws NegocioException;
 
     /**
@@ -85,11 +85,11 @@ public interface IBoletoBO {
      * @throws NegocioException si ocurre un error durante la operación de
      * negocio
      */
-    boolean comprarBoleto(int idBoleto, String numSerie, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario) throws NegocioException;
+    boolean comprarBoleto(int idBoleto, String numSerie, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario) throws NegocioException;
 
     boolean crearBoletos(int numeroFilas, int numeroAsientosPorFila, int idEvento, double precio) throws NegocioException;
 
-    void asignarBoletos(List<Boleto> boletosSeleccionados) throws PersistenciaException;
+    void asignarBoletos(List<BoletoDTO> boletosSeleccionados) throws NegocioException;
 
     List<BoletoDTO> consultarPorEvento(int idEvento) throws NegocioException;
 
