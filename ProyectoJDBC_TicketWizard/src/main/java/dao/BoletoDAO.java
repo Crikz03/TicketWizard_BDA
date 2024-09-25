@@ -265,6 +265,7 @@ public class BoletoDAO implements IBoletoDAO {
                 boleto.setIdBoleto(resultSet.getInt("id_boleto"));
                 boleto.setFila(resultSet.getString("fila"));
                 boleto.setAsiento(resultSet.getString("asiento"));
+                boleto.setPrecio(resultSet.getDouble("precio"));
                 boleto.setIdUsuario(resultSet.getInt("id_usuario"));
                 // Asegúrate de que el campo id_evento exista
                 boleto.setIdEvento(idEvento);

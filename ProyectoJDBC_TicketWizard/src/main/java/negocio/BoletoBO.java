@@ -17,8 +17,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import objetos.Boleto;
 import utilidades.EstadoAdquisicion;
+import utilidades.TipoTransaccion;
 
 /**
  *
@@ -86,6 +89,7 @@ public class BoletoBO implements IBoletoBO {
             throw new NegocioException("No se pudieron consultar los boletos.");
         }
     }
+
     @Override
     public List<BoletoDTO> consultarAsignados() throws NegocioException {
         try {
@@ -99,17 +103,18 @@ public class BoletoBO implements IBoletoBO {
     }
 
     @Override
-    public boolean comprarBoleto(int idBoleto, String numSerie, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario) throws NegocioException {
+    public boolean comprarBoleto(int idBoleto, String numSerie, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario) throws NegocioException {
         try {
             Connection bd = conexion.crearConexion();
-            String procedimiento = "{CALL ComprarBoleto(?, ?, ?, ?, ?)}";
+            String procedimiento = "{CALL ComprarBoleto(?, ?, ?, ?, ?, ?)}";
             PreparedStatement stmt = bd.prepareStatement(procedimiento);
 
             stmt.setInt(1, idBoleto);
             stmt.setString(2, numSerie);
             stmt.setDouble(3, precio);
-            stmt.setObject(4, estadoAdquisicion);
-            stmt.setInt(5, idUsuario);
+            stmt.setString(4, estadoAdquisicion.name());
+            stmt.setString(5, tipoTransaccion.name());
+            stmt.setInt(6, idUsuario);
 
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -118,23 +123,28 @@ public class BoletoBO implements IBoletoBO {
         }
         return true;
     }
-    
-    public boolean crearBoletos(int numeroFilas, int numeroAsientosPorFila, int idEvento,double precio) throws NegocioException {
+
+    public boolean crearBoletos(int numeroFilas, int numeroAsientosPorFila, int idEvento, double precio) throws NegocioException {
         try {
-            return boletodao.crearBoletos(numeroFilas, numeroAsientosPorFila, idEvento,precio);
+            return boletodao.crearBoletos(numeroFilas, numeroAsientosPorFila, idEvento, precio);
         } catch (PersistenciaException e) {
             throw new NegocioException("No se pudieron crear los boletos: " + e.getMessage());
         }
     }
-    public void asignarBoletos(List<Boleto> boletosSeleccionados) throws PersistenciaException {
+
+    public void asignarBoletos(List<BoletoDTO> boletosSeleccionados) throws NegocioException {
         // Validar que la lista de asientos no esté vacía
         if (boletosSeleccionados == null || boletosSeleccionados.isEmpty()) {
-            throw new PersistenciaException("No hay boletos seleccionados para asignar.");
+            throw new NegocioException("No hay boletos seleccionados para asignar.");
         }
-
-        // Llamar al método del DAO para asignar los asientos
-        boletodao.asignarBoletosDAO(boletosSeleccionados);
+        try {
+            // Llamar al método del DAO para asignar los asientos
+            boletodao.asignarBoletosDAO(ConvertidorGeneral.convertidorListaEntidad(boletosSeleccionados, Boleto.class));
+        } catch (PersistenciaException ex) {
+            Logger.getLogger(BoletoBO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
     public List<BoletoDTO> consultarPorEvento(int idEvento) throws NegocioException {
         try {
             List<Boleto> boletos = boletodao.consultarPorEvento(idEvento);

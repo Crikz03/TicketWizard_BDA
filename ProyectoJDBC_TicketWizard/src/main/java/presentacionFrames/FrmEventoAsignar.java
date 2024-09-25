@@ -9,14 +9,11 @@ import dtos.BoletoDTO;
 import dtos.EventoDTO;
 import dtos.UsuarioDTO;
 import excepciones.NegocioException;
-import excepciones.PersistenciaException;
-
 import interfaces.IBoletoBO;
 import interfaces.IEventoBO;
 import interfaces.ITransaccionBO;
 import interfaces.IUsuarioBO;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +24,6 @@ import javax.swing.table.DefaultTableModel;
 import negocio.BoletoBO;
 import negocio.EventoBO;
 import negocio.UsuarioBO;
-import objetos.Boleto;
 import utilidades.Forms;
 
 /**
@@ -273,9 +269,9 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
 
 
         try {
-            List<Boleto> boletos = new ArrayList<>();
+            List<BoletoDTO> boletos = new ArrayList<>();
             for (BoletoDTO dto : boletosSeleccionados) {
-                Boleto boleto = new Boleto();
+                BoletoDTO boleto = new BoletoDTO();
                 // Asigna los valores de dto a asiento
                 boleto.setFila(dto.getFila());
                 boleto.setAsiento(dto.getAsiento());
@@ -288,7 +284,7 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Boletos asignados exitosamente.");
             Forms.cargarForm(new FrmBoletosAsignados(usuarioLoggeado), this);
         
-        } catch (PersistenciaException ex) {
+        } catch (NegocioException ex) {
             Logger.getLogger(FrmEventoAsignar.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnGuardarActionPerformed
