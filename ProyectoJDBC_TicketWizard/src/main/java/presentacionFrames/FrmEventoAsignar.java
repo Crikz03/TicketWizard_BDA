@@ -4,12 +4,14 @@
  */
 package presentacionFrames;
 
-import dtos.AsientoDTO;
+
+import dtos.BoletoDTO;
 import dtos.EventoDTO;
 import dtos.UsuarioDTO;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
-import interfaces.IAsientoBO;
+
+import interfaces.IBoletoBO;
 import interfaces.IEventoBO;
 import interfaces.ITransaccionBO;
 import interfaces.IUsuarioBO;
@@ -22,10 +24,10 @@ import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
-import negocio.AsientoBO;
+import negocio.BoletoBO;
 import negocio.EventoBO;
 import negocio.UsuarioBO;
-import objetos.Asiento;
+import objetos.Boleto;
 import utilidades.Forms;
 
 /**
@@ -38,7 +40,7 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
     private IEventoBO eventobo;
     private ITransaccionBO transaccionbo;
     private IUsuarioBO usuariobo;
-    private IAsientoBO asientobo;
+    private IBoletoBO boletobo;
 
     /**
      * Creates new form FrmAgregarSaldo
@@ -48,7 +50,7 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.eventobo = new EventoBO();
         this.usuariobo = new UsuarioBO();
-        this.asientobo = new AsientoBO();
+        this.boletobo= new BoletoBO();
         llenarComboBoxEventos();
 
     }
@@ -67,7 +69,7 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
         labelFecha = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblAsientos = new javax.swing.JTable();
+        tblBoletos = new javax.swing.JTable();
         btnGuardar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblUsuarios = new javax.swing.JTable();
@@ -83,9 +85,9 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
 
         labelFecha.setText("FechaEvento");
 
-        jLabel5.setText("Seleccionar asientos:");
+        jLabel5.setText("Seleccionar boletos:");
 
-        tblAsientos.setModel(new javax.swing.table.DefaultTableModel(
+        tblBoletos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -96,7 +98,7 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
                 "Select", "Fila", "Asiento"
             }
         ));
-        jScrollPane1.setViewportView(tblAsientos);
+        jScrollPane1.setViewportView(tblBoletos);
 
         btnGuardar.setText("Guardar");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -206,13 +208,12 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
         actualizarFechaEvento();
         cargarUsuariosEnTabla();
 
-        // Obtener la lista de AsientoDTO según el evento seleccionado
-        List<AsientoDTO> asientos = obtenerAsientosPorEvento(eventoSeleccionado);
+        List<BoletoDTO> boletos = obtenerBoletosPorEvento(eventoSeleccionado);
 
-        // Crear un nuevo modelo de tabla con los AsientoDTO obtenidos
-        AsientoTableModel tableModel = new AsientoTableModel(asientos);
-        tblAsientos.setModel(tableModel); // Suponiendo que jTable1 es tu tabla
-        tblAsientos.repaint(); // Actualiza la tabla
+
+        BoletoTableModel tableModel = new BoletoTableModel(boletos);
+        tblBoletos.setModel(tableModel); // Suponiendo que jTable1 es tu tabla
+        tblBoletos.repaint(); // Actualiza la tabla
 
     }//GEN-LAST:event_comboBoxEventosActionPerformed
 
@@ -231,9 +232,9 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
 
         int idUsuario = (int) tblUsuarios.getValueAt(rowIndex, 0); // Suponiendo que el ID de usuario está en la primera columna
 
-        // Recoger los asientos seleccionados
-        List<AsientoDTO> asientosSeleccionados = new ArrayList<>();
-        AsientoTableModel model = (AsientoTableModel) tblAsientos.getModel();
+
+        List<BoletoDTO> boletosSeleccionados = new ArrayList<>();
+        BoletoTableModel model = (BoletoTableModel) tblBoletos.getModel();
 
         int idEvento = -1; // Inicializa la variable idEvento
         String eventoSeleccionado = (String) comboBoxEventos.getSelectedItem();
@@ -256,43 +257,37 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
         if (idEvento != -1) {
             for (int i = 0; i < model.getRowCount(); i++) {
                 if (model.getValueAt(i, 0) != null && (Boolean) model.getValueAt(i, 0)) { // Verifica si está seleccionado
-                    AsientoDTO asiento = new AsientoDTO(
+                    BoletoDTO boleto = new BoletoDTO(
                             model.getValueAt(i, 1).toString(), // fila
-                            Integer.parseInt(model.getValueAt(i, 2).toString()), // asiento
+                            model.getValueAt(i, 2).toString(), // asiento
                             idEvento, // Usa el idEvento que obtuviste
                             idUsuario, // Asignar ID del usuario
                             true // Estado seleccionado
                     );
-                    asientosSeleccionados.add(asiento);
+                    boletosSeleccionados.add(boleto);
                 }
             }
         } else {
             JOptionPane.showMessageDialog(this, "No se encontró el evento seleccionado.");
         }
 
-        // Guardar los asientos seleccionados 
+
         try {
-            List<Asiento> asientos = new ArrayList<>();
-            for (AsientoDTO dto : asientosSeleccionados) {
-                Asiento asiento = new Asiento();
+            List<Boleto> boletos = new ArrayList<>();
+            for (BoletoDTO dto : boletosSeleccionados) {
+                Boleto boleto = new Boleto();
                 // Asigna los valores de dto a asiento
-                asiento.setFila(dto.getFila());
-                asiento.setAsiento(dto.getAsiento());
-                asiento.setIdUsuario(dto.getIdUsuario());
-                asiento.setIdEvento(dto.getIdEvento());
-                asientos.add(asiento);
+                boleto.setFila(dto.getFila());
+                boleto.setAsiento(dto.getAsiento());
+                boleto.setIdUsuario(dto.getIdUsuario());
+                boleto.setIdEvento(dto.getIdEvento());
+                boletos.add(boleto);
             }
 
-            
-            asientobo.asignarAsientos(asientos);
-            JOptionPane.showMessageDialog(this, "Asientos asignados exitosamente.");
-            // Obtener la lista de AsientoDTO según el evento seleccionado
-        List<AsientoDTO> asientosActuales = obtenerAsientosPorEvento(eventoSeleccionado);
-
-        // Crear un nuevo modelo de tabla con los AsientoDTO obtenidos
-        AsientoTableModel tableModel = new AsientoTableModel(asientosActuales);
-        tblAsientos.setModel(tableModel); // Suponiendo que jTable1 es tu tabla
-        tblAsientos.repaint(); // Actualiza la tabla
+            boletobo.asignarBoletos(boletos);
+            JOptionPane.showMessageDialog(this, "Boletos asignados exitosamente.");
+            Forms.cargarForm(new FrmBoletosAsignados(usuarioLoggeado), this);
+        
         } catch (PersistenciaException ex) {
             Logger.getLogger(FrmEventoAsignar.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -334,18 +329,18 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
         }
     }
 
-    public class AsientoTableModel extends AbstractTableModel {
+    public class BoletoTableModel extends AbstractTableModel {
 
         private String[] columnNames = {"Select", "Fila", "Asiento"};
-        private List<AsientoDTO> asientos;
+        private List<BoletoDTO> boletos;
 
-        public AsientoTableModel(List<AsientoDTO> asientos) {
-            this.asientos = asientos;
+        public BoletoTableModel(List<BoletoDTO> boletos) {
+            this.boletos = boletos;
         }
 
         @Override
         public int getRowCount() {
-            return asientos.size();
+            return boletos.size();
         }
 
         @Override
@@ -355,14 +350,14 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
 
         @Override
         public Object getValueAt(int row, int col) {
-            AsientoDTO asiento = asientos.get(row);
+            BoletoDTO boleto = boletos.get(row);
             switch (col) {
                 case 0:
-                    return asiento.isSelected(); // estado del checkbox
+                    return boleto.isSelected(); // estado del checkbox
                 case 1:
-                    return asiento.getFila();    // fila
+                    return boleto.getFila();    // fila
                 case 2:
-                    return asiento.getAsiento();  // número de asiento
+                    return boleto.getAsiento();  // número de asiento
                 default:
                     return null;
             }
@@ -370,9 +365,9 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
 
         @Override
         public void setValueAt(Object value, int row, int col) {
-            AsientoDTO asiento = asientos.get(row);
+            BoletoDTO boleto = boletos.get(row);
             if (col == 0) {
-                asiento.setSelected((Boolean) value); // actualizar el estado del checkbox
+                boleto.setSelected((Boolean) value); // actualizar el estado del checkbox
             }
             fireTableCellUpdated(row, col);
         }
@@ -393,13 +388,13 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
         }
     }
 
-    private List<AsientoDTO> obtenerAsientosPorEvento(String eventoSeleccionado) {
+    private List<BoletoDTO> obtenerBoletosPorEvento(String eventoSeleccionado) {
         try {
             EventoDTO evento = eventobo.consultarPorNombre(eventoSeleccionado);
             if (evento != null) {
-                List<AsientoDTO> asientos =asientobo.consultarPorEvento(evento.getIdEvento());
+                List<BoletoDTO> boletos =boletobo.consultarPorEvento(evento.getIdEvento());
                 
-                return asientos.stream().filter(asiento -> asiento.getIdUsuario() == 0).collect(Collectors.toList());
+                return boletos.stream().filter(boleto -> boleto.getIdUsuario() == 0).collect(Collectors.toList());
             }
         } catch (NegocioException e) {
             e.printStackTrace();
@@ -469,7 +464,7 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel labelFecha;
-    private javax.swing.JTable tblAsientos;
+    private javax.swing.JTable tblBoletos;
     private javax.swing.JTable tblUsuarios;
     // End of variables declaration//GEN-END:variables
 }

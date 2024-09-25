@@ -30,15 +30,6 @@ CREATE TABLE Eventos (
     venue VARCHAR(255) NOT NULL
 )AUTO_INCREMENT = 1;
 
-CREATE TABLE Asientos (
-	id_asiento INT AUTO_INCREMENT PRIMARY KEY,
-    asiento INT NOT NULL,
-    fila VARCHAR(4) NOT NULL,
-    id_usuario INT,
-    id_evento INT NOT NULL,
-    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario),
-    FOREIGN KEY (id_evento) REFERENCES Eventos(id_evento)
-)AUTO_INCREMENT = 1;
 
 CREATE TABLE Transacciones (
     num_transaccion INT AUTO_INCREMENT PRIMARY KEY,
