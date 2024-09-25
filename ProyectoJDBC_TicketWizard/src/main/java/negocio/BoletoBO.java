@@ -86,6 +86,17 @@ public class BoletoBO implements IBoletoBO {
             throw new NegocioException("No se pudieron consultar los boletos.");
         }
     }
+    @Override
+    public List<BoletoDTO> consultarAsignados() throws NegocioException {
+        try {
+            List<Boleto> boletos = boletodao.consultarAsignados();
+            List<BoletoDTO> boletosDTO = ConvertidorGeneral.convertidoraListaDTO(boletos, BoletoDTO.class);
+
+            return boletosDTO;
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No se pudieron consultar los boletos.");
+        }
+    }
 
     @Override
     public boolean comprarBoleto(int idBoleto, String numSerie, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario) throws NegocioException {
@@ -107,5 +118,30 @@ public class BoletoBO implements IBoletoBO {
         }
         return true;
     }
+    
+    public boolean crearBoletos(int numeroFilas, int numeroAsientosPorFila, int idEvento,double precio) throws NegocioException {
+        try {
+            return boletodao.crearBoletos(numeroFilas, numeroAsientosPorFila, idEvento,precio);
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No se pudieron crear los boletos: " + e.getMessage());
+        }
+    }
+    public void asignarBoletos(List<Boleto> boletosSeleccionados) throws PersistenciaException {
+        // Validar que la lista de asientos no esté vacía
+        if (boletosSeleccionados == null || boletosSeleccionados.isEmpty()) {
+            throw new PersistenciaException("No hay boletos seleccionados para asignar.");
+        }
 
+        // Llamar al método del DAO para asignar los asientos
+        boletodao.asignarBoletosDAO(boletosSeleccionados);
+    }
+    public List<BoletoDTO> consultarPorEvento(int idEvento) throws NegocioException {
+        try {
+            List<Boleto> boletos = boletodao.consultarPorEvento(idEvento);
+            List<BoletoDTO> boletosDTO = ConvertidorGeneral.convertidoraListaDTO(boletos, BoletoDTO.class);
+            return boletosDTO;
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No se pudieron consultar los boletos.");
+        }
+    }
 }

@@ -8,13 +8,13 @@ import dtos.AsientoDTO;
 import dtos.EventoDTO;
 import dtos.UsuarioDTO;
 import excepciones.NegocioException;
-import interfaces.IAsientoBO;
+import interfaces.IBoletoBO;
 import interfaces.IEventoBO;
 import interfaces.IUsuarioBO;
 import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JOptionPane;
-import negocio.AsientoBO;
+import negocio.BoletoBO;
 import negocio.EventoBO;
 import negocio.UsuarioBO;
 import utilidades.Forms;
@@ -30,8 +30,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
     private IEventoBO eventobo;
     private IUsuarioBO usuariobo;
     private EventoDTO eventoCreando;
-    private IAsientoBO asientobo;
-    private AsientoDTO asientosCreando;
+    private IBoletoBO boletobo;
 
     /**
      * Creates new form FrmBoletosAdquiridos
@@ -41,7 +40,8 @@ public class FrmAdministrador extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.eventobo = new EventoBO();
         this.usuariobo = new UsuarioBO();
-        this.asientobo = new AsientoBO();
+
+        this.boletobo= new BoletoBO();
     }
 
     /**
@@ -72,6 +72,9 @@ public class FrmAdministrador extends javax.swing.JFrame {
         labelCapacidad = new javax.swing.JLabel();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
         btnCancelar = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        txtPrecio = new javax.swing.JTextField();
+        btnVerBoletos = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -123,6 +126,21 @@ public class FrmAdministrador extends javax.swing.JFrame {
 
         btnCancelar.setText("Cancelar");
 
+        jLabel10.setText("Precio:");
+
+        txtPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPrecioKeyReleased(evt);
+            }
+        });
+
+        btnVerBoletos.setText("Boletos asignados");
+        btnVerBoletos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerBoletosActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -133,7 +151,10 @@ public class FrmAdministrador extends javax.swing.JFrame {
                         .addGap(21, 21, 21)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1)
-                            .addComponent(btnAsignarBoletos)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnAsignarBoletos)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnVerBoletos))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(145, 145, 145)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -144,7 +165,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
                             .addComponent(jLabel9)
                             .addComponent(jLabel6)
                             .addComponent(jLabel7)
-                            .addComponent(jLabel8))
+                            .addComponent(jLabel10))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -154,11 +175,16 @@ public class FrmAdministrador extends javax.swing.JFrame {
                             .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtLocalidad, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(labelCapacidad)
                             .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(txtAsientos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
-                                .addComponent(txtFilas, javax.swing.GroupLayout.Alignment.LEADING)))))
+                                .addComponent(txtFilas, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(237, 237, 237)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(labelCapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -191,21 +217,25 @@ public class FrmAdministrador extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
-                            .addComponent(txtAsientos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(labelCapacidad))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnGuardarEvento)
-                            .addComponent(btnCancelar))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                        .addComponent(btnAsignarBoletos)
-                        .addGap(26, 26, 26))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(txtAsientos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel10)
+                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(9, 9, 9)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(labelCapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnGuardarEvento)
+                    .addComponent(btnCancelar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAsignarBoletos)
+                    .addComponent(btnVerBoletos))
+                .addGap(26, 26, 26))
         );
 
         pack();
@@ -229,6 +259,29 @@ public class FrmAdministrador extends javax.swing.JFrame {
         validarEnterosAsientos();
     }//GEN-LAST:event_txtAsientosKeyReleased
 
+    private void txtPrecioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPrecioKeyReleased
+        // TODO add your handling code here:
+        String text = txtPrecio.getText();
+        if (!isValidDouble(text)) {
+            txtPrecio.setText(text.substring(0, text.length() - 1));
+        }
+    }//GEN-LAST:event_txtPrecioKeyReleased
+
+    private void btnVerBoletosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerBoletosActionPerformed
+        // TODO add your handling code here:
+         Forms.cargarForm(new FrmBoletosAsignados(usuarioLoggeado), this);
+    }//GEN-LAST:event_btnVerBoletosActionPerformed
+    private  boolean isValidDouble(String text) {
+        if (text.isEmpty()) {
+            return true; // Permitir campo vacío
+        }
+        try {
+            Double.parseDouble(text);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
     private void crearEvento() {
         eventoCreando = new EventoDTO();
         Date mFecha = jDateChooser1.getDate();
@@ -268,7 +321,11 @@ public class FrmAdministrador extends javax.swing.JFrame {
                 camposFaltantes.append("- Número de asientos por fila\n");
                 hayCamposVacios = true;
             }
-
+             if (txtPrecio.getText().isEmpty()) {
+                camposFaltantes.append("- Precio\n");
+                hayCamposVacios = true;
+            }
+             
             // Si hay al menos un campo vacío, mostramos el mensaje
             if (hayCamposVacios) {
                 JOptionPane.showMessageDialog(this, camposFaltantes.toString(), "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
@@ -295,7 +352,8 @@ public class FrmAdministrador extends javax.swing.JFrame {
 
                 this.guardarEvento();
                 EventoDTO evento = this.eventobo.consultarPorNombre(txtNombre.getText());
-                asientobo.crearAsientos(Integer.parseInt(txtFilas.getText()), Integer.parseInt(txtAsientos.getText()), evento.getIdEvento());
+                double precioDouble=Double.parseDouble(txtPrecio.getText());
+                boletobo.crearBoletos(Integer.parseInt(txtFilas.getText()), Integer.parseInt(txtAsientos.getText()), evento.getIdEvento(),precioDouble);
 
                 JOptionPane.showMessageDialog(this, "Exito!, se ha creado el evento correctamente.");
 
@@ -400,8 +458,10 @@ public class FrmAdministrador extends javax.swing.JFrame {
     private javax.swing.JButton btnAsignarBoletos;
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnGuardarEvento;
+    private javax.swing.JButton btnVerBoletos;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -415,6 +475,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
     private javax.swing.JTextField txtFilas;
     private javax.swing.JTextField txtLocalidad;
     private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtPrecio;
     private javax.swing.JTextField txtVenue;
     // End of variables declaration//GEN-END:variables
 }

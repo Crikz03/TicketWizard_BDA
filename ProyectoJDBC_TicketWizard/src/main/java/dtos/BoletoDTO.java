@@ -20,11 +20,11 @@ public class BoletoDTO {
     private EstadoAdquisicion estadoAdquisicion;
     private int idUsuario;
     private int idEvento;
-
+    private boolean selected;
     public BoletoDTO() {
     }
 
-    public BoletoDTO(String numSerie, String fila, String asiento, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario, int idEvento) {
+    public BoletoDTO(String numSerie, String fila, String asiento, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario, int idEvento,boolean selected) {
         this.numSerie = numSerie;
         this.fila = fila;
         this.asiento = asiento;
@@ -32,8 +32,15 @@ public class BoletoDTO {
         this.estadoAdquisicion = estadoAdquisicion;
         this.idUsuario = idUsuario;
         this.idEvento = idEvento;
+        this.selected=selected;
     }
-
+    public BoletoDTO(String fila, String asiento, int idEvento, int idUsuario, boolean selected) {
+        this.fila = fila;
+        this.asiento = asiento;
+        this.idEvento = idEvento;
+        this.idUsuario = idUsuario;
+        this.selected = selected;
+    }
     public int getIdBoleto() {
         return idBoleto;
     }
@@ -97,5 +104,11 @@ public class BoletoDTO {
     public void setIdEvento(int idEvento) {
         this.idEvento = idEvento;
     }
+    public boolean isSelected() {
+        return selected;
+    }
 
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
 }
