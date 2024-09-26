@@ -220,6 +220,7 @@ public class IniciarSesion extends javax.swing.JFrame {
 
             Forms.cargarForm(new FrmMenuPrincipal(usuario), this);
         }
+        
     }
 
     /**
