@@ -27,7 +27,8 @@ CREATE TABLE Eventos (
     fecha DATE NOT NULL,
     localidad VARCHAR(255) NOT NULL,
     capacidad INT NOT NULL,
-    venue VARCHAR(255) NOT NULL
+    venue VARCHAR(255) NOT NULL,
+    descripcion VARCHAR(255) NOT NULL
 )AUTO_INCREMENT = 1;
 
 
@@ -47,7 +48,8 @@ CREATE TABLE Boletos (
     num_serie CHAR(8) UNIQUE,
     fila VARCHAR(10),
     asiento VARCHAR(10),
-    precio DECIMAL(10, 2) NOT NULL,
+    precioOriginal DECIMAL(10,2) NOT NULL,
+    precioReventa DECIMAL(10, 2),
     estado_adquisicion ENUM('reventa', 'directo') NOT NULL,
     id_usuario INT, 
     id_evento INT, 
@@ -110,7 +112,7 @@ DELIMITER //
 CREATE PROCEDURE ComprarBoleto (
     IN p_id_boleto INT,
     IN p_num_serie CHAR(8),
-    IN p_precio DECIMAL(10, 2),
+    IN p_precioOriginal DECIMAL(10, 2),
     IN p_estado_adquisicion ENUM('reventa', 'directo'),
     IN p_tipo ENUM('saldo', 'compra'),
     IN p_id_usuario INT
@@ -131,12 +133,53 @@ BEGIN
 
     -- Insertar la transacción en la tabla Transacciones
     INSERT INTO Transacciones (num_transaccion, monto, tipo, id_usuario)
-    VALUES (v_num_transaccion, p_precio, p_tipo, p_id_usuario);
+    VALUES (v_num_transaccion, p_precioOriginal, p_tipo, p_id_usuario);
 
     -- Insertar el detalle de la transacción en Detalles_BoletoTransaccion
     INSERT INTO Detalles_BoletoTransaccion (id_boleto, num_transaccion, estado)
     VALUES (p_id_boleto, v_num_transaccion, 'Completado');
 END//
 
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE ReventaBoleto (
+    IN p_id_boleto INT,
+    IN p_precioReventa DECIMAL(10, 2),
+    IN p_fecha_limite DATE,
+    IN p_id_usuario INT
+)
+BEGIN
+    -- Verificar que los parámetros no sean nulos
+    IF p_precioReventa IS NULL THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'El precio de reventa no puede ser nulo';
+    END IF;
+
+    IF p_fecha_limite IS NULL THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'La fecha límite no puede ser nula';
+    END IF;
+
+    -- Continuar con el procedimiento si las verificaciones pasan
+    -- Validar que el precio de reventa no sea mayor al 3% del precio original
+    IF p_precioReventa > (SELECT precioOriginal * 1.03 FROM Boletos WHERE id_boleto = p_id_boleto) THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'El precio de reventa no puede exceder el 3% del precio original';
+    ELSE
+        -- Actualizar el boleto con el nuevo precio y marcarlo como en venta
+        UPDATE Boletos
+        SET precioReventa = p_precioReventa,
+            en_venta = TRUE
+        WHERE id_boleto = p_id_boleto;
+
+        -- Insertar la transacción de reventa en la tabla de transacciones
+        INSERT INTO Transacciones (monto, tipo, id_usuario, tiempo_limite)
+        VALUES (p_precioReventa, 'venta', p_id_usuario, SEC_TO_TIME(TIMESTAMPDIFF(SECOND, NOW(), p_fecha_limite))); 
+    END IF;
+END //
 
 DELIMITER ;
