@@ -4,14 +4,24 @@
  */
 package presentacionFrames;
 
+import dtos.ApartadoDTO;
+import dtos.BoletoDTO;
 import dtos.UsuarioDTO;
 import excepciones.NegocioException;
+import interfaces.IApartadoBO;
+import interfaces.IBoletoBO;
 import interfaces.ITransaccionBO;
 import interfaces.IUsuarioBO;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
+import negocio.ApartadoBO;
+import negocio.BoletoBO;
 import negocio.TransaccionBO;
 import negocio.UsuarioBO;
+import utilidades.EstadoAdquisicion;
 import utilidades.Forms;
+import utilidades.TipoTransaccion;
 
 /**
  *
@@ -22,6 +32,8 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
     private UsuarioDTO usuarioLoggeado;
     private ITransaccionBO transaccionbo;
     private IUsuarioBO usuariobo;
+    private IApartadoBO apartadobo;
+    private IBoletoBO boletobo;
 
     /**
      * Creates new form FrmAgregarSaldo
@@ -31,6 +43,8 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.transaccionbo = new TransaccionBO();
         this.usuariobo = new UsuarioBO();
+        this.apartadobo = new ApartadoBO();
+        this.boletobo = new BoletoBO();
         this.mostrarSaldo();
     }
 
@@ -140,7 +154,40 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
 
             if (cantidad > 0) {
                 try {
+                    double saldoAponer = usuarioLoggeado.getSaldo() + cantidad;
+                    List<ApartadoDTO> apartados = apartadobo.consultar(usuarioLoggeado.getIdUsuario());
                     transaccionbo.agregarSaldo(usuarioLoggeado, cantidad);
+                    usuarioLoggeado.setSaldo(saldoAponer);
+                    if (apartados.size() > 0) {
+                        double total = 0;
+                        List<BoletoDTO> boletos = new ArrayList<>();
+                        for (ApartadoDTO apartado : apartados) {
+                            BoletoDTO boleto = boletobo.consultar(apartado.getIdBoleto());
+                            boletos.add(boleto);
+                            total += boleto.getPrecio();
+                        }
+
+                        if (total <= saldoAponer) {
+                            for (BoletoDTO boleto : boletos) {
+                                double precio = boleto.getPrecio();
+                                int idUsuario = usuarioLoggeado.getIdUsuario();
+
+                                try {
+                                    boolean exito = boletobo.comprarBoleto(boleto.getIdBoleto(), precio, estadoAdquisicion(boleto.getIdUsuario()), TipoTransaccion.compra, idUsuario, boleto.getIdUsuario());
+                                    boletobo.liberarBoleto(boleto.getIdBoleto()); 
+                                    if (exito) {
+                                        JOptionPane.showMessageDialog(this, "Boletos Apartado comprados exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                                    } else {
+                                        JOptionPane.showMessageDialog(this, "Error al comprar el boleto.", "Error", JOptionPane.ERROR_MESSAGE);
+                                    }
+                                } catch (NegocioException e) {
+                                    JOptionPane.showMessageDialog(this, "Ocurrió un error al procesar la compra: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Tiene Boletos apartados pero aun no cuenta con el saldo suficiente.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
                 } catch (NegocioException ex) {
                     JOptionPane.showMessageDialog(this, "No se ha podido agregar el saldo a la cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -155,7 +202,13 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_bAgregaActionPerformed
-
+    private EstadoAdquisicion estadoAdquisicion(int idUsuario) {
+        if (idUsuario == 0) {
+            return EstadoAdquisicion.directo;
+        } else {
+            return EstadoAdquisicion.reventa;
+        }
+    }
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         Forms.cargarForm(new FrmMenuPrincipal(usuarioLoggeado), this);

@@ -85,7 +85,7 @@ public interface IBoletoBO {
      * @throws NegocioException si ocurre un error durante la operación de
      * negocio
      */
-    boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario) throws NegocioException;
+    boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario,int idUsuarioAnteriorDueño) throws NegocioException;
 
     boolean crearBoletos(int numeroFilas, int numeroAsientosPorFila, int idEvento, double precio) throws NegocioException;
 
@@ -94,4 +94,8 @@ public interface IBoletoBO {
     List<BoletoDTO> consultarPorEvento(int idEvento) throws NegocioException;
 
     List<BoletoDTO> consultarAsignados() throws NegocioException;
+
+    void apartarBoleto(int idBoleto, int idUsuario) throws NegocioException;
+
+    void liberarBoleto(int idBoleto) throws NegocioException;
 }

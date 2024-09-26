@@ -390,7 +390,7 @@ public class FrmEventoAsignar extends javax.swing.JFrame {
             if (evento != null) {
                 List<BoletoDTO> boletos =boletobo.consultarPorEvento(evento.getIdEvento());
                 
-                return boletos.stream().filter(boleto -> boleto.getIdUsuario() == 0).collect(Collectors.toList());
+                return boletos.stream().filter(boleto ->  boleto.getApartado()==false && boleto.getEn_venta()==true).collect(Collectors.toList());
             }
         } catch (NegocioException e) {
             e.printStackTrace();

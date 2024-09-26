@@ -26,6 +26,24 @@ public class Boleto {
     private EstadoAdquisicion estadoAdquisicion; //estado de adquisicion del boleto(si es reventa o adquirido directo de boletera)
     private int idUsuario; //id del usuario asignado a ese boleto
     private int idEvento; //id del evento al que pertence ese boleto
+    private boolean en_venta;
+    private boolean apartado;
+    public boolean isEn_venta() {
+        return en_venta;
+    }
+
+    public void setEn_venta(boolean en_venta) {
+        this.en_venta = en_venta;
+    }
+
+    public boolean isApartado() {
+        return apartado;
+    }
+
+    public void setApartado(boolean apartado) {
+        this.apartado = apartado;
+    }
+    
     
 
     // Constructor vacío
@@ -46,7 +64,7 @@ public class Boleto {
      * @param idUsuario Identificador del usuario que adquirió el boleto.
      * @param idEvento Identificador del evento asociado al boleto.
      */
-    public Boleto(int idBoleto, String numSerie, String fila, String asiento, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario, int idEvento) {
+    public Boleto(int idBoleto, String numSerie, String fila, String asiento, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario, int idEvento,boolean en_venta, boolean apartado) {
         this.idBoleto = idBoleto;
         this.numSerie = numSerie;
         this.fila = fila;
@@ -55,6 +73,8 @@ public class Boleto {
         this.estadoAdquisicion = estadoAdquisicion;
         this.idUsuario = idUsuario;
         this.idEvento = idEvento;
+        this.en_venta=en_venta;
+        this.apartado=apartado;
     }
     /**
      * Constructor sin el identificador del boleto.

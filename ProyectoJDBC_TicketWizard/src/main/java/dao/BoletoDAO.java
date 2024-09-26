@@ -97,9 +97,12 @@ public class BoletoDAO implements IBoletoDAO {
                 b.setFila(resultado.getString("fila"));
                 b.setAsiento(resultado.getString("asiento"));
                 b.setPrecio(resultado.getDouble("precio"));
-                b.setEstadoAdquisicion((EstadoAdquisicion) resultado.getObject("estado_adquisicion"));
+                String estadoAdquisicionStr = resultado.getString("estado_adquisicion");
+                b.setEstadoAdquisicion(EstadoAdquisicion.valueOf(estadoAdquisicionStr));
                 b.setIdUsuario(resultado.getInt("id_usuario"));
                 b.setIdEvento(resultado.getInt("id_evento"));
+                b.setApartado(resultado.getBoolean("apartado"));
+                b.setEn_venta(resultado.getBoolean("en_venta"));
                 return b;
             }
         } catch (SQLException e) {
@@ -123,6 +126,8 @@ public class BoletoDAO implements IBoletoDAO {
                 b.setEstadoAdquisicion(EstadoAdquisicion.valueOf(estadoAdquisicionString));
                 b.setIdUsuario(resultados.getInt("id_usuario"));
                 b.setIdEvento(resultados.getInt("id_evento"));
+                b.setApartado(resultados.getBoolean("apartado"));
+                b.setEn_venta(resultados.getBoolean("en_venta"));
                 listaBoletos.add(b);
             }
         } catch (SQLException e) {
@@ -130,6 +135,7 @@ public class BoletoDAO implements IBoletoDAO {
         }
         return listaBoletos;
     }
+
     public List<Boleto> consultarAsignados() throws PersistenciaException {
         List<Boleto> listaBoletos = new ArrayList<>();
         String consultarBoletos = "SELECT * FROM boletos WHERE num_serie IS NOT NULL AND id_usuario IS NOT NULL";
@@ -156,7 +162,7 @@ public class BoletoDAO implements IBoletoDAO {
     public boolean crearBoletos(int numeroFilas, int numeroAsientosPorFila, int idEvento, double precio) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
-            String insertar = "INSERT INTO boletos(asiento, fila, id_usuario, id_evento, precio, estado_adquisicion) VALUES (?, ?, ?, ?,?,?)";
+            String insertar = "INSERT INTO boletos(asiento, fila, id_usuario, id_evento, precio, estado_adquisicion, en_venta,apartado) VALUES (?, ?, ?, ?,?,?,?,?)";
 
             for (int i = 0; i < numeroFilas; i++) {
                 String fila = convertirAFormatoLetra(i); // Genera fila como A, B, ..., Z, AA, AB, ...
@@ -168,6 +174,8 @@ public class BoletoDAO implements IBoletoDAO {
                     agregar.setInt(4, idEvento); // Asigna el id_evento
                     agregar.setDouble(5, precio);
                     agregar.setString(6, "directo");
+                    agregar.setBoolean(7, true);
+                    agregar.setBoolean(8, false);
                     agregar.executeUpdate();
                 }
             }
@@ -269,6 +277,8 @@ public class BoletoDAO implements IBoletoDAO {
                 boleto.setAsiento(resultSet.getString("asiento"));
                 boleto.setPrecio(resultSet.getDouble("precio"));
                 boleto.setIdUsuario(resultSet.getInt("id_usuario"));
+                boleto.setApartado(resultSet.getBoolean("apartado"));
+                boleto.setEn_venta(resultSet.getBoolean("en_venta"));
                 // Asegúrate de que el campo id_evento exista
                 boleto.setIdEvento(idEvento);
                 boletos.add(boleto);
@@ -279,8 +289,9 @@ public class BoletoDAO implements IBoletoDAO {
 
         return boletos;
     }
+
     @Override
-    public boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario) throws PersistenciaException {
+    public boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario, int idUsuarioAnteriorDueño) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
             String procedimiento = "{CALL ComprarBoleto(?, ?, ?, ?, ?, ?)}";
@@ -294,9 +305,103 @@ public class BoletoDAO implements IBoletoDAO {
             stmt.setInt(6, idUsuario);
 
             stmt.executeUpdate();
+
+            if (estadoAdquisicion == EstadoAdquisicion.reventa) {
+                double montoVenta = precio * 0.97;  // Restar el 3% de comisión
+                String queryVenta = "INSERT INTO Transacciones (num_transaccion, monto, tipo, id_usuario) VALUES (?, ?, 'venta', ?)";
+                PreparedStatement stmtVenta = bd.prepareStatement(queryVenta);
+
+                // Generar el número de transacción (puedes adaptarlo según tu lógica actual)
+                int numTransaccion = generarNumeroTransaccion(bd);
+                stmtVenta.setInt(1, numTransaccion);
+                stmtVenta.setDouble(2, montoVenta);
+                stmtVenta.setInt(3, idUsuarioAnteriorDueño);
+                stmtVenta.executeUpdate();
+
+                // Insertar el detalle de la transacción en Detalles_BoletoTransaccion
+                String queryDetalle = "INSERT INTO Detalles_BoletoTransaccion (id_boleto, num_transaccion, estado) VALUES (?, ?, ?)";
+                PreparedStatement stmtDetalle = bd.prepareStatement(queryDetalle);
+                stmtDetalle.setInt(1, idBoleto);
+                stmtDetalle.setInt(2, numTransaccion);
+                stmtDetalle.setString(3, "Completado");  // Estado de la transacción
+                stmtDetalle.executeUpdate();
+            }
         } catch (SQLException e) {
             throw new PersistenciaException("Error al comprar los boletos", e);
         }
         return true;
+    }
+
+    private int generarNumeroTransaccion(Connection bd) throws SQLException {
+        String query = "SELECT COALESCE(MAX(num_transaccion), 0) + 1 FROM Transacciones";
+        try (PreparedStatement stmt = bd.prepareStatement(query); ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 1;  // Retorna 1 si no hay transacciones previas
+    }
+
+    public void apartarBoleto(int idBoleto, int idUsuario) throws PersistenciaException {
+        String updateQuery = "UPDATE Boletos SET apartado = TRUE WHERE id_boleto = ?";
+        String insertQuery = "INSERT INTO Apartados (id_usuario, id_boleto) VALUES (?, ?)";
+
+        try (Connection bd = conexion.crearConexion();
+                PreparedStatement updateStmt = bd.prepareStatement(updateQuery);
+                PreparedStatement insertStmt = bd.prepareStatement(insertQuery)) {
+
+            // Actualizar el estado del boleto a apartado
+            updateStmt.setInt(1, idBoleto);
+            int rowsAffected = updateStmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new PersistenciaException("No se pudo apartar el boleto con ID " + idBoleto);
+            }
+
+            // Insertar en la tabla Apartados
+            insertStmt.setInt(1, idUsuario);
+            insertStmt.setInt(2, idBoleto);
+            insertStmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al apartar el boleto: " + e.getMessage());
+        }
+    }
+
+    public void liberarBoleto(int idBoleto) throws PersistenciaException {
+        String selectQuery = "SELECT apartado FROM Boletos WHERE id_boleto = ?";
+        String updateQuery = "UPDATE Boletos SET apartado = FALSE WHERE id_boleto = ?";
+        String deleteQuery = "DELETE FROM Apartados WHERE id_boleto = ?";
+
+        try (Connection bd = conexion.crearConexion();
+                PreparedStatement selectStmt = bd.prepareStatement(selectQuery);
+                PreparedStatement updateStmt = bd.prepareStatement(updateQuery);
+                PreparedStatement deleteStmt = bd.prepareStatement(deleteQuery)) {
+
+            selectStmt.setInt(1, idBoleto);
+            try (ResultSet resultSet = selectStmt.executeQuery()) {
+                if (resultSet.next()) {
+                    boolean estaApartado = resultSet.getBoolean("apartado");
+
+                    if (!estaApartado) {
+                        System.out.println("El boleto con ID " + idBoleto + " no está apartado.");
+                        return;
+                    }
+                } else {
+                    throw new PersistenciaException("No se encontró el boleto con ID " + idBoleto);
+                }
+            }
+
+            updateStmt.setInt(1, idBoleto);
+            int rowsAffected = updateStmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new PersistenciaException("No se pudo liberar el boleto con ID " + idBoleto);
+            }
+
+            deleteStmt.setInt(1, idBoleto);
+            deleteStmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al liberar el boleto: " + e.getMessage());
+        }
     }
 }

@@ -82,7 +82,11 @@ public interface IBoletoDAO {
 
     List<Boleto> consultarAsignados() throws PersistenciaException;
 
-    boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario) throws PersistenciaException;
+    boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario,int idUsuarioAnteriorDueño) throws PersistenciaException;
+
+    void apartarBoleto(int idBoleto, int idUsuario) throws PersistenciaException;
+
+    void liberarBoleto(int idBoleto) throws PersistenciaException;
 
 
 

@@ -52,9 +52,18 @@ CREATE TABLE Boletos (
     id_usuario INT, 
     id_evento INT, 
     en_venta BOOLEAN NOT NULL,
+    apartado BOOLEAN NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario),
     FOREIGN KEY (id_evento) REFERENCES Eventos(id_evento)
 )AUTO_INCREMENT = 1;
+
+CREATE TABLE Apartados (
+    id_usuario INT NOT NULL,
+    id_boleto INT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario),
+    FOREIGN KEY (id_boleto) REFERENCES Boletos(id_boleto),
+    PRIMARY KEY (id_usuario, id_boleto) -- Clave primaria compuesta para evitar duplicados
+);
 
 CREATE TABLE Detalles_BoletoTransaccion (
 id_boleto INT,
@@ -97,6 +106,7 @@ DELIMITER ;
 
 DELIMITER //
 
+
 CREATE PROCEDURE ComprarBoleto (
     IN p_id_boleto INT,
     IN p_num_serie CHAR(8),
@@ -115,7 +125,8 @@ BEGIN
     UPDATE Boletos
     SET num_serie = p_num_serie,
         estado_adquisicion = p_estado_adquisicion,
-        id_usuario = p_id_usuario
+        id_usuario = p_id_usuario,
+        en_venta=FALSE
     WHERE id_boleto = p_id_boleto;
 
     -- Insertar la transacción en la tabla Transacciones

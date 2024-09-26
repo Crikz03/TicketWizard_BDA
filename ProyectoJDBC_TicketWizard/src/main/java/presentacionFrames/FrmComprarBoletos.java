@@ -13,6 +13,8 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -123,12 +125,12 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
             boletosDisponibles = boletobo.consultarPorEvento(eventodto.getIdEvento());
             // Filtra boletos que aún no han sido adquiridos
             boletosDisponibles = boletosDisponibles.stream()
-                    .filter(boleto -> boleto.getIdUsuario() == 0)
+                    .filter(boleto -> boleto.getApartado()==false && boleto.getEn_venta()==true)
                     .collect(Collectors.toList());
 
             // Usa BoletoTableModel en lugar de DefaultTableModel
             jTable1.setModel(new BoletoTableModel(boletosDisponibles));
-
+            
             // Configura el renderizador para la columna de precio (si es necesario)
             TableColumn precioColumn = jTable1.getColumnModel().getColumn(3);
             precioColumn.setCellRenderer(new DefaultTableCellRenderer() {
@@ -314,47 +316,77 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCompraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompraActionPerformed
-        List<BoletoDTO> boletosSeleccionados = new ArrayList<>();
-        for (BoletoDTO boleto : boletosDisponibles) {
-            if (boleto.isSelected()) {
-                boletosSeleccionados.add(boleto);
-            }
-        }
-
-        if (boletosSeleccionados.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, selecciona al menos un boleto.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        double total=0;
-        for (BoletoDTO boleto : boletosSeleccionados) {
-             double precio = boleto.getPrecio();
-             total+=precio;
-        }
-        if(total>usuarioLoggeado.getSaldo()){
-            JOptionPane.showMessageDialog(this, "Saldo insuficiente.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        for (BoletoDTO boleto : boletosSeleccionados) {
-            double precio = boleto.getPrecio();
-            int idUsuario = usuarioLoggeado.getIdUsuario(); // Asumiendo que tienes un método para obtener el ID del usuario
-
-            try {
-                boolean exito = boletobo.comprarBoleto(boleto.getIdBoleto(), precio, EstadoAdquisicion.directo, TipoTransaccion.compra, idUsuario);
-                if (exito) {
-                    JOptionPane.showMessageDialog(this, "Boleto comprado exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error al comprar el boleto.", "Error", JOptionPane.ERROR_MESSAGE);
+        try {
+            List<BoletoDTO> boletosSeleccionados = new ArrayList<>();
+            for (BoletoDTO boleto : boletosDisponibles) {
+                if (boleto.isSelected()) {
+                    boletosSeleccionados.add(boleto);
                 }
-            } catch (NegocioException e) {
-                JOptionPane.showMessageDialog(this, "Ocurrió un error al procesar la compra: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
-        }
 
-        // Actualiza la interfaz de usuario según sea necesario, como limpiar selecciones o actualizar la tabla
-        actualizarTotal();
+            if (boletosSeleccionados.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, selecciona al menos un boleto.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            double total = 0;
+            for (BoletoDTO boleto : boletosSeleccionados) {
+                double precio = boleto.getPrecio();
+                total += precio;
+            }
+            if (total > usuarioLoggeado.getSaldo()) {
+                for (BoletoDTO boleto : boletosSeleccionados) {
+                    boletobo.apartarBoleto(boleto.getIdBoleto(), usuarioLoggeado.getIdUsuario());
+                }
+                JOptionPane.showMessageDialog(this, "Boletos apartados durante 1 minutos. Por favor, agrega saldo a tu cuenta.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(1 * 60 * 1000); 
+                        for (BoletoDTO boleto : boletosSeleccionados) {
+                            boletobo.liberarBoleto(boleto.getIdBoleto()); 
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (NegocioException ex) {
+                        Logger.getLogger(FrmComprarBoletos.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }).start();
+
+                return;
+            }
+
+            for (BoletoDTO boleto : boletosSeleccionados) {
+                double precio = boleto.getPrecio();
+                int idUsuario = usuarioLoggeado.getIdUsuario(); // Asumiendo que tienes un método para obtener el ID del usuario
+                
+                try {
+                    boolean exito = boletobo.comprarBoleto(boleto.getIdBoleto(), precio, estadoAdquisicion(boleto.getIdUsuario()), TipoTransaccion.compra, idUsuario,boleto.getIdUsuario());
+                    if (exito) {
+                        double saldo=usuarioLoggeado.getSaldo()-precio;
+                        usuarioLoggeado.setSaldo(saldo);
+                        JOptionPane.showMessageDialog(this, "Boleto comprado exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error al comprar el boleto.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (NegocioException e) {
+                    JOptionPane.showMessageDialog(this, "Ocurrió un error al procesar la compra: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+            // Actualiza la interfaz de usuario según sea necesario, como limpiar selecciones o actualizar la tabla
+            actualizarTotal();
+            cargarBoletosDisponibles();
+        } catch (NegocioException ex) {
+            Logger.getLogger(FrmEventoAsignar.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnCompraActionPerformed
 
+    private EstadoAdquisicion estadoAdquisicion (int idUsuario){
+        if(idUsuario==0){
+            return EstadoAdquisicion.directo;
+        }else{
+            return EstadoAdquisicion.reventa;
+        }
+    }
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
         // TODO add your handling code here:
         Forms.cargarForm(new FrmMenuPrincipal(usuarioLoggeado), this);

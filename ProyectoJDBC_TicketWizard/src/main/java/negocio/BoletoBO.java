@@ -103,9 +103,9 @@ public class BoletoBO implements IBoletoBO {
     }
 
     
-    public boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario) throws NegocioException {
+    public boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario,int idUsuarioAnteriorDueño) throws NegocioException {
         try {
-            return boletodao.comprarBoleto(idBoleto, precio, estadoAdquisicion, tipoTransaccion, idUsuario);
+            return boletodao.comprarBoleto(idBoleto, precio, estadoAdquisicion, tipoTransaccion, idUsuario,idUsuarioAnteriorDueño);
         } catch (PersistenciaException e) {
             throw new NegocioException("No se pudieron comprar los boletos: " + e.getMessage());
         }
@@ -139,6 +139,20 @@ public class BoletoBO implements IBoletoBO {
             return boletosDTO;
         } catch (PersistenciaException e) {
             throw new NegocioException("No se pudieron consultar los boletos.");
+        }
+    }
+    public void apartarBoleto(int idBoleto, int idUsuario) throws NegocioException {
+        try {
+             boletodao.apartarBoleto(idBoleto, idUsuario);
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No se pudieron apartar los boletos: " + e.getMessage());
+        }
+    }
+    public void liberarBoleto(int idBoleto) throws NegocioException {
+        try {
+             boletodao.liberarBoleto(idBoleto);
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No se pudieron liberar los boletos: " + e.getMessage());
         }
     }
 }

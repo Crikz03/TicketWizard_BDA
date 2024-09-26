@@ -21,10 +21,12 @@ public class BoletoDTO {
     private int idUsuario;
     private int idEvento;
     private boolean selected;
+    private boolean apartado;
+    private boolean en_venta;
     public BoletoDTO() {
     }
 
-    public BoletoDTO(String numSerie, String fila, String asiento, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario, int idEvento,boolean selected) {
+    public BoletoDTO(String numSerie, String fila, String asiento, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario, int idEvento,boolean selected,boolean en_venta, boolean apartado) {
         this.numSerie = numSerie;
         this.fila = fila;
         this.asiento = asiento;
@@ -33,6 +35,8 @@ public class BoletoDTO {
         this.idUsuario = idUsuario;
         this.idEvento = idEvento;
         this.selected=selected;
+        this.apartado=apartado;
+        this.en_venta=en_venta;
     }
     public BoletoDTO(String fila, String asiento, int idEvento, int idUsuario, boolean selected) {
         this.fila = fila;
@@ -41,6 +45,23 @@ public class BoletoDTO {
         this.idUsuario = idUsuario;
         this.selected = selected;
     }
+
+    public boolean getApartado() {
+        return apartado;
+    }
+
+    public void setApartado(boolean apartado) {
+        this.apartado = apartado;
+    }
+
+    public boolean getEn_venta() {
+        return en_venta;
+    }
+
+    public void setEn_venta(boolean en_venta) {
+        this.en_venta = en_venta;
+    }
+    
     public int getIdBoleto() {
         return idBoleto;
     }
