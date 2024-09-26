@@ -13,6 +13,7 @@ import excepciones.PersistenciaException;
 import interfaces.IBoletoBO;
 import interfaces.IBoletoDAO;
 import interfaces.IConexion;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -163,6 +164,40 @@ public class BoletoBO implements IBoletoBO {
             boletodao.liberarBoleto(idBoleto);
         } catch (PersistenciaException e) {
             throw new NegocioException("No se pudieron liberar los boletos: " + e.getMessage());
+        }
+    }
+
+    public double obtenerPrecioOriginal(String numSerie) throws NegocioException {
+        try {
+            return boletodao.obtenerPrecioOriginal(numSerie);
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Error al obtener el precio original del boleto.", e);
+        }
+    }
+
+    public boolean revenderBoleto(int idBoleto, double precioReventa, Date fechaLimite, int idUsuario) throws NegocioException {
+        try {
+            Boleto boleto = boletodao.consultar(idBoleto);
+
+            BoletoDTO boletodto = ConvertidorGeneral.convertidoraDTO(boleto, BoletoDTO.class);
+            if (precioReventa > boletodto.getPrecioOriginal() * 1.03) {
+                throw new NegocioException("El precio de reventa no puede exceder el 3% del precio original");
+            }
+
+            return boletodao.revenderBoleto(boletodto.getIdBoleto(), precioReventa, fechaLimite, idUsuario);
+        } catch (PersistenciaException e) {
+            throw new NegocioException("Error en la capa de negocio al revender el boleto", e);
+        }
+    }
+
+    public List<BoletoDTO> consultarBoletosEnVenta(int idUsuario) throws NegocioException {
+        try {
+            List<Boleto> boletos = boletodao.consultarBoletosEnVenta(idUsuario);
+            List<BoletoDTO> boletosDTO = ConvertidorGeneral.convertidoraListaDTO(boletos, BoletoDTO.class);
+
+            return boletosDTO;
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No se pudo obtener los boletos en venta", e);
         }
     }
 

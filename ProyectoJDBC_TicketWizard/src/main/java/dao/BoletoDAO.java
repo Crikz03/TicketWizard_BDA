@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import objetos.Boleto;
@@ -33,13 +34,13 @@ public class BoletoDAO implements IBoletoDAO {
     public boolean agregar(Boleto boleto) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
-            String insertar = "INSERT INTO Boletos(num_serie, fila, asiento, precio, estado_adquisicion, id_usuario, id_evento) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String insertar = "INSERT INTO Boletos(num_serie, fila, asiento, precioOriginal, estado_adquisicion, id_usuario, id_evento) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement agregar = bd.prepareStatement(insertar);
 
             agregar.setString(1, boleto.getNumSerie());
             agregar.setString(2, boleto.getFila());
             agregar.setString(3, boleto.getAsiento());
-            agregar.setDouble(4, boleto.getPrecio());
+            agregar.setDouble(4, boleto.getPrecioOriginal());
             agregar.setObject(5, boleto.getEstadoAdquisicion());
             agregar.setInt(6, boleto.getIdUsuario());
             agregar.setInt(7, boleto.getIdEvento());
@@ -63,12 +64,12 @@ public class BoletoDAO implements IBoletoDAO {
     }
 
     public boolean actualizar(Boleto boleto) throws PersistenciaException {
-        String actualizarBoleto = "UPDATE Boletos SET num_serie = ?, fila = ?, asiento = ?, precio = ?, estado_adquisicion = ?, id_usuario = ?, id_evento = ? WHERE id_boleto = ?";
+        String actualizarBoleto = "UPDATE Boletos SET num_serie = ?, fila = ?, asiento = ?, precioOriginal = ?, estado_adquisicion = ?, id_usuario = ?, id_evento = ? WHERE id_boleto = ?";
         try (Connection bd = conexion.crearConexion(); PreparedStatement actualizar = bd.prepareStatement(actualizarBoleto)) {
             actualizar.setString(1, boleto.getNumSerie());
             actualizar.setString(2, boleto.getFila());
             actualizar.setString(3, boleto.getAsiento());
-            actualizar.setDouble(4, boleto.getPrecio());
+            actualizar.setDouble(4, boleto.getPrecioOriginal());
             actualizar.setObject(5, boleto.getEstadoAdquisicion());
             actualizar.setInt(6, boleto.getIdUsuario());
             actualizar.setInt(7, boleto.getIdEvento());
@@ -95,7 +96,7 @@ public class BoletoDAO implements IBoletoDAO {
                 b.setNumSerie(resultado.getString("num_serie"));
                 b.setFila(resultado.getString("fila"));
                 b.setAsiento(resultado.getString("asiento"));
-                b.setPrecio(resultado.getDouble("precio"));
+                b.setPrecioOriginal(resultado.getDouble("precioOriginal"));
                 String estadoAdquisicionStr = resultado.getString("estado_adquisicion");
                 b.setEstadoAdquisicion(EstadoAdquisicion.valueOf(estadoAdquisicionStr));
                 b.setIdUsuario(resultado.getInt("id_usuario"));
@@ -120,7 +121,7 @@ public class BoletoDAO implements IBoletoDAO {
                 b.setNumSerie(resultados.getString("num_serie"));
                 b.setFila(resultados.getString("fila"));
                 b.setAsiento(resultados.getString("asiento"));
-                b.setPrecio(resultados.getDouble("precio"));
+                b.setPrecioOriginal(resultados.getDouble("precioOriginal"));
                 String estadoAdquisicionString = resultados.getString("estado_adquisicion");
                 b.setEstadoAdquisicion(EstadoAdquisicion.valueOf(estadoAdquisicionString));
                 b.setIdUsuario(resultados.getInt("id_usuario"));
@@ -134,7 +135,7 @@ public class BoletoDAO implements IBoletoDAO {
         }
         return listaBoletos;
     }
-    
+
     public List<Boleto> consultarIdUsuario(int idUsuario) throws PersistenciaException {
         List<Boleto> listaBoletos = new ArrayList<>();
         String consultarBoletos = "SELECT * FROM Boletos WHERE id_usuario = ?";
@@ -145,7 +146,7 @@ public class BoletoDAO implements IBoletoDAO {
                 b.setNumSerie(resultados.getString("num_serie"));
                 b.setFila(resultados.getString("fila"));
                 b.setAsiento(resultados.getString("asiento"));
-                b.setPrecio(resultados.getDouble("precio"));
+                b.setPrecioOriginal(resultados.getDouble("precioOriginal"));
                 String estadoAdquisicionString = resultados.getString("estado_adquisicion");
                 b.setEstadoAdquisicion(EstadoAdquisicion.valueOf(estadoAdquisicionString));
                 b.setIdUsuario(resultados.getInt("id_usuario"));
@@ -155,7 +156,7 @@ public class BoletoDAO implements IBoletoDAO {
                 listaBoletos.add(b);
             }
         } catch (SQLException e) {
-            throw new PersistenciaException("No se pudo encontrar los boletos del usuario con id: "+idUsuario);
+            throw new PersistenciaException("No se pudo encontrar los boletos del usuario con id: " + idUsuario);
         }
         return listaBoletos;
     }
@@ -170,7 +171,7 @@ public class BoletoDAO implements IBoletoDAO {
                 b.setNumSerie(resultados.getString("num_serie"));
                 b.setFila(resultados.getString("fila"));
                 b.setAsiento(resultados.getString("asiento"));
-                b.setPrecio(resultados.getDouble("precio"));
+                b.setPrecioOriginal(resultados.getDouble("precioOriginal"));
                 String estadoAdquisicionString = resultados.getString("estado_adquisicion");
                 b.setEstadoAdquisicion(EstadoAdquisicion.valueOf(estadoAdquisicionString));
                 b.setIdUsuario(resultados.getInt("id_usuario"));
@@ -186,7 +187,7 @@ public class BoletoDAO implements IBoletoDAO {
     public boolean crearBoletos(int numeroFilas, int numeroAsientosPorFila, int idEvento, double precio) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
-            String insertar = "INSERT INTO boletos(asiento, fila, id_usuario, id_evento, precio, estado_adquisicion, en_venta,apartado) VALUES (?, ?, ?, ?,?,?,?,?)";
+            String insertar = "INSERT INTO boletos(asiento, fila, id_usuario, id_evento, precioOriginal, estado_adquisicion, en_venta,apartado) VALUES (?, ?, ?, ?,?,?,?,?)";
 
             for (int i = 0; i < numeroFilas; i++) {
                 String fila = convertirAFormatoLetra(i); // Genera fila como A, B, ..., Z, AA, AB, ...
@@ -299,7 +300,7 @@ public class BoletoDAO implements IBoletoDAO {
                 boleto.setIdBoleto(resultSet.getInt("id_boleto"));
                 boleto.setFila(resultSet.getString("fila"));
                 boleto.setAsiento(resultSet.getString("asiento"));
-                boleto.setPrecio(resultSet.getDouble("precio"));
+                boleto.setPrecioOriginal(resultSet.getDouble("precioOriginal"));
                 boleto.setIdUsuario(resultSet.getInt("id_usuario"));
                 boleto.setApartado(resultSet.getBoolean("apartado"));
                 boleto.setEn_venta(resultSet.getBoolean("en_venta"));
@@ -370,9 +371,7 @@ public class BoletoDAO implements IBoletoDAO {
         String updateQuery = "UPDATE Boletos SET apartado = TRUE WHERE id_boleto = ?";
         String insertQuery = "INSERT INTO Apartados (id_usuario, id_boleto) VALUES (?, ?)";
 
-        try (Connection bd = conexion.crearConexion();
-                PreparedStatement updateStmt = bd.prepareStatement(updateQuery);
-                PreparedStatement insertStmt = bd.prepareStatement(insertQuery)) {
+        try (Connection bd = conexion.crearConexion(); PreparedStatement updateStmt = bd.prepareStatement(updateQuery); PreparedStatement insertStmt = bd.prepareStatement(insertQuery)) {
 
             // Actualizar el estado del boleto a apartado
             updateStmt.setInt(1, idBoleto);
@@ -396,10 +395,7 @@ public class BoletoDAO implements IBoletoDAO {
         String updateQuery = "UPDATE Boletos SET apartado = FALSE WHERE id_boleto = ?";
         String deleteQuery = "DELETE FROM Apartados WHERE id_boleto = ?";
 
-        try (Connection bd = conexion.crearConexion();
-                PreparedStatement selectStmt = bd.prepareStatement(selectQuery);
-                PreparedStatement updateStmt = bd.prepareStatement(updateQuery);
-                PreparedStatement deleteStmt = bd.prepareStatement(deleteQuery)) {
+        try (Connection bd = conexion.crearConexion(); PreparedStatement selectStmt = bd.prepareStatement(selectQuery); PreparedStatement updateStmt = bd.prepareStatement(updateQuery); PreparedStatement deleteStmt = bd.prepareStatement(deleteQuery)) {
 
             selectStmt.setInt(1, idBoleto);
             try (ResultSet resultSet = selectStmt.executeQuery()) {
@@ -427,5 +423,74 @@ public class BoletoDAO implements IBoletoDAO {
         } catch (SQLException e) {
             throw new PersistenciaException("Error al liberar el boleto: " + e.getMessage());
         }
+    }
+
+    public boolean revenderBoleto(int idBoleto, double precioReventa, Date fechaLimite, int idUsuario) throws PersistenciaException {
+        try (Connection bd = conexion.crearConexion()) {
+            String sql = "{CALL ReventaBoleto(?, ?, ?, ?)}";
+            PreparedStatement stmt = bd.prepareStatement(sql);
+
+            stmt.setInt(1, idBoleto);
+            stmt.setDouble(2, precioReventa);
+            stmt.setDate(3, new java.sql.Date(fechaLimite.getTime()));
+            stmt.setInt(4, idUsuario);
+
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al realizar la reventa", e);
+        }
+    }
+
+    public double obtenerPrecioOriginal(String numSerie) throws PersistenciaException {
+        Connection bd = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        double precioOriginal = 0.0;
+
+        try {
+            bd = conexion.crearConexion();
+            String sql = "SELECT precioOriginal FROM Boletos WHERE numSerie = ?";
+            stmt = bd.prepareStatement(sql);
+            stmt.setString(1, numSerie);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                precioOriginal = rs.getDouble("precioOriginal");
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al obtener el precio original del boleto.", e);
+        }
+        return precioOriginal;
+    }
+
+    public List<Boleto> consultarBoletosEnVenta(int idUsuario) throws PersistenciaException {
+        List<Boleto> boletosEnVenta = new ArrayList<>();
+        String sql = "SELECT * FROM Boletos WHERE id_usuario = ? AND en_venta = TRUE"; // Ajusta la condición según tu lógica
+
+        try (Connection conn = this.conexion.crearConexion(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Boleto boleto = new Boleto();
+                    boleto.setIdBoleto(rs.getInt("id_boleto"));
+                    boleto.setNumSerie(rs.getString("num_serie"));
+                    boleto.setFila(rs.getString("fila"));
+                    boleto.setAsiento(rs.getString("asiento"));
+                    boleto.setPrecioReventa(rs.getDouble("precioReventa"));
+                    String estadoAdquisicionString = rs.getString("estado_adquisicion");
+                    boleto.setEstadoAdquisicion(EstadoAdquisicion.valueOf(estadoAdquisicionString));
+                    boleto.setEn_venta(rs.getBoolean("en_venta"));
+                    boleto.setIdEvento(rs.getInt("id_evento"));
+
+                    boletosEnVenta.add(boleto);
+                }
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al consultar los boletos en venta", e);
+        }
+        return boletosEnVenta;
     }
 }

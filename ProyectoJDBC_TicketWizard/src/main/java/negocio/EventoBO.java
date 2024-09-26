@@ -77,9 +77,10 @@ public class EventoBO implements IEventoBO {
         try {
             Evento evento = eventodao.consultar(id);
 
-            EventoDTO boletodto = ConvertidorGeneral.convertidorEntidad(evento, EventoDTO.class);
+            // Aquí se convierte la entidad a DTO
+            EventoDTO eventoDTO = ConvertidorGeneral.convertidorEntidad(evento);
 
-            return boletodto;
+            return eventoDTO;
         } catch (PersistenciaException e) {
             throw new NegocioException("No se pudo consultar el evento con id: " + id);
         }

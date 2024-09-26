@@ -87,7 +87,7 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
                 case 2:
                     return boleto.getAsiento();
                 case 3:
-                    return String.format("%.2f", boleto.getPrecio()); // Formatea el precio con dos decimales
+                    return String.format("%.2f", boleto.getPrecioOriginal()); // Formatea el precio con dos decimales
                 default:
                     return null;
             }
@@ -154,7 +154,7 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
         for (BoletoDTO boleto : boletosDisponibles) {
             if (boleto.isSelected()) { // Asegúrate de que este método esté funcionando
                 boletosSeleccionados++;
-                total += boleto.getPrecio();
+                total += boleto.getPrecioOriginal();
             }
         }
 
@@ -330,7 +330,7 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
             }
             double total = 0;
             for (BoletoDTO boleto : boletosSeleccionados) {
-                double precio = boleto.getPrecio();
+                double precio = boleto.getPrecioOriginal();
                 total += precio;
             }
             if (total > usuarioLoggeado.getSaldo()) {
@@ -355,7 +355,7 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
             }
 
             for (BoletoDTO boleto : boletosSeleccionados) {
-                double precio = boleto.getPrecio();
+                double precio = boleto.getPrecioOriginal();
                 int idUsuario = usuarioLoggeado.getIdUsuario(); // Asumiendo que tienes un método para obtener el ID del usuario
                 
                 try {

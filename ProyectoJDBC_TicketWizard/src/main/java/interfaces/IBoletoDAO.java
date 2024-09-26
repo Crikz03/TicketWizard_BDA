@@ -6,6 +6,7 @@ package interfaces;
 
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
+import java.util.Date;
 import java.util.List;
 import objetos.Boleto;
 import utilidades.EstadoAdquisicion;
@@ -81,15 +82,19 @@ public interface IBoletoDAO {
     List<Boleto> consultarPorEvento(int idEvento) throws PersistenciaException;
 
     List<Boleto> consultarAsignados() throws PersistenciaException;
-    
+
     List<Boleto> consultarIdUsuario(int idUsuario) throws PersistenciaException;
 
-    boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario,int idUsuarioAnteriorDueño) throws PersistenciaException;
+    boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario, int idUsuarioAnteriorDueño) throws PersistenciaException;
 
     void apartarBoleto(int idBoleto, int idUsuario) throws PersistenciaException;
 
     void liberarBoleto(int idBoleto) throws PersistenciaException;
 
-
+    double obtenerPrecioOriginal(String numSerie) throws PersistenciaException;
+    
+    boolean revenderBoleto(int idBoleto, double precioReventa, Date fechaLimite, int idUsuario) throws PersistenciaException;
+    
+    public List<Boleto> consultarBoletosEnVenta(int idUsuario) throws PersistenciaException;
 
 }

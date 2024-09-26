@@ -7,6 +7,7 @@ package interfaces;
 import dtos.BoletoDTO;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
+import java.util.Date;
 import java.util.List;
 import objetos.Boleto;
 import utilidades.EstadoAdquisicion;
@@ -85,7 +86,7 @@ public interface IBoletoBO {
      * @throws NegocioException si ocurre un error durante la operación de
      * negocio
      */
-    boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario,int idUsuarioAnteriorDueño) throws NegocioException;
+    boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario, int idUsuarioAnteriorDueño) throws NegocioException;
 
     boolean crearBoletos(int numeroFilas, int numeroAsientosPorFila, int idEvento, double precio) throws NegocioException;
 
@@ -94,10 +95,16 @@ public interface IBoletoBO {
     List<BoletoDTO> consultarPorEvento(int idEvento) throws NegocioException;
 
     List<BoletoDTO> consultarAsignados() throws NegocioException;
-    
+
     List<BoletoDTO> consultarIdUsuario(int idUsuario) throws NegocioException;
 
     void apartarBoleto(int idBoleto, int idUsuario) throws NegocioException;
 
     void liberarBoleto(int idBoleto) throws NegocioException;
+
+    double obtenerPrecioOriginal(String numSerie) throws NegocioException;
+    
+    boolean revenderBoleto(int idBoleto, double precioReventa, Date fechaLimite, int idUsuario) throws NegocioException;
+    
+    public List<BoletoDTO> consultarBoletosEnVenta(int idUsuario) throws NegocioException;
 }

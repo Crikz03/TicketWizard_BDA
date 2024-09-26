@@ -69,7 +69,7 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
 
         if (boletoLista != null) {
             boletoLista.forEach(row -> {
-                Object[] fila = new Object[9];
+                Object[] fila = new Object[10];
                 fila[0] = row.getNumSerie();
                 fila[1] = row.getFila();
                 fila[2] = row.getAsiento();
@@ -82,6 +82,7 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
                     fila[7] = detallesEvento[3];
                     fila[8] = detallesEvento[4];
                 }
+                fila[9] = row.getIdBoleto();
                 modeloTabla.addRow(fila);
             });
         }
@@ -91,7 +92,7 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
         try {
             EventoDTO evento = eventobo.consultar(idEvento);
 
-            Object[] detallesEvento = new Object[5];
+            Object[] detallesEvento = new Object[6];
             detallesEvento[0] = evento.getNombre();
             detallesEvento[1] = evento.getLocalidad();
             detallesEvento[2] = evento.getVenue();
@@ -127,13 +128,13 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
 
         tblBoletos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Numero Serie", "Fila", "Asiento", "Tipo Adquisiscion", "Evento", "Localidad", "Venue", "Fecha", "Descripcion"
+                "Numero Serie", "Fila", "Asiento", "Tipo Adquisiscion", "Evento", "Localidad", "Venue", "Fecha", "Descripcion", "ID Boleto"
             }
         ));
         jScrollPane1.setViewportView(tblBoletos);
@@ -160,16 +161,16 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnRegresar)
-                        .addGap(636, 636, 636)
-                        .addComponent(jButton1))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(731, 731, 731)))
-                .addContainerGap(27, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 847, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(1113, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnRegresar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addGap(31, 31, 31))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(98, 98, 98)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1018, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -177,9 +178,9 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addComponent(jLabel1)
-                .addGap(80, 80, 80)
+                .addGap(75, 75, 75)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRegresar)
                     .addComponent(jButton1))
@@ -192,14 +193,15 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         int selectedRow = tblBoletos.getSelectedRow();
         if (selectedRow != -1) {
-            // Obtener los datos del boleto seleccionado
+            // Obtener el id_boleto de la columna oculta
+            int idBoleto = (int) tblBoletos.getValueAt(selectedRow, 9); // Suponiendo que la columna 9 es el id_boleto
             String numSerie = (String) tblBoletos.getValueAt(selectedRow, 0);
-            int fila = (int) tblBoletos.getValueAt(selectedRow, 1);
-            int asiento = (int) tblBoletos.getValueAt(selectedRow, 2);
+            String fila = (String) tblBoletos.getValueAt(selectedRow, 1);
+            String asiento = (String) tblBoletos.getValueAt(selectedRow, 2);
             String nombreEvento = (String) tblBoletos.getValueAt(selectedRow, 4);
 
             // Abrir el nuevo frame con los datos del boleto
-            FrmVenderBoleto venderBoletoFrame = new FrmVenderBoleto(usuarioLoggeado, numSerie, fila, asiento, nombreEvento);
+            FrmVenderBoleto venderBoletoFrame = new FrmVenderBoleto(usuarioLoggeado, idBoleto, numSerie, fila, asiento, nombreEvento);
             venderBoletoFrame.setVisible(true);
             this.dispose(); // Opcional, para cerrar el frame actual si se desea
         } else {

@@ -65,7 +65,7 @@ public class FrmBoletosAsignados extends javax.swing.JFrame {
                 fila[0] = row.getNumSerie();
                 fila[1] = row.getFila();
                 fila[2] = row.getAsiento();
-                fila[3] = row.getPrecio();
+                fila[3] = row.getPrecioOriginal();
                 fila[4] = row.getEstadoAdquisicion();
                 fila[5]= consultarNombreUsuarioPorId(row.getIdUsuario());
                 fila[6] = consultarNombreEventoPorId(row.getIdEvento());

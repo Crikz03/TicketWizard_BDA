@@ -10,6 +10,7 @@ import interfaces.IBoletoBO;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import negocio.BoletoBO;
+import utilidades.Forms;
 
 /**
  *
@@ -20,17 +21,19 @@ public class FrmVenderBoleto extends javax.swing.JFrame {
     private UsuarioDTO usuarioLoggeado;
     private IBoletoBO boletobo;
     private String numSerie;
-    private int fila;
-    private int asiento;
+    private int idBoleto;
+    private String fila;
+    private String asiento;
     private String nombreEvento;
 
     /**
      * Creates new form FrmVenderBoleto
      */
-    public FrmVenderBoleto(UsuarioDTO usuarioLoggeado, String numSerie, int fila, int asiento, String nombreEvento) {
+    public FrmVenderBoleto(UsuarioDTO usuarioLoggeado, int idBoleto, String numSerie, String fila, String asiento, String nombreEvento) {
         initComponents();
 
         this.usuarioLoggeado = usuarioLoggeado;
+        this.idBoleto = idBoleto;
         this.numSerie = numSerie;
         this.fila = fila;
         this.asiento = asiento;
@@ -63,7 +66,7 @@ public class FrmVenderBoleto extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         lblevento = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtPrecio = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
@@ -128,16 +131,13 @@ public class FrmVenderBoleto extends javax.swing.JFrame {
                                     .addComponent(lblevento))))
                         .addGap(178, 178, 178))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel11)
-                                .addGap(84, 84, 84))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addGap(94, 94, 94)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel11))
+                        .addGap(84, 84, 84)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(143, 143, 143))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel1)
@@ -167,7 +167,7 @@ public class FrmVenderBoleto extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel11)
@@ -181,28 +181,27 @@ public class FrmVenderBoleto extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-//        try {
-//            double precioOriginal = boletobo.obtenerPrecioOriginal(numSerie); // Método para obtener el precio original
-//            double nuevoPrecio = Double.parseDouble(txtPrecio.getText());
-//
-//            // Validar que el nuevo precio no exceda el 3% del precio original
-//            if (nuevoPrecio > precioOriginal * 1.03) {
-//                JOptionPane.showMessageDialog(this, "El precio no debe exceder el 3% del precio original.");
-//                return;
-//            }
-//
-//            // Obtener la fecha límite
-//            Date fechaLimite = jDateChooser1.getDate();
-//
-//            // Llamar al procedimiento para realizar la reventa
-//            transaccionbo.realizarReventa(numSerie, nuevoPrecio, fechaLimite, usuarioLoggeado.getId());
-//
-//            JOptionPane.showMessageDialog(this, "Reventa exitosa.");
-//            this.dispose(); // Cerrar el frame después de la venta
-//        } catch (NegocioException ex) {
-//            JOptionPane.showMessageDialog(this, "Error al realizar la reventa.");
-//            Logger.getLogger(FrmVenderBoleto.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+        try {
+            double precioReventa = Double.parseDouble(txtPrecio.getText());
+            Date fechaLimite = jDateChooser1.getDate();
+            // Si fechaLimite es nula, maneja la excepción aquí
+            if (fechaLimite == null) {
+                throw new NegocioException("La fecha límite no puede ser nula.");
+            }
+
+            // Llamar al método de reventa
+            boolean exito = boletobo.revenderBoleto(idBoleto, precioReventa, fechaLimite, usuarioLoggeado.getIdUsuario());
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Boleto puesto en reventa exitosamente.");
+                Forms.cargarForm(new FrmBoletosAdquiridos(usuarioLoggeado), this);
+            }
+        } catch (NegocioException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace(); // Para depuración
+        }
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
 
@@ -216,10 +215,10 @@ public class FrmVenderBoleto extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel lblasiento;
     private javax.swing.JLabel lblevento;
     private javax.swing.JLabel lblfila;
     private javax.swing.JLabel lblnumero;
+    private javax.swing.JTextField txtPrecio;
     // End of variables declaration//GEN-END:variables
 }
