@@ -94,6 +94,8 @@ public interface IBoletoBO {
     List<BoletoDTO> consultarPorEvento(int idEvento) throws NegocioException;
 
     List<BoletoDTO> consultarAsignados() throws NegocioException;
+    
+    List<BoletoDTO> consultarIdUsuario(int idUsuario) throws NegocioException;
 
     void apartarBoleto(int idBoleto, int idUsuario) throws NegocioException;
 

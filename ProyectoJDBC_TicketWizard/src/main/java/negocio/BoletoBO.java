@@ -13,9 +13,6 @@ import excepciones.PersistenciaException;
 import interfaces.IBoletoBO;
 import interfaces.IBoletoDAO;
 import interfaces.IConexion;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -102,10 +99,21 @@ public class BoletoBO implements IBoletoBO {
         }
     }
 
-    
-    public boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario,int idUsuarioAnteriorDueño) throws NegocioException {
+    @Override
+    public List<BoletoDTO> consultarIdUsuario(int idUsuario) throws NegocioException {
         try {
-            return boletodao.comprarBoleto(idBoleto, precio, estadoAdquisicion, tipoTransaccion, idUsuario,idUsuarioAnteriorDueño);
+            List<Boleto> boletos = boletodao.consultarIdUsuario(idUsuario);
+            List<BoletoDTO> boletosDTO = ConvertidorGeneral.convertidoraListaDTO(boletos, BoletoDTO.class);
+
+            return boletosDTO;
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No se pudieron consultar los boletos de el usuario con id: " + idUsuario);
+        }
+    }
+
+    public boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario, int idUsuarioAnteriorDueño) throws NegocioException {
+        try {
+            return boletodao.comprarBoleto(idBoleto, precio, estadoAdquisicion, tipoTransaccion, idUsuario, idUsuarioAnteriorDueño);
         } catch (PersistenciaException e) {
             throw new NegocioException("No se pudieron comprar los boletos: " + e.getMessage());
         }
@@ -141,18 +149,21 @@ public class BoletoBO implements IBoletoBO {
             throw new NegocioException("No se pudieron consultar los boletos.");
         }
     }
+
     public void apartarBoleto(int idBoleto, int idUsuario) throws NegocioException {
         try {
-             boletodao.apartarBoleto(idBoleto, idUsuario);
+            boletodao.apartarBoleto(idBoleto, idUsuario);
         } catch (PersistenciaException e) {
             throw new NegocioException("No se pudieron apartar los boletos: " + e.getMessage());
         }
     }
+
     public void liberarBoleto(int idBoleto) throws NegocioException {
         try {
-             boletodao.liberarBoleto(idBoleto);
+            boletodao.liberarBoleto(idBoleto);
         } catch (PersistenciaException e) {
             throw new NegocioException("No se pudieron liberar los boletos: " + e.getMessage());
         }
     }
+
 }

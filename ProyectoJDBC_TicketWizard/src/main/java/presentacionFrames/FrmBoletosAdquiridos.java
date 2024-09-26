@@ -4,9 +4,21 @@
  */
 package presentacionFrames;
 
+import dtos.BoletoDTO;
+import dtos.EventoDTO;
 import dtos.UsuarioDTO;
+import excepciones.NegocioException;
+import interfaces.IBoletoBO;
+import interfaces.IEventoBO;
 import interfaces.ITransaccionBO;
 import interfaces.IUsuarioBO;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import negocio.BoletoBO;
+import negocio.EventoBO;
 import negocio.TransaccionBO;
 import negocio.UsuarioBO;
 import utilidades.Forms;
@@ -16,9 +28,11 @@ import utilidades.Forms;
  * @author pauli
  */
 public class FrmBoletosAdquiridos extends javax.swing.JFrame {
-    
-    private UsuarioDTO usuarioLoggeado;
+
     private ITransaccionBO transaccionbo;
+    private UsuarioDTO usuarioLoggeado;
+    private IBoletoBO boletobo;
+    private IEventoBO eventobo;
     private IUsuarioBO usuariobo;
 
     /**
@@ -29,8 +43,67 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.transaccionbo = new TransaccionBO();
         this.usuariobo = new UsuarioBO();
+        this.boletobo = new BoletoBO();
+        this.eventobo = new EventoBO();
+        this.cargarBoletosTabla();
     }
 
+    private void cargarBoletosTabla() {
+        List<BoletoDTO> boletos = null;
+        try {
+            boletos = this.boletobo.consultarAsignados();
+        } catch (NegocioException ex) {
+            Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.llenarTablaBoletos(boletos);
+    }
+
+    private void llenarTablaBoletos(List<BoletoDTO> boletoLista) {
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.tblBoletos.getModel();
+
+        if (modeloTabla.getRowCount() > 0) {
+            for (int i = modeloTabla.getRowCount() - 1; i > -1; i--) {
+                modeloTabla.removeRow(i);
+            }
+        }
+
+        if (boletoLista != null) {
+            boletoLista.forEach(row -> {
+                Object[] fila = new Object[9];
+                fila[0] = row.getNumSerie();
+                fila[1] = row.getFila();
+                fila[2] = row.getAsiento();
+                fila[3] = row.getEstadoAdquisicion();
+                Object[] detallesEvento = consultarDetallesEventoPorId(row.getIdEvento());
+                if (detallesEvento != null) {
+                    fila[4] = detallesEvento[0];
+                    fila[5] = detallesEvento[1];
+                    fila[6] = detallesEvento[2];
+                    fila[7] = detallesEvento[3];
+                    fila[8] = detallesEvento[4];
+                }
+                modeloTabla.addRow(fila);
+            });
+        }
+    }
+
+    private Object[] consultarDetallesEventoPorId(int idEvento) {
+        try {
+            EventoDTO evento = eventobo.consultar(idEvento);
+
+            Object[] detallesEvento = new Object[5];
+            detallesEvento[0] = evento.getNombre();
+            detallesEvento[1] = evento.getLocalidad();
+            detallesEvento[2] = evento.getVenue();
+            detallesEvento[3] = evento.getFecha();
+            detallesEvento[4] = evento.getDescripcion();
+
+            return detallesEvento;
+        } catch (NegocioException ex) {
+            Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -43,7 +116,7 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblBoletos = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         btnRegresar = new javax.swing.JButton();
 
@@ -52,18 +125,18 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Mis Boletos");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblBoletos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "N.Transaccion", "Fechay Hora Trans", "Tipo Adquisiscion", "Serie", "Fila", "Asiento", "Evento", "Localidad", "Venue", "Fecha", "Descripcion"
+                "Numero Serie", "Fila", "Asiento", "Tipo Adquisiscion", "Evento", "Localidad", "Venue", "Fecha", "Descripcion"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblBoletos);
 
         jButton1.setText("Vender Boleto");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -85,15 +158,19 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnRegresar)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 823, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton1)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel1)
-                            .addGap(731, 731, 731))))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnRegresar)
+                        .addGap(636, 636, 636)
+                        .addComponent(jButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(731, 731, 731)))
                 .addContainerGap(27, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 847, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -101,19 +178,33 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
                 .addGap(26, 26, 26)
                 .addComponent(jLabel1)
                 .addGap(80, 80, 80)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(33, 33, 33)
-                .addComponent(jButton1)
-                .addGap(18, 18, 18)
-                .addComponent(btnRegresar)
-                .addContainerGap(119, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRegresar)
+                    .addComponent(jButton1))
+                .addGap(16, 16, 16))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Forms.cargarForm(new FrmVenderBoleto(usuarioLoggeado), this);
+        int selectedRow = tblBoletos.getSelectedRow();
+        if (selectedRow != -1) {
+            // Obtener los datos del boleto seleccionado
+            String numSerie = (String) tblBoletos.getValueAt(selectedRow, 0);
+            int fila = (int) tblBoletos.getValueAt(selectedRow, 1);
+            int asiento = (int) tblBoletos.getValueAt(selectedRow, 2);
+            String nombreEvento = (String) tblBoletos.getValueAt(selectedRow, 4);
+
+            // Abrir el nuevo frame con los datos del boleto
+            FrmVenderBoleto venderBoletoFrame = new FrmVenderBoleto(usuarioLoggeado, numSerie, fila, asiento, nombreEvento);
+            venderBoletoFrame.setVisible(true);
+            this.dispose(); // Opcional, para cerrar el frame actual si se desea
+        } else {
+            JOptionPane.showMessageDialog(this, "Selecciona un boleto para vender.");
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
@@ -127,6 +218,6 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tblBoletos;
     // End of variables declaration//GEN-END:variables
 }

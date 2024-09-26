@@ -18,16 +18,18 @@ public class EventoDTO {
     private String localidad;
     private int capacidad;
     private String venue;
+    private String descripcion;
 
     public EventoDTO() {
     }
 
-    public EventoDTO(String nombre, Date fecha, String localidad, int capacidad, String venue) {
+    public EventoDTO(String nombre, Date fecha, String localidad, int capacidad, String venue, String descripcion) {
         this.nombre = nombre;
         this.fecha = fecha;
         this.localidad = localidad;
         this.capacidad = capacidad;
         this.venue = venue;
+        this.descripcion = descripcion;
     }
 
     public int getIdEvento() {
@@ -76,6 +78,14 @@ public class EventoDTO {
 
     public void setVenue(String venue) {
         this.venue = venue;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
 }

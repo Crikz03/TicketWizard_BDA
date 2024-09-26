@@ -4,7 +4,6 @@
  */
 package dao;
 
-import excepciones.NegocioException;
 import excepciones.PersistenciaException;
 import interfaces.IBoletoDAO;
 import interfaces.IConexion;
@@ -132,6 +131,31 @@ public class BoletoDAO implements IBoletoDAO {
             }
         } catch (SQLException e) {
             throw new PersistenciaException("No se pudo encontrar los boletos");
+        }
+        return listaBoletos;
+    }
+    
+    public List<Boleto> consultarIdUsuario(int idUsuario) throws PersistenciaException {
+        List<Boleto> listaBoletos = new ArrayList<>();
+        String consultarBoletos = "SELECT * FROM Boletos WHERE id_usuario = ?";
+        try (Connection bd = conexion.crearConexion(); PreparedStatement consulta = bd.prepareStatement(consultarBoletos); ResultSet resultados = consulta.executeQuery()) {
+            while (resultados.next()) {
+                Boleto b = new Boleto();
+                b.setIdBoleto(resultados.getInt("id_boleto"));
+                b.setNumSerie(resultados.getString("num_serie"));
+                b.setFila(resultados.getString("fila"));
+                b.setAsiento(resultados.getString("asiento"));
+                b.setPrecio(resultados.getDouble("precio"));
+                String estadoAdquisicionString = resultados.getString("estado_adquisicion");
+                b.setEstadoAdquisicion(EstadoAdquisicion.valueOf(estadoAdquisicionString));
+                b.setIdUsuario(resultados.getInt("id_usuario"));
+                b.setIdEvento(resultados.getInt("id_evento"));
+                b.setApartado(resultados.getBoolean("apartado"));
+                b.setEn_venta(resultados.getBoolean("en_venta"));
+                listaBoletos.add(b);
+            }
+        } catch (SQLException e) {
+            throw new PersistenciaException("No se pudo encontrar los boletos del usuario con id: "+idUsuario);
         }
         return listaBoletos;
     }

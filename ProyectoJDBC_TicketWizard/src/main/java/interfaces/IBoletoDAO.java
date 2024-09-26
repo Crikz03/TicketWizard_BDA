@@ -81,6 +81,8 @@ public interface IBoletoDAO {
     List<Boleto> consultarPorEvento(int idEvento) throws PersistenciaException;
 
     List<Boleto> consultarAsignados() throws PersistenciaException;
+    
+    List<Boleto> consultarIdUsuario(int idUsuario) throws PersistenciaException;
 
     boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario,int idUsuarioAnteriorDueño) throws PersistenciaException;
 

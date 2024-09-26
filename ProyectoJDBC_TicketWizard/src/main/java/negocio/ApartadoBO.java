@@ -9,7 +9,6 @@ import conexion.ConexionBD;
 import conversiones.ConvertidorGeneral;
 import dao.ApartadoDAO;
 import dtos.ApartadoDTO;
-import dtos.BoletoDTO;
 import excepciones.NegocioException;
 import excepciones.PersistenciaException;
 import interfaces.IApartadoBO;
@@ -17,20 +16,22 @@ import interfaces.IApartadoDAO;
 import interfaces.IConexion;
 import java.util.List;
 import objetos.Apartado;
-import objetos.Boleto;
 
 /**
  *
  * @author lalo_
  */
-public class ApartadoBO implements IApartadoBO{
+public class ApartadoBO implements IApartadoBO {
+
     private IConexion conexion;
     private IApartadoDAO apartadoDao;
-    public ApartadoBO(){
-         this.conexion = new ConexionBD();
-         this.apartadoDao=new ApartadoDAO(conexion);
+
+    public ApartadoBO() {
+        this.conexion = new ConexionBD();
+        this.apartadoDao = new ApartadoDAO(conexion);
     }
-     public List<ApartadoDTO> consultar(int id) throws NegocioException {
+
+    public List<ApartadoDTO> consultar(int id) throws NegocioException {
         try {
             List<Apartado> apartados = apartadoDao.consultar(id);
             List<ApartadoDTO> apartadosDTO = ConvertidorGeneral.convertidoraListaDTO(apartados, ApartadoDTO.class);
