@@ -102,26 +102,13 @@ public class BoletoBO implements IBoletoBO {
         }
     }
 
-    @Override
-    public boolean comprarBoleto(int idBoleto, String numSerie, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario) throws NegocioException {
+    
+    public boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario) throws NegocioException {
         try {
-            Connection bd = conexion.crearConexion();
-            String procedimiento = "{CALL ComprarBoleto(?, ?, ?, ?, ?, ?)}";
-            PreparedStatement stmt = bd.prepareStatement(procedimiento);
-
-            stmt.setInt(1, idBoleto);
-            stmt.setString(2, numSerie);
-            stmt.setDouble(3, precio);
-            stmt.setString(4, estadoAdquisicion.name());
-            stmt.setString(5, tipoTransaccion.name());
-            stmt.setInt(6, idUsuario);
-
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            return boletodao.comprarBoleto(idBoleto, precio, estadoAdquisicion, tipoTransaccion, idUsuario);
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No se pudieron comprar los boletos: " + e.getMessage());
         }
-        return true;
     }
 
     public boolean crearBoletos(int numeroFilas, int numeroAsientosPorFila, int idEvento, double precio) throws NegocioException {

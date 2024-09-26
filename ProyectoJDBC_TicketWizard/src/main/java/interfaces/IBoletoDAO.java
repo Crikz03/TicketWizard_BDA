@@ -4,9 +4,12 @@
  */
 package interfaces;
 
+import excepciones.NegocioException;
 import excepciones.PersistenciaException;
 import java.util.List;
 import objetos.Boleto;
+import utilidades.EstadoAdquisicion;
+import utilidades.TipoTransaccion;
 
 /**
  * Interfaz para la gestión de boletos en la capa de persistencia. Define los
@@ -78,6 +81,8 @@ public interface IBoletoDAO {
     List<Boleto> consultarPorEvento(int idEvento) throws PersistenciaException;
 
     List<Boleto> consultarAsignados() throws PersistenciaException;
+
+    boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario) throws PersistenciaException;
 
 
 

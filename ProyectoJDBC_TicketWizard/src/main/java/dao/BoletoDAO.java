@@ -4,6 +4,7 @@
  */
 package dao;
 
+import excepciones.NegocioException;
 import excepciones.PersistenciaException;
 import interfaces.IBoletoDAO;
 import interfaces.IConexion;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Random;
 import objetos.Boleto;
 import utilidades.EstadoAdquisicion;
+import utilidades.TipoTransaccion;
 
 /**
  *
@@ -276,5 +278,25 @@ public class BoletoDAO implements IBoletoDAO {
         }
 
         return boletos;
+    }
+    @Override
+    public boolean comprarBoleto(int idBoleto, double precio, EstadoAdquisicion estadoAdquisicion, TipoTransaccion tipoTransaccion, int idUsuario) throws PersistenciaException {
+        try {
+            Connection bd = conexion.crearConexion();
+            String procedimiento = "{CALL ComprarBoleto(?, ?, ?, ?, ?, ?)}";
+            PreparedStatement stmt = bd.prepareStatement(procedimiento);
+
+            stmt.setInt(1, idBoleto);
+            stmt.setString(2, generarNumeroSerieUnico(bd));
+            stmt.setDouble(3, precio);
+            stmt.setString(4, estadoAdquisicion.name());
+            stmt.setString(5, tipoTransaccion.name());
+            stmt.setInt(6, idUsuario);
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al comprar los boletos", e);
+        }
+        return true;
     }
 }

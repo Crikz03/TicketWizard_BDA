@@ -69,9 +69,17 @@ CREATE TRIGGER actualizar_usuario_saldo
 AFTER INSERT ON Transacciones
 FOR EACH ROW
 BEGIN
-    UPDATE Usuarios
-    SET saldo = saldo + NEW.monto
-    WHERE id_usuario = NEW.id_usuario;
+    IF NEW.tipo = 'compra' THEN
+        -- Si es una compra, restar el monto del saldo
+        UPDATE Usuarios
+        SET saldo = saldo - NEW.monto
+        WHERE id_usuario = NEW.id_usuario;
+    ELSEIF NEW.tipo = 'saldo' THEN
+        -- Si es saldo, aumentar el monto al saldo
+        UPDATE Usuarios
+        SET saldo = saldo + NEW.monto
+        WHERE id_usuario = NEW.id_usuario;
+    END IF;
 END //
 
 DELIMITER ;

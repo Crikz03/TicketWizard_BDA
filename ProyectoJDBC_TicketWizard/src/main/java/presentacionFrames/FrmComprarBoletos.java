@@ -22,6 +22,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
 import negocio.BoletoBO;
 import utilidades.EstadoAdquisicion;
+import utilidades.Forms;
 import utilidades.TipoTransaccion;
 
 /**
@@ -185,6 +186,7 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        btnRegresar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -233,6 +235,13 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
 
         jLabel9.setText("total por boletos");
 
+        btnRegresar.setText("Regresar");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -246,7 +255,10 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
                                 .addGap(5, 5, 5)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel5)
-                                    .addComponent(btnCompra)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnCompra)
+                                        .addGap(76, 76, 76)
+                                        .addComponent(btnRegresar))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(jLabel7)
@@ -292,7 +304,9 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
                     .addComponent(jLabel7)
                     .addComponent(jLabel9))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                .addComponent(btnCompra)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCompra)
+                    .addComponent(btnRegresar))
                 .addGap(42, 42, 42))
         );
 
@@ -311,14 +325,22 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Por favor, selecciona al menos un boleto.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        double total=0;
+        for (BoletoDTO boleto : boletosSeleccionados) {
+             double precio = boleto.getPrecio();
+             total+=precio;
+        }
+        if(total>usuarioLoggeado.getSaldo()){
+            JOptionPane.showMessageDialog(this, "Saldo insuficiente.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         for (BoletoDTO boleto : boletosSeleccionados) {
-            String numSerie = this.generarNumSerie();
             double precio = boleto.getPrecio();
             int idUsuario = usuarioLoggeado.getIdUsuario(); // Asumiendo que tienes un método para obtener el ID del usuario
 
             try {
-                boolean exito = boletobo.comprarBoleto(boleto.getIdBoleto(), numSerie, precio, EstadoAdquisicion.directo, TipoTransaccion.compra, idUsuario);
+                boolean exito = boletobo.comprarBoleto(boleto.getIdBoleto(), precio, EstadoAdquisicion.directo, TipoTransaccion.compra, idUsuario);
                 if (exito) {
                     JOptionPane.showMessageDialog(this, "Boleto comprado exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -333,6 +355,11 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
         actualizarTotal();
     }//GEN-LAST:event_btnCompraActionPerformed
 
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+        // TODO add your handling code here:
+        Forms.cargarForm(new FrmMenuPrincipal(usuarioLoggeado), this);
+    }//GEN-LAST:event_btnRegresarActionPerformed
+
     private void cargarDatosEvento() {
         jLabel2.setText(eventodto.getNombre());
         jLabel4.setText(eventodto.getFecha().toString());
@@ -341,6 +368,7 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCompra;
+    private javax.swing.JButton btnRegresar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -353,8 +381,5 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
-private String generarNumSerie() {
-        // Genera un número de serie de acuerdo a tu lógica
-        return String.format("%08d", new Random().nextInt(100000000)); // Ejemplo simple
-    }
+
 }
