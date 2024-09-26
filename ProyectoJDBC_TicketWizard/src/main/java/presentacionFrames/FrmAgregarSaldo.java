@@ -164,12 +164,12 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
                         for (ApartadoDTO apartado : apartados) {
                             BoletoDTO boleto = boletobo.consultar(apartado.getIdBoleto());
                             boletos.add(boleto);
-                            total += boleto.getPrecio();
+                            total += boleto.getPrecioOriginal();
                         }
 
                         if (total <= saldoAponer) {
                             for (BoletoDTO boleto : boletos) {
-                                double precio = boleto.getPrecio();
+                                double precio = boleto.getPrecioOriginal();
                                 int idUsuario = usuarioLoggeado.getIdUsuario();
 
                                 try {

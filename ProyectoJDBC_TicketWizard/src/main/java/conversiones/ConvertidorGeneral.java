@@ -4,9 +4,11 @@
  */
 package conversiones;
 
+import dtos.EventoDTO;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import objetos.Evento;
 
 /**
  *
@@ -103,6 +105,40 @@ public class ConvertidorGeneral {
             listaDtos.add(convertidoraDTO(entidad, claseDto));
         }
         return listaDtos;
+    }
+    
+    public static EventoDTO convertidorEntidad(Evento evento) {
+        if (evento == null) {
+            return null; // Maneja el caso nulo
+        }
+
+        EventoDTO eventoDTO = new EventoDTO();
+        eventoDTO.setIdEvento(evento.getIdEvento());
+        eventoDTO.setNombre(evento.getNombre());
+        eventoDTO.setFecha(evento.getFecha());
+        eventoDTO.setLocalidad(evento.getLocalidad());
+        eventoDTO.setCapacidad(evento.getCapacidad());
+        eventoDTO.setVenue(evento.getVenue());
+        eventoDTO.setDescripcion(evento.getDescripcion());
+
+        return eventoDTO;
+    }
+
+    public static Evento convertidorDTOaEntidad(EventoDTO eventoDTO) {
+        if (eventoDTO == null) {
+            return null; // Maneja el caso nulo
+        }
+
+        Evento evento = new Evento();
+        evento.setIdEvento(eventoDTO.getIdEvento());
+        evento.setNombre(eventoDTO.getNombre());
+        evento.setFecha(eventoDTO.getFecha());
+        evento.setLocalidad(eventoDTO.getLocalidad());
+        evento.setCapacidad(eventoDTO.getCapacidad());
+        evento.setVenue(eventoDTO.getVenue());
+        evento.setDescripcion(eventoDTO.getDescripcion());
+
+        return evento;
     }
 
 }

@@ -23,9 +23,8 @@ import utilidades.Forms;
  *
  * @author pauli
  */
-
 public class FrmAdministrador extends javax.swing.JFrame {
-
+    
     private UsuarioDTO usuarioLoggeado;
     private IEventoBO eventobo;
     private IUsuarioBO usuariobo;
@@ -40,8 +39,8 @@ public class FrmAdministrador extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.eventobo = new EventoBO();
         this.usuariobo = new UsuarioBO();
-
-        this.boletobo= new BoletoBO();
+        
+        this.boletobo = new BoletoBO();
     }
 
     /**
@@ -53,6 +52,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel11 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         btnAsignarBoletos = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
@@ -75,6 +75,11 @@ public class FrmAdministrador extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         txtPrecio = new javax.swing.JTextField();
         btnVerBoletos = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jLabel12 = new javax.swing.JLabel();
+        txtDescripcion = new javax.swing.JTextField();
+
+        jLabel11.setText("jLabel11");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -128,6 +133,11 @@ public class FrmAdministrador extends javax.swing.JFrame {
 
         jLabel10.setText("Precio:");
 
+        txtPrecio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPrecioActionPerformed(evt);
+            }
+        });
         txtPrecio.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtPrecioKeyReleased(evt);
@@ -141,66 +151,93 @@ public class FrmAdministrador extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Cerrar Sesión");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jLabel12.setText("Descripcion:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnAsignarBoletos)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnVerBoletos))))
+                        .addComponent(btnAsignarBoletos)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnVerBoletos))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(145, 145, 145)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel9)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel10))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel1)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnGuardarEvento)
-                                .addGap(58, 58, 58)
-                                .addComponent(btnCancelar))
-                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtLocalidad, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(txtAsientos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
-                                .addComponent(txtFilas, javax.swing.GroupLayout.Alignment.LEADING))
-                            .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(23, 23, 23)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel9)
+                                    .addComponent(jLabel10))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnGuardarEvento)
+                                        .addGap(58, 58, 58)
+                                        .addComponent(btnCancelar))
+                                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtLocalidad, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, 418, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addContainerGap(163, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton1)
+                                .addGap(19, 19, 19))))))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(237, 237, 237)
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(labelCapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(labelCapacidad, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(147, 147, 147)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel12))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(txtAsientos, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtFilas, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtDescripcion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE))))
+                .addContainerGap(163, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(14, 14, 14)
-                .addComponent(jLabel1)
-                .addGap(25, 25, 25)
-                .addComponent(jLabel2)
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton1))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(15, 15, 15)
+                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(109, 109, 109)
                         .addComponent(jLabel4)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -209,17 +246,20 @@ public class FrmAdministrador extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel9)
-                            .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(txtFilas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(txtAsientos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                            .addComponent(txtVenue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(21, 21, 21)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel12)
+                    .addComponent(txtDescripcion, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtFilas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(txtAsientos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel10)
                     .addComponent(txtPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -269,9 +309,17 @@ public class FrmAdministrador extends javax.swing.JFrame {
 
     private void btnVerBoletosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerBoletosActionPerformed
         // TODO add your handling code here:
-         Forms.cargarForm(new FrmBoletosAsignados(usuarioLoggeado), this);
+        Forms.cargarForm(new FrmBoletosAsignados(usuarioLoggeado), this);
     }//GEN-LAST:event_btnVerBoletosActionPerformed
-    private  boolean isValidDouble(String text) {
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        Forms.cargarForm(new IniciarSesion(), this);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void txtPrecioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPrecioActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtPrecioActionPerformed
+    private boolean isValidDouble(String text) {
         if (text.isEmpty()) {
             return true; // Permitir campo vacío
         }
@@ -282,6 +330,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
             return false;
         }
     }
+    
     private void crearEvento() {
         eventoCreando = new EventoDTO();
         Date mFecha = jDateChooser1.getDate();
@@ -296,75 +345,81 @@ public class FrmAdministrador extends javax.swing.JFrame {
                 camposFaltantes.append("- Nombre del evento\n");
                 hayCamposVacios = true;
             }
-
+            
             if (mFecha == null) {
                 camposFaltantes.append("- Fecha del evento\n");
                 hayCamposVacios = true;
             }
-
+            
             if (txtLocalidad.getText().isEmpty()) {
                 camposFaltantes.append("- Localidad del evento\n");
                 hayCamposVacios = true;
             }
-
+            
             if (txtVenue.getText().isEmpty()) {
                 camposFaltantes.append("- Venue del evento\n");
                 hayCamposVacios = true;
             }
-
+            
+            if (txtDescripcion.getText().isEmpty()) {
+                camposFaltantes.append("- Descripcion del evento\n");
+                hayCamposVacios = true;
+            }
+            
             if (txtFilas.getText().isEmpty()) {
                 camposFaltantes.append("- Número de filas\n");
                 hayCamposVacios = true;
             }
-
+            
             if (txtAsientos.getText().isEmpty()) {
                 camposFaltantes.append("- Número de asientos por fila\n");
                 hayCamposVacios = true;
             }
-             if (txtPrecio.getText().isEmpty()) {
+            if (txtPrecio.getText().isEmpty()) {
                 camposFaltantes.append("- Precio\n");
                 hayCamposVacios = true;
             }
-             
+
             // Si hay al menos un campo vacío, mostramos el mensaje
             if (hayCamposVacios) {
                 JOptionPane.showMessageDialog(this, camposFaltantes.toString(), "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
             } else {
-
+                
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(mFecha);
                 int añoNacimiento = cal.get(Calendar.YEAR);
                 int añoActual = Calendar.getInstance().get(Calendar.YEAR);
                 int edad = añoActual - añoNacimiento;
-
+                
                 eventoCreando.setNombre(txtNombre.getText());
                 java.sql.Date fechaSQL = new java.sql.Date(mFecha.getTime());
                 eventoCreando.setFecha(fechaSQL);
                 eventoCreando.setLocalidad(txtLocalidad.getText());
                 eventoCreando.setVenue(txtVenue.getText());
-
+                eventoCreando.setDescripcion(txtDescripcion.getText());
+                
                 this.actualizarCapacidad();
-
+                
                 if (eventobo.existeEvento(eventoCreando.getNombre())) {
                     JOptionPane.showMessageDialog(this, "El nombre del evento ya está registrado. Por favor, use otro.", "Error!", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-
+                
                 this.guardarEvento();
                 EventoDTO evento = this.eventobo.consultarPorNombre(txtNombre.getText());
-                double precioDouble=Double.parseDouble(txtPrecio.getText());
-                boletobo.crearBoletos(Integer.parseInt(txtFilas.getText()), Integer.parseInt(txtAsientos.getText()), evento.getIdEvento(),precioDouble);
-
+                double precioDouble = Double.parseDouble(txtPrecio.getText());
+                boletobo.crearBoletos(Integer.parseInt(txtFilas.getText()), Integer.parseInt(txtAsientos.getText()), evento.getIdEvento(), precioDouble);
+                
                 JOptionPane.showMessageDialog(this, "Exito!, se ha creado el evento correctamente.");
-
+                
                 Forms.cargarForm(new FrmEventosAdministrador(usuarioLoggeado), this);
             }
         } catch (NegocioException e) {
             JOptionPane.showMessageDialog(this, "Ha ocurrido un error durante la operacion, intentelo denuevo", "Error!", JOptionPane.ERROR_MESSAGE);
         }
-
+        
     }
-
+    
     private void guardarEvento() {
         try {
             this.eventobo.agregar(eventoCreando);
@@ -372,86 +427,83 @@ public class FrmAdministrador extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "El usuairo no ha podido registrarse correctamente.", "Error!", JOptionPane.ERROR_MESSAGE);
         }
     }
-
- 
-
-
+    
     private void actualizarCapacidad() {
-    try {
-        int filas = Integer.parseInt(txtFilas.getText());
-        int asientos = Integer.parseInt(txtAsientos.getText());
-        int capacidad = filas * asientos;
-        labelCapacidad.setText(String.valueOf(capacidad));
-        eventoCreando.setCapacidad(capacidad); // Actualizar el objeto eventoCreando
-    } catch (NumberFormatException ex) {
-        // Si el usuario no ha ingresado números válidos, puedes manejarlo aquí
-        labelCapacidad.setText("0");  // Muestra 0 si los valores no son válidos
+        try {
+            int filas = Integer.parseInt(txtFilas.getText());
+            int asientos = Integer.parseInt(txtAsientos.getText());
+            int capacidad = filas * asientos;
+            labelCapacidad.setText(String.valueOf(capacidad));
+            eventoCreando.setCapacidad(capacidad); // Actualizar el objeto eventoCreando
+        } catch (NumberFormatException ex) {
+            // Si el usuario no ha ingresado números válidos, puedes manejarlo aquí
+            labelCapacidad.setText("0");  // Muestra 0 si los valores no son válidos
+        }
     }
-}
-
+    
     private boolean validarEnterosFilas() {
-    boolean hayCamposVacios = false;
-    StringBuilder camposFaltantes = new StringBuilder("Por favor, completa los siguientes campos:\n");
+        boolean hayCamposVacios = false;
+        StringBuilder camposFaltantes = new StringBuilder("Por favor, completa los siguientes campos:\n");
 
-    // Validación del campo de filas
-    if (txtFilas.getText().isEmpty()) {
-        camposFaltantes.append("- Número de filas\n");
-        hayCamposVacios = true;
-    } else {
-        try {
-            Integer.parseInt(txtFilas.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingresa un número válido para el número de filas.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+        // Validación del campo de filas
+        if (txtFilas.getText().isEmpty()) {
+            camposFaltantes.append("- Número de filas\n");
+            hayCamposVacios = true;
+        } else {
+            try {
+                Integer.parseInt(txtFilas.getText());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Por favor, ingresa un número válido para el número de filas.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                return false; // Indicar que la validación falló
+            }
+        }
+
+        // Mostrar mensaje si hay campos vacíos
+        if (hayCamposVacios) {
+            JOptionPane.showMessageDialog(this, camposFaltantes.toString(), "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
             return false; // Indicar que la validación falló
         }
+        
+        return true; // Indicar que la validación fue exitosa
     }
-
-    // Mostrar mensaje si hay campos vacíos
-    if (hayCamposVacios) {
-        JOptionPane.showMessageDialog(this, camposFaltantes.toString(), "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
-        return false; // Indicar que la validación falló
-    }
-
-    return true; // Indicar que la validación fue exitosa
-}
-
+    
     private boolean validarEnterosAsientos() {
-    boolean hayCamposVacios = false;
-    StringBuilder camposFaltantes = new StringBuilder("Por favor, completa los siguientes campos:\n");
+        boolean hayCamposVacios = false;
+        StringBuilder camposFaltantes = new StringBuilder("Por favor, completa los siguientes campos:\n");
 
-    // Validación del campo de filas
-    if (txtAsientos.getText().isEmpty()) {
-        camposFaltantes.append("- Número de filas\n");
-        hayCamposVacios = true;
-    } else {
-        try {
-            Integer.parseInt(txtAsientos.getText());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingresa un número válido para el número de filas.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+        // Validación del campo de filas
+        if (txtAsientos.getText().isEmpty()) {
+            camposFaltantes.append("- Número de filas\n");
+            hayCamposVacios = true;
+        } else {
+            try {
+                Integer.parseInt(txtAsientos.getText());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Por favor, ingresa un número válido para el número de filas.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                return false; // Indicar que la validación falló
+            }
+        }
+
+        // Mostrar mensaje si hay campos vacíos
+        if (hayCamposVacios) {
+            JOptionPane.showMessageDialog(this, camposFaltantes.toString(), "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
             return false; // Indicar que la validación falló
         }
+        
+        return true; // Indicar que la validación fue exitosa
     }
-
-    // Mostrar mensaje si hay campos vacíos
-    if (hayCamposVacios) {
-        JOptionPane.showMessageDialog(this, camposFaltantes.toString(), "Campos Vacíos", JOptionPane.ERROR_MESSAGE);
-        return false; // Indicar que la validación falló
-    }
-
-    return true; // Indicar que la validación fue exitosa
-}
 
     /**
      * Limpia los campos de texto.
      */
     public void limpiarTextbox() {
-    txtNombre.setText("");
-    jDateChooser1.setDate(null);
-    txtLocalidad.setText("");
-    txtVenue.setText("");
-    txtFilas.setText("");
-    txtAsientos.setText("");
-}
+        txtNombre.setText("");
+        jDateChooser1.setDate(null);
+        txtLocalidad.setText("");
+        txtVenue.setText("");
+        txtFilas.setText("");
+        txtAsientos.setText("");
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -459,9 +511,12 @@ public class FrmAdministrador extends javax.swing.JFrame {
     private javax.swing.JButton btnCancelar;
     private javax.swing.JButton btnGuardarEvento;
     private javax.swing.JButton btnVerBoletos;
+    private javax.swing.JButton jButton1;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -472,6 +527,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel labelCapacidad;
     private javax.swing.JTextField txtAsientos;
+    private javax.swing.JTextField txtDescripcion;
     private javax.swing.JTextField txtFilas;
     private javax.swing.JTextField txtLocalidad;
     private javax.swing.JTextField txtNombre;

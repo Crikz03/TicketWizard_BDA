@@ -31,8 +31,8 @@ public class NewMain {
                 "Chris", // Nombres
                 "Smith", // Apellido Paterno
                 "Johnson", // Apellido Materno
-                "chris@email.com", // Correo
-                "password123", // Contraseña
+                "cri", // Correo
+                "123", // Contraseña
                 "Main Street", // Calle
                 "123", // Número Exterior
                 "Centro", // Colonia

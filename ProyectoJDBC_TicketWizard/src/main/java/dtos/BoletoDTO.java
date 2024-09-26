@@ -16,28 +16,32 @@ public class BoletoDTO {
     private String numSerie;
     private String fila;
     private String asiento;
-    private double precio;
+    private double precioOriginal;
+    private double precioReventa;
     private EstadoAdquisicion estadoAdquisicion;
     private int idUsuario;
     private int idEvento;
     private boolean selected;
     private boolean apartado;
     private boolean en_venta;
+
     public BoletoDTO() {
     }
 
-    public BoletoDTO(String numSerie, String fila, String asiento, double precio, EstadoAdquisicion estadoAdquisicion, int idUsuario, int idEvento,boolean selected,boolean en_venta, boolean apartado) {
+    public BoletoDTO(String numSerie, String fila, String asiento, double precioOriginal, double precioReventa, EstadoAdquisicion estadoAdquisicion, int idUsuario, int idEvento, boolean selected, boolean en_venta, boolean apartado) {
         this.numSerie = numSerie;
         this.fila = fila;
         this.asiento = asiento;
-        this.precio = precio;
+        this.precioOriginal = precioOriginal;
+        this.precioReventa = precioReventa;
         this.estadoAdquisicion = estadoAdquisicion;
         this.idUsuario = idUsuario;
         this.idEvento = idEvento;
-        this.selected=selected;
-        this.apartado=apartado;
-        this.en_venta=en_venta;
+        this.selected = selected;
+        this.apartado = apartado;
+        this.en_venta = en_venta;
     }
+
     public BoletoDTO(String fila, String asiento, int idEvento, int idUsuario, boolean selected) {
         this.fila = fila;
         this.asiento = asiento;
@@ -61,7 +65,7 @@ public class BoletoDTO {
     public void setEn_venta(boolean en_venta) {
         this.en_venta = en_venta;
     }
-    
+
     public int getIdBoleto() {
         return idBoleto;
     }
@@ -94,12 +98,20 @@ public class BoletoDTO {
         this.asiento = asiento;
     }
 
-    public double getPrecio() {
-        return precio;
+    public double getPrecioOriginal() {
+        return precioOriginal;
     }
 
-    public void setPrecio(double precio) {
-        this.precio = precio;
+    public void setPrecioOriginal(double precioOriginal) {
+        this.precioOriginal = precioOriginal;
+    }
+
+    public double getPrecioReventa() {
+        return precioReventa;
+    }
+
+    public void setPrecioReventa(double precioReventa) {
+        this.precioReventa = precioReventa;
     }
 
     public EstadoAdquisicion getEstadoAdquisicion() {
@@ -125,6 +137,7 @@ public class BoletoDTO {
     public void setIdEvento(int idEvento) {
         this.idEvento = idEvento;
     }
+
     public boolean isSelected() {
         return selected;
     }

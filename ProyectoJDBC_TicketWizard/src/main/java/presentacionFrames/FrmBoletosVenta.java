@@ -4,9 +4,21 @@
  */
 package presentacionFrames;
 
+import dtos.BoletoDTO;
+import dtos.EventoDTO;
 import dtos.UsuarioDTO;
+import excepciones.NegocioException;
+import interfaces.IBoletoBO;
+import interfaces.IEventoBO;
 import interfaces.ITransaccionBO;
 import interfaces.IUsuarioBO;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import negocio.BoletoBO;
+import negocio.EventoBO;
 import negocio.TransaccionBO;
 import negocio.UsuarioBO;
 import utilidades.Forms;
@@ -19,7 +31,9 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
 
     private UsuarioDTO usuarioLoggeado;
     private ITransaccionBO transaccionbo;
+    private IEventoBO eventobo;
     private IUsuarioBO usuariobo;
+    private IBoletoBO boletobo;
 
     /**
      * Creates new form FrmBoletosVenta
@@ -29,6 +43,67 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.transaccionbo = new TransaccionBO();
         this.usuariobo = new UsuarioBO();
+        this.eventobo = new EventoBO();
+        this.boletobo = new BoletoBO();
+        this.cargarBoletosEnVenta();
+    }
+
+    private void cargarBoletosEnVenta() {
+        List<BoletoDTO> boletosEnVenta = null;
+        try {
+            // Consultar los boletos que el usuario ha puesto en venta
+            boletosEnVenta = boletobo.consultarBoletosEnVenta(usuarioLoggeado.getIdUsuario());
+        } catch (NegocioException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Llenar la tabla con los boletos en venta
+        llenarTablaBoletosEnVenta(boletosEnVenta);
+    }
+
+    private void llenarTablaBoletosEnVenta(List<BoletoDTO> boletosEnVenta) {
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.jTable1.getModel();
+
+        if (modeloTabla.getRowCount() > 0) {
+            for (int i = modeloTabla.getRowCount() - 1; i > -1; i--) {
+                modeloTabla.removeRow(i);
+            }
+        }
+
+        if (boletosEnVenta != null) {
+            boletosEnVenta.forEach(row -> {
+                Object[] fila = new Object[8];
+                fila[0] = row.getNumSerie();
+                fila[1] = row.getFila();
+                Object[] detallesEvento = consultarDetallesEventoPorId(row.getIdEvento());
+                if (detallesEvento != null) {
+                    fila[2] = detallesEvento[0];
+                    fila[3] = detallesEvento[1];
+                    fila[4] = detallesEvento[2];
+                    fila[5] = detallesEvento[3];
+                    fila[6] = detallesEvento[4];
+                }
+                fila[7] = row.getPrecioReventa();
+                modeloTabla.addRow(fila);
+            });
+        }
+    }
+
+    private Object[] consultarDetallesEventoPorId(int idEvento) {
+        try {
+            EventoDTO evento = eventobo.consultar(idEvento);
+
+            Object[] detallesEvento = new Object[6];
+            detallesEvento[0] = evento.getNombre();
+            detallesEvento[1] = evento.getLocalidad();
+            detallesEvento[2] = evento.getVenue();
+            detallesEvento[3] = evento.getFecha();
+            return detallesEvento;
+        } catch (NegocioException ex) {
+            Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     /**
