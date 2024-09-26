@@ -36,7 +36,7 @@ CREATE TABLE Transacciones (
     monto DECIMAL(10, 2) NOT NULL,
     comision DECIMAL (10,2),
     tiempo_limite TIME,
-    tipo ENUM ('saldo','compra'),
+    tipo ENUM ('saldo','compra','venta','comision'),
     fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario)
@@ -51,6 +51,7 @@ CREATE TABLE Boletos (
     estado_adquisicion ENUM('reventa', 'directo') NOT NULL,
     id_usuario INT, 
     id_evento INT, 
+    en_venta BOOLEAN NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario),
     FOREIGN KEY (id_evento) REFERENCES Eventos(id_evento)
 )AUTO_INCREMENT = 1;
@@ -74,7 +75,17 @@ BEGIN
         UPDATE Usuarios
         SET saldo = saldo - NEW.monto
         WHERE id_usuario = NEW.id_usuario;
+	ELSEIF NEW.tipo = 'comision' THEN
+        -- Si es una comision, restar el monto del saldo
+        UPDATE Usuarios
+        SET saldo = saldo - NEW.monto
+        WHERE id_usuario = NEW.id_usuario;
     ELSEIF NEW.tipo = 'saldo' THEN
+        -- Si es saldo, aumentar el monto al saldo
+        UPDATE Usuarios
+        SET saldo = saldo + NEW.monto
+        WHERE id_usuario = NEW.id_usuario;
+	ELSEIF NEW.tipo = 'venta' THEN
         -- Si es saldo, aumentar el monto al saldo
         UPDATE Usuarios
         SET saldo = saldo + NEW.monto

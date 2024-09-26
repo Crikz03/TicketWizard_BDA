@@ -9,5 +9,5 @@ package utilidades;
  * @author Chris
  */
 public enum TipoTransaccion {
-    compra, saldo;
+    compra, saldo, venta, comision;
 }
