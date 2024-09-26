@@ -73,7 +73,7 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
 
         if (boletosEnVenta != null) {
             boletosEnVenta.forEach(row -> {
-                Object[] fila = new Object[8];
+                Object[] fila = new Object[7];
                 fila[0] = row.getNumSerie();
                 fila[1] = row.getFila();
                 Object[] detallesEvento = consultarDetallesEventoPorId(row.getIdEvento());
@@ -82,9 +82,8 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
                     fila[3] = detallesEvento[1];
                     fila[4] = detallesEvento[2];
                     fila[5] = detallesEvento[3];
-                    fila[6] = detallesEvento[4];
                 }
-                fila[7] = row.getPrecioReventa();
+                fila[6] = row.getPrecioReventa();
                 modeloTabla.addRow(fila);
             });
         }

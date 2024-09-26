@@ -153,33 +153,11 @@ CREATE PROCEDURE ReventaBoleto (
     IN p_id_usuario INT
 )
 BEGIN
-    -- Verificar que los parámetros no sean nulos
-    IF p_precioReventa IS NULL THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'El precio de reventa no puede ser nulo';
-    END IF;
-
-    IF p_fecha_limite IS NULL THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'La fecha límite no puede ser nula';
-    END IF;
-
-    -- Continuar con el procedimiento si las verificaciones pasan
-    -- Validar que el precio de reventa no sea mayor al 3% del precio original
-    IF p_precioReventa > (SELECT precioOriginal * 1.03 FROM Boletos WHERE id_boleto = p_id_boleto) THEN
-        SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'El precio de reventa no puede exceder el 3% del precio original';
-    ELSE
         -- Actualizar el boleto con el nuevo precio y marcarlo como en venta
         UPDATE Boletos
         SET precioReventa = p_precioReventa,
             en_venta = TRUE
         WHERE id_boleto = p_id_boleto;
-
-        -- Insertar la transacción de reventa en la tabla de transacciones
-        INSERT INTO Transacciones (monto, tipo, id_usuario, tiempo_limite)
-        VALUES (p_precioReventa, 'venta', p_id_usuario, SEC_TO_TIME(TIMESTAMPDIFF(SECOND, NOW(), p_fecha_limite))); 
-    END IF;
 END //
 
 DELIMITER ;
