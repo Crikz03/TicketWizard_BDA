@@ -118,13 +118,12 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         btnMisBoletos = new javax.swing.JButton();
         btnBoletosVenta = new javax.swing.JButton();
         btnDatosUsuario = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnCerrarSesion = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setBackground(new java.awt.Color(0, 0, 0));
         jLabel1.setFont(new java.awt.Font("Arial", 0, 18)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Nombre de usuario");
 
         bSaldo.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
@@ -193,10 +192,10 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Cerrar Sesión");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnCerrarSesion.setText("Cerrar Sesión");
+        btnCerrarSesion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnCerrarSesionActionPerformed(evt);
             }
         });
 
@@ -222,7 +221,7 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
                     .addGroup(panel2Layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)))
+                        .addComponent(btnCerrarSesion)))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
         panel2Layout.setVerticalGroup(
@@ -231,7 +230,7 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
                 .addGap(44, 44, 44)
                 .addGroup(panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel1)
-                    .addComponent(jButton1))
+                    .addComponent(btnCerrarSesion))
                 .addGap(31, 31, 31)
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
@@ -318,19 +317,19 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_tblEventosMouseClicked
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
         Forms.cargarForm(new IniciarSesion(), this);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bInicio;
     private javax.swing.JButton bSaldo;
     private javax.swing.JButton btnBoletosVenta;
+    private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnDatosUsuario;
     private javax.swing.JButton btnMisBoletos;
     private javax.swing.JButton btnTransacciones;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;

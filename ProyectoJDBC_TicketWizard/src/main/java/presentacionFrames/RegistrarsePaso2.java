@@ -52,6 +52,7 @@ public class RegistrarsePaso2 extends javax.swing.JFrame {
         jLReptir = new javax.swing.JLabel();
         jLReptir1 = new javax.swing.JLabel();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        btnRegresar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -156,12 +157,21 @@ public class RegistrarsePaso2 extends javax.swing.JFrame {
                 .addGap(47, 47, 47))
         );
 
+        btnRegresar.setText("Regresar");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel1Layout = new javax.swing.GroupLayout(panel1);
         panel1.setLayout(panel1Layout);
         panel1Layout.setHorizontalGroup(
             panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel1Layout.createSequentialGroup()
-                .addContainerGap(131, Short.MAX_VALUE)
+                .addContainerGap(46, Short.MAX_VALUE)
+                .addComponent(btnRegresar)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(116, 116, 116))
         );
@@ -171,6 +181,10 @@ public class RegistrarsePaso2 extends javax.swing.JFrame {
                 .addGap(29, 29, 29)
                 .addComponent(panel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnRegresar)
+                .addGap(29, 29, 29))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -206,6 +220,10 @@ public class RegistrarsePaso2 extends javax.swing.JFrame {
     private void txtRepeContraseñaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtRepeContraseñaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtRepeContraseñaActionPerformed
+
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+        Forms.cargarForm(new RegistrarsePaso1(), this);
+    }//GEN-LAST:event_btnRegresarActionPerformed
 
     private void terminarRegistro() {
 
@@ -268,6 +286,7 @@ public class RegistrarsePaso2 extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bRegistrarse;
+    private javax.swing.JButton btnRegresar;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLReptir;
     private javax.swing.JLabel jLReptir1;
