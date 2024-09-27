@@ -139,25 +139,39 @@ public class BoletoDAO implements IBoletoDAO {
     public List<Boleto> consultarIdUsuario(int idUsuario) throws PersistenciaException {
         List<Boleto> listaBoletos = new ArrayList<>();
         String consultarBoletos = "SELECT * FROM Boletos WHERE id_usuario = ?";
-        try (Connection bd = conexion.crearConexion(); PreparedStatement consulta = bd.prepareStatement(consultarBoletos); ResultSet resultados = consulta.executeQuery()) {
-            while (resultados.next()) {
-                Boleto b = new Boleto();
-                b.setIdBoleto(resultados.getInt("id_boleto"));
-                b.setNumSerie(resultados.getString("num_serie"));
-                b.setFila(resultados.getString("fila"));
-                b.setAsiento(resultados.getString("asiento"));
-                b.setPrecioOriginal(resultados.getDouble("precioOriginal"));
-                String estadoAdquisicionString = resultados.getString("estado_adquisicion");
-                b.setEstadoAdquisicion(EstadoAdquisicion.valueOf(estadoAdquisicionString));
-                b.setIdUsuario(resultados.getInt("id_usuario"));
-                b.setIdEvento(resultados.getInt("id_evento"));
-                b.setApartado(resultados.getBoolean("apartado"));
-                b.setEn_venta(resultados.getBoolean("en_venta"));
-                listaBoletos.add(b);
+
+        try (Connection bd = conexion.crearConexion();
+                PreparedStatement consulta = bd.prepareStatement(consultarBoletos)) {
+
+            // Establecer el valor de idUsuario en el PreparedStatement
+            consulta.setInt(1, idUsuario);
+
+            try (ResultSet resultados = consulta.executeQuery()) {
+                while (resultados.next()) {
+                    Boleto b = new Boleto();
+                    b.setIdBoleto(resultados.getInt("id_boleto"));
+                    b.setNumSerie(resultados.getString("num_serie"));
+                    b.setFila(resultados.getString("fila"));
+                    b.setAsiento(resultados.getString("asiento"));
+                    b.setPrecioOriginal(resultados.getDouble("precioOriginal"));
+                    b.setPrecioReventa(resultados.getDouble("precioReventa"));
+
+                    // Convertir el estado de adquisición de String a Enum
+                    String estadoAdquisicionString = resultados.getString("estado_adquisicion");
+                    b.setEstadoAdquisicion(EstadoAdquisicion.valueOf(estadoAdquisicionString));
+
+                    b.setIdUsuario(resultados.getInt("id_usuario"));
+                    b.setIdEvento(resultados.getInt("id_evento"));
+                    b.setApartado(resultados.getBoolean("apartado"));
+                    b.setEn_venta(resultados.getBoolean("en_venta"));
+                    listaBoletos.add(b);
+                }
             }
+
         } catch (SQLException e) {
-            throw new PersistenciaException("No se pudo encontrar los boletos del usuario con id: " + idUsuario);
+            throw new PersistenciaException("No se pudo encontrar los boletos del usuario con id: " + idUsuario, e);
         }
+
         return listaBoletos;
     }
 
@@ -304,6 +318,7 @@ public class BoletoDAO implements IBoletoDAO {
                 boleto.setIdUsuario(resultSet.getInt("id_usuario"));
                 boleto.setApartado(resultSet.getBoolean("apartado"));
                 boleto.setEn_venta(resultSet.getBoolean("en_venta"));
+                boleto.setPrecioReventa(resultSet.getDouble("precioReventa"));
                 // Asegúrate de que el campo id_evento exista
                 boleto.setIdEvento(idEvento);
                 boletos.add(boleto);

@@ -119,7 +119,14 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
             return columnIndex == 0;
         }
     }
-
+    private List<BoletoDTO> adecuarPrecioBoletoReventa(List<BoletoDTO> boletos){
+        for(BoletoDTO boleto : boletos){
+            if(boleto.getIdUsuario()!=0 && boleto.getEn_venta() && boleto.getPrecioReventa()!=0){
+                boleto.setPrecioOriginal(boleto.getPrecioReventa());
+            }
+        }
+        return boletos;
+    }
     private void cargarBoletosDisponibles() {
         try {
             boletosDisponibles = boletobo.consultarPorEvento(eventodto.getIdEvento());
@@ -127,7 +134,7 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
             boletosDisponibles = boletosDisponibles.stream()
                     .filter(boleto -> boleto.getApartado()==false && boleto.getEn_venta()==true)
                     .collect(Collectors.toList());
-
+            boletosDisponibles=adecuarPrecioBoletoReventa(boletosDisponibles);
             // Usa BoletoTableModel en lugar de DefaultTableModel
             jTable1.setModel(new BoletoTableModel(boletosDisponibles));
             

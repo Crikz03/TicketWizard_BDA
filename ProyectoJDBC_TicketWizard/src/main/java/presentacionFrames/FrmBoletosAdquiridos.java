@@ -51,7 +51,7 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
     private void cargarBoletosTabla() {
         List<BoletoDTO> boletos = null;
         try {
-            boletos = this.boletobo.consultarAsignados();
+            boletos = this.boletobo.consultarIdUsuario(usuarioLoggeado.getIdUsuario());
         } catch (NegocioException ex) {
             Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
