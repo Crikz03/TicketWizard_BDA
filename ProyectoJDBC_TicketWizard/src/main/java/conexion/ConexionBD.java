@@ -22,9 +22,9 @@ import java.sql.SQLException;
  */
 public class ConexionBD implements IConexion {
 
-    private String cadenaConex = "jdbc:mysql://localhost/ticketwizard"; // URL de conexión a la base de datos
-    private String usuario = "root"; // Nombre de usuario de la base de datos
-    private String pass = "itson"; // Contraseña del usuario de la base de datos
+    private String cadenaConex = "jdbc:mysql://127.0.0.1:3306/ticketwizard"; // URL de conexión a la base de datos
+    private String usuario = "Paulina"; // Nombre de usuario de la base de datos
+    private String pass = "leydemurphy"; // Contraseña del usuario de la base de datos
 
     /**
      * Método que crea una conexión a la base de datos MySQL. Utiliza los
