@@ -37,6 +37,7 @@ public class RegistrarsePaso2 extends javax.swing.JFrame {
         initComponents();
         this.usuarioRegistrando = usuarioRegistrando;
         this.usuariobo = new UsuarioBO();
+        this.setLocationRelativeTo(this);
     }
 
     /**

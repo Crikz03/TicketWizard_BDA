@@ -26,6 +26,7 @@ public class RegistrarsePaso1 extends javax.swing.JFrame {
      */
     public RegistrarsePaso1() {
         initComponents();
+        this.setLocationRelativeTo(this);
     }
 
     /**

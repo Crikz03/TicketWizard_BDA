@@ -38,6 +38,7 @@ public class FrmTransacciones extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.transaccionbo = new TransaccionBO();
         this.cargarMetodosIniciales();
+        this.setLocationRelativeTo(this);
 
     }
 

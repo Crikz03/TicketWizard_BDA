@@ -38,6 +38,7 @@ public class FrmMenuPrincipal extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.eventobo = new EventoBO();
         this.cargarMetodosIniciales();
+        this.setLocationRelativeTo(this);
     }
 
     private void cargarMetodosIniciales() {

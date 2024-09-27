@@ -41,6 +41,7 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
     private EventoDTO eventodto;
     private IBoletoBO boletobo;
     private List<BoletoDTO> boletosDisponibles;
+    
 
     /**
      * Creates new form FrmComprarBoletos
@@ -51,6 +52,7 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
         this.eventodto = eventodto;
         this.boletobo = new BoletoBO();
         this.cargarDatosIniciales();
+        this.setLocationRelativeTo(this);
         // Establecer el modelo de la tabla
         jTable1.setModel(new BoletoTableModel(boletosDisponibles));
         jTable1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

@@ -42,6 +42,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
         this.eventobo = new EventoBO();
         this.usuariobo = new UsuarioBO();        
         this.boletobo = new BoletoBO();
+        this.setLocationRelativeTo(this);
     }
 
     /**

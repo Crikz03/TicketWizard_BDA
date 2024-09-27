@@ -51,6 +51,7 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
         this.boletobo = new BoletoBO();
         this.eventobo = new EventoBO();
         this.cargarBoletosTabla();
+        this.setLocationRelativeTo(this);
     }
 
     private void cargarBoletosTabla() {
