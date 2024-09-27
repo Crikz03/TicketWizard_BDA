@@ -18,38 +18,46 @@ import javax.swing.table.DefaultTableModel;
 import negocio.BoletoBO;
 import negocio.EventoBO;
 import negocio.UsuarioBO;
-import objetos.Evento;
 import utilidades.Forms;
 
 /**
+ * Clase que representa la interfaz gráfica del formulario para mostrar los
+ * boletos asignados a un usuario. Permite a los usuarios visualizar la lista de
+ * boletos que han sido asignados a ellos, incluyendo detalles como el evento
+ * asociado, la fecha del evento y el estado del boleto.
  *
- * @author pauli
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmBoletosAsignados extends javax.swing.JFrame {
+
     private UsuarioDTO usuarioLoggeado;
     private IBoletoBO boletobo;
     private IEventoBO eventobo;
     private IUsuarioBO usuariobo;
+
     /**
      * Creates new form FrmBoletosAsignados
      */
     public FrmBoletosAsignados(UsuarioDTO usuarioLoggeado) {
         initComponents();
         this.usuarioLoggeado = usuarioLoggeado;
-        this.boletobo= new BoletoBO();
-        this.eventobo=new EventoBO();
-        this.usuariobo=new UsuarioBO();
+        this.boletobo = new BoletoBO();
+        this.eventobo = new EventoBO();
+        this.usuariobo = new UsuarioBO();
         cargarBoletosTabla();
     }
-    private void cargarBoletosTabla(){
-         List<BoletoDTO> boletos = null;
-         try {
+
+    private void cargarBoletosTabla() {
+        List<BoletoDTO> boletos = null;
+        try {
             boletos = this.boletobo.consultarAsignados();
         } catch (NegocioException ex) {
             Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
         this.llenarTablaBoletos(boletos);
     }
+
     private void llenarTablaBoletos(List<BoletoDTO> boletoLista) {
         DefaultTableModel modeloTabla = (DefaultTableModel) this.tblBoletos.getModel();
 
@@ -67,13 +75,14 @@ public class FrmBoletosAsignados extends javax.swing.JFrame {
                 fila[2] = row.getAsiento();
                 fila[3] = row.getPrecioOriginal();
                 fila[4] = row.getEstadoAdquisicion();
-                fila[5]= consultarNombreUsuarioPorId(row.getIdUsuario());
+                fila[5] = consultarNombreUsuarioPorId(row.getIdUsuario());
                 fila[6] = consultarNombreEventoPorId(row.getIdEvento());
                 modeloTabla.addRow(fila);
             });
         }
     }
-    private String consultarNombreEventoPorId(int idEvento){
+
+    private String consultarNombreEventoPorId(int idEvento) {
         try {
             EventoDTO evento = eventobo.consultar(idEvento);
             return evento.getNombre();
@@ -82,10 +91,11 @@ public class FrmBoletosAsignados extends javax.swing.JFrame {
         }
         return null;
     }
-    private String consultarNombreUsuarioPorId(int idUsuario){
+
+    private String consultarNombreUsuarioPorId(int idUsuario) {
         try {
             UsuarioDTO usuario = usuariobo.consultar(idUsuario);
-            return usuario.getNombres() + " "+ usuario.getApellidoPaterno();
+            return usuario.getNombres() + " " + usuario.getApellidoPaterno();
         } catch (NegocioException ex) {
             Logger.getLogger(FrmMenuPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -186,13 +196,12 @@ public class FrmBoletosAsignados extends javax.swing.JFrame {
 
     private void btnAsignarBoletosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAsignarBoletosActionPerformed
         // TODO add your handling code here:
-         Forms.cargarForm(new FrmEventoAsignar(usuarioLoggeado), this);
+        Forms.cargarForm(new FrmEventoAsignar(usuarioLoggeado), this);
     }//GEN-LAST:event_btnAsignarBoletosActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAsignarBoletos;

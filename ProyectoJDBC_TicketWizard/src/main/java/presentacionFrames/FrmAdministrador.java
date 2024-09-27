@@ -4,7 +4,6 @@
  */
 package presentacionFrames;
 
-import dtos.AsientoDTO;
 import dtos.EventoDTO;
 import dtos.UsuarioDTO;
 import excepciones.NegocioException;
@@ -20,8 +19,11 @@ import negocio.UsuarioBO;
 import utilidades.Forms;
 
 /**
- *
- * @author pauli
+ * Clase que representa la interfaz gráfica del formulario del Administrador.
+ * Permite gestionar y administrar diferentes aspectos del sistema.
+ * 
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmAdministrador extends javax.swing.JFrame {
     
@@ -38,8 +40,7 @@ public class FrmAdministrador extends javax.swing.JFrame {
         initComponents();
         this.usuarioLoggeado = usuarioLoggeado;
         this.eventobo = new EventoBO();
-        this.usuariobo = new UsuarioBO();
-        
+        this.usuariobo = new UsuarioBO();        
         this.boletobo = new BoletoBO();
     }
 

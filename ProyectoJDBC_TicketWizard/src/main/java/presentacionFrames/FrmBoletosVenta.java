@@ -24,8 +24,13 @@ import negocio.UsuarioBO;
 import utilidades.Forms;
 
 /**
+ * Clase que representa la interfaz gráfica del formulario para la venta de
+ * boletos. Permite a los usuarios realizar compras de boletos para eventos,
+ * visualizar detalles de los boletos disponibles y gestionar la transacción de
+ * compra.
  *
- * @author pauli
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmBoletosVenta extends javax.swing.JFrame {
 
@@ -216,7 +221,7 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "El boleto ya no esta a la venta.");
                 cargarBoletosEnVenta();
             }
-            
+
         } catch (NegocioException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {

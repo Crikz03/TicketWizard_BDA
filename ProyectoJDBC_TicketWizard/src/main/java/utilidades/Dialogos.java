@@ -8,8 +8,12 @@ import java.awt.Component;
 import javax.swing.JOptionPane;
 
 /**
+ * Clase utilitaria para mostrar diálogos de mensajes en la interfaz de usuario.
+ * Proporciona métodos para mostrar mensajes de error, éxito y para solicitar
+ * input del usuario.
  *
- * @author Chris
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class Dialogos {
 
@@ -20,8 +24,8 @@ public class Dialogos {
     /**
      * Muestra un mensaje de error sobre el componente especificado.
      *
-     * @param componente
-     * @param msg
+     * @param componente El componente padre para el diálogo.
+     * @param msg El mensaje de error a mostrar.
      */
     public static void mostrarMensajeError(
             final Component componente,
@@ -33,14 +37,13 @@ public class Dialogos {
                 "Error",
                 JOptionPane.ERROR_MESSAGE
         );
-
     }
 
     /**
-     * Muestra un mensaje de exito sobre el componente especificado.
+     * Muestra un mensaje de éxito sobre el componente especificado.
      *
-     * @param componente
-     * @param msg
+     * @param componente El componente padre para el diálogo.
+     * @param msg El mensaje de éxito a mostrar.
      */
     public static void mostrarMensajeExito(
             final Component componente,
@@ -49,7 +52,7 @@ public class Dialogos {
         JOptionPane.showMessageDialog(
                 componente,
                 msg,
-                "Exito",
+                "Éxito",
                 JOptionPane.PLAIN_MESSAGE
         );
     }
@@ -57,10 +60,10 @@ public class Dialogos {
     /**
      * Pide input al usuario y lo regresa.
      *
-     * @param componente
-     * @param titulo
-     * @param texto
-     * @return Input del usuario
+     * @param componente El componente padre para el diálogo.
+     * @param titulo El título del diálogo.
+     * @param texto El texto que se mostrará en el cuadro de entrada.
+     * @return Input del usuario, o null si se cancela.
      */
     public static String pedirInputUsuario(
             final Component componente,

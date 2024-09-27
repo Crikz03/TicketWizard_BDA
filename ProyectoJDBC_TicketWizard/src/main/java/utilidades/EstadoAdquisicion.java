@@ -5,9 +5,16 @@
 package utilidades;
 
 /**
+ * Enum que representa los diferentes estados de adquisición de boletos.
+ * 
+ * Los estados pueden ser:
+ * - directo: Adquisición de boletos directamente de la fuente.
+ * - reventa: Adquisición de boletos a través de un proceso de reventa.
  *
- * @author Chris
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public enum EstadoAdquisicion {
     directo, reventa;
 }
+

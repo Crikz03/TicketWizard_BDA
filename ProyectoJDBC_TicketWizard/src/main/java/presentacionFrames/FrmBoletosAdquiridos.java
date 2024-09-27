@@ -24,8 +24,13 @@ import negocio.UsuarioBO;
 import utilidades.Forms;
 
 /**
+ * Clase que representa la interfaz gráfica del formulario para mostrar los
+ * boletos adquiridos por un usuario. Permite a los usuarios visualizar la lista
+ * de boletos que han comprado, incluyendo detalles como el evento asociado,
+ * fecha, y otros datos relevantes.
  *
- * @author pauli
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmBoletosAdquiridos extends javax.swing.JFrame {
 
@@ -233,8 +238,6 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
                 Logger.getLogger(FrmBoletosAdquiridos.class.getName()).log(Level.SEVERE, null, ex);
             }
             this.dispose(); // Opcional, para cerrar el frame actual si se desea
-        } else {
-            JOptionPane.showMessageDialog(this, "Selecciona un boleto para vender.");
         }
     }//GEN-LAST:event_btnVenderActionPerformed
 
