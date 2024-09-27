@@ -33,6 +33,7 @@ public class FrmDatosUsuario extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.usuariobo = new UsuarioBO();
         this.cargarDatosUsuario();
+        this.setLocationRelativeTo(this);
     }
 
     /**

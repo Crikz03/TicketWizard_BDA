@@ -32,6 +32,7 @@ public class IniciarSesion extends javax.swing.JFrame {
      */
     public IniciarSesion() {
         initComponents();
+        this.setLocationRelativeTo(this);
         this.usuariobo = new UsuarioBO();
     }
 

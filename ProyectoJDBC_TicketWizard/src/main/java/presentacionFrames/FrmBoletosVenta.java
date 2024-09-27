@@ -51,6 +51,7 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
         this.eventobo = new EventoBO();
         this.boletobo = new BoletoBO();
         this.cargarBoletosEnVenta();
+        this.setLocationRelativeTo(this);
     }
 
     private void cargarBoletosEnVenta() {

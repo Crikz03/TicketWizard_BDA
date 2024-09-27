@@ -42,7 +42,7 @@ public class FrmEventosAdministrador extends javax.swing.JFrame {
         this.usuarioLoggeado = usuarioLoggeado;
         this.eventobo = new EventoBO();
         this.usuariobo = new UsuarioBO();
-
+        this.setLocationRelativeTo(this);
         this.cargarMetodosIniciales();
     }
 

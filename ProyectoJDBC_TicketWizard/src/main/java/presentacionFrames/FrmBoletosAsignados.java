@@ -46,6 +46,7 @@ public class FrmBoletosAsignados extends javax.swing.JFrame {
         this.eventobo = new EventoBO();
         this.usuariobo = new UsuarioBO();
         cargarBoletosTabla();
+        this.setLocationRelativeTo(this);
     }
 
     private void cargarBoletosTabla() {

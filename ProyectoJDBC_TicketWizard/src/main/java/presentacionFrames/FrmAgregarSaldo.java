@@ -50,6 +50,7 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
         this.apartadobo = new ApartadoBO();
         this.boletobo = new BoletoBO();
         this.mostrarSaldo();
+        this.setLocationRelativeTo(this);
     }
 
     /**

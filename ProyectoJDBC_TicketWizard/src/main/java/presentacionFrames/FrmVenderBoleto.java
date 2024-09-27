@@ -44,6 +44,7 @@ public class FrmVenderBoleto extends javax.swing.JFrame {
         this.asiento = asiento;
         this.nombreEvento = nombreEvento;
         this.boletobo = new BoletoBO();
+        this.setLocationRelativeTo(this);
 
         // Llenar los campos con los datos del boleto
         lblnumero.setText(numSerie);
