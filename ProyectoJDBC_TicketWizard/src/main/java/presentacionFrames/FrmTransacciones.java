@@ -16,8 +16,14 @@ import negocio.TransaccionBO;
 import utilidades.Forms;
 
 /**
+ * Clase que representa la interfaz de usuario para la gestión de transacciones
+ * dentro de la aplicación. Permite a los usuarios consultar y gestionar
+ * diferentes tipos de transacciones, como la compra de boletos y la reventa de
+ * boletos. Facilita la interacción y visualización de datos relacionados con
+ * las transacciones del usuario.
  *
- * @author pauli
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmTransacciones extends javax.swing.JFrame {
 

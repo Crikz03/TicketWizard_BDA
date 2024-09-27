@@ -19,8 +19,12 @@ import negocio.UsuarioBO;
 import utilidades.Forms;
 
 /**
+ * Clase que representa la interfaz gráfica para la gestión de eventos por parte
+ * de los administradores. Permite visualizar detalles de los eventos
+ * existentes.
  *
- * @author pauli
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmEventosAdministrador extends javax.swing.JFrame {
 
@@ -98,8 +102,6 @@ public class FrmEventosAdministrador extends javax.swing.JFrame {
         }
         this.llenarTablaProductos(eventos);
     }
-
-    
 
     /**
      * This method is called from within the constructor to initialize the form.

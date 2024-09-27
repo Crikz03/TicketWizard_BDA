@@ -12,7 +12,6 @@ import interfaces.IBoletoBO;
 import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -28,8 +27,13 @@ import utilidades.Forms;
 import utilidades.TipoTransaccion;
 
 /**
+ * Clase que representa la interfaz gráfica del formulario para la compra de
+ * boletos. Permite a los usuarios seleccionar eventos, elegir asientos y
+ * realizar la transacción para adquirir boletos, gestionando así el proceso de
+ * compra.
  *
- * @author pauli
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmComprarBoletos extends javax.swing.JFrame {
 
@@ -119,25 +123,27 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
             return columnIndex == 0;
         }
     }
-    private List<BoletoDTO> adecuarPrecioBoletoReventa(List<BoletoDTO> boletos){
-        for(BoletoDTO boleto : boletos){
-            if(boleto.getIdUsuario()!=0 && boleto.getEn_venta() && boleto.getPrecioReventa()!=0){
+
+    private List<BoletoDTO> adecuarPrecioBoletoReventa(List<BoletoDTO> boletos) {
+        for (BoletoDTO boleto : boletos) {
+            if (boleto.getIdUsuario() != 0 && boleto.getEn_venta() && boleto.getPrecioReventa() != 0) {
                 boleto.setPrecioOriginal(boleto.getPrecioReventa());
             }
         }
         return boletos;
     }
+
     private void cargarBoletosDisponibles() {
         try {
             boletosDisponibles = boletobo.consultarPorEvento(eventodto.getIdEvento());
             // Filtra boletos que aún no han sido adquiridos
             boletosDisponibles = boletosDisponibles.stream()
-                    .filter(boleto -> boleto.getApartado()==false && boleto.getEn_venta()==true)
+                    .filter(boleto -> boleto.getApartado() == false && boleto.getEn_venta() == true)
                     .collect(Collectors.toList());
-            boletosDisponibles=adecuarPrecioBoletoReventa(boletosDisponibles);
+            boletosDisponibles = adecuarPrecioBoletoReventa(boletosDisponibles);
             // Usa BoletoTableModel en lugar de DefaultTableModel
             jTable1.setModel(new BoletoTableModel(boletosDisponibles));
-            
+
             // Configura el renderizador para la columna de precio (si es necesario)
             TableColumn precioColumn = jTable1.getColumnModel().getColumn(3);
             precioColumn.setCellRenderer(new DefaultTableCellRenderer() {
@@ -347,9 +353,9 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Boletos apartados durante 1 minutos. Por favor, agrega saldo a tu cuenta.", "Información", JOptionPane.INFORMATION_MESSAGE);
                 new Thread(() -> {
                     try {
-                        Thread.sleep(1 * 60 * 1000); 
+                        Thread.sleep(1 * 60 * 1000);
                         for (BoletoDTO boleto : boletosSeleccionados) {
-                            boletobo.liberarBoleto(boleto.getIdBoleto()); 
+                            boletobo.liberarBoleto(boleto.getIdBoleto());
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -364,11 +370,11 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
             for (BoletoDTO boleto : boletosSeleccionados) {
                 double precio = boleto.getPrecioOriginal();
                 int idUsuario = usuarioLoggeado.getIdUsuario(); // Asumiendo que tienes un método para obtener el ID del usuario
-                
+
                 try {
-                    boolean exito = boletobo.comprarBoleto(boleto.getIdBoleto(), precio, estadoAdquisicion(boleto.getIdUsuario()), TipoTransaccion.compra, idUsuario,boleto.getIdUsuario());
+                    boolean exito = boletobo.comprarBoleto(boleto.getIdBoleto(), precio, estadoAdquisicion(boleto.getIdUsuario()), TipoTransaccion.compra, idUsuario, boleto.getIdUsuario());
                     if (exito) {
-                        double saldo=usuarioLoggeado.getSaldo()-precio;
+                        double saldo = usuarioLoggeado.getSaldo() - precio;
                         usuarioLoggeado.setSaldo(saldo);
                         JOptionPane.showMessageDialog(this, "Boleto comprado exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                     } else {
@@ -387,10 +393,10 @@ public class FrmComprarBoletos extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnCompraActionPerformed
 
-    private EstadoAdquisicion estadoAdquisicion (int idUsuario){
-        if(idUsuario==0){
+    private EstadoAdquisicion estadoAdquisicion(int idUsuario) {
+        if (idUsuario == 0) {
             return EstadoAdquisicion.directo;
-        }else{
+        } else {
             return EstadoAdquisicion.reventa;
         }
     }

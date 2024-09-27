@@ -28,24 +28,8 @@ public class Boleto {
     private EstadoAdquisicion estadoAdquisicion; //estado de adquisicion del boleto(si es reventa o adquirido directo de boletera)
     private int idUsuario; //id del usuario asignado a ese boleto
     private int idEvento; //id del evento al que pertence ese boleto
-    private boolean en_venta;
-    private boolean apartado;
-
-    public boolean isEn_venta() {
-        return en_venta;
-    }
-
-    public void setEn_venta(boolean en_venta) {
-        this.en_venta = en_venta;
-    }
-
-    public boolean isApartado() {
-        return apartado;
-    }
-
-    public void setApartado(boolean apartado) {
-        this.apartado = apartado;
-    }
+    private boolean en_venta; //boolean de si el boleto se encuentra en venta
+    private boolean apartado; //boolean de si el boleto ha sido apartado por alguien
 
     // Constructor vacío
     public Boleto() {
@@ -268,6 +252,43 @@ public class Boleto {
      */
     public void setIdEvento(int idEvento) {
         this.idEvento = idEvento;
+    }
+
+    /**
+     * Obtiene el valor booleano de si el boleto esta en venta o no.
+     *
+     * @return El valor del booleano del estado del boleto.
+     */
+    public boolean isEn_venta() {
+        return en_venta;
+    }
+
+    /**
+     * Establece el valor booleano del estado del boleto.
+     *
+     * @param en_venta El valor booleano del estado del boleto a asignar.
+     */
+    public void setEn_venta(boolean en_venta) {
+        this.en_venta = en_venta;
+    }
+
+    /**
+     * Obtiene el valor booleano de si el boleto ha sido apartado por alguien o
+     * no.
+     *
+     * @return El valor del booleano de si ha sido apartado.
+     */
+    public boolean isApartado() {
+        return apartado;
+    }
+
+    /**
+     * Establece el valor booleano de si el boleto ha sido apartado por alguien.
+     *
+     * @param apartado El valor booleano de si ha sido apartado a asignar
+     */
+    public void setApartado(boolean apartado) {
+        this.apartado = apartado;
     }
 
     /**

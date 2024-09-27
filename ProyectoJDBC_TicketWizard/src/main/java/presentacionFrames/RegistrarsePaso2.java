@@ -14,8 +14,16 @@ import negocio.UsuarioBO;
 import utilidades.Forms;
 
 /**
+ * Clase que representa la segunda etapa del proceso de registro de un nuevo
+ * usuario en la aplicación. Esta interfaz permite a los usuarios ingresar
+ * información adicional, como detalles de seguridad (por ejemplo, contraseñas)
+ * y preferencias del usuario, necesarios para completar la creación de su
+ * cuenta. La clase también incluye la validación de los datos ingresados para
+ * asegurar la integridad de la información proporcionada por el usuario antes
+ * de finalizar el registro.
  *
- * @author Chris
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class RegistrarsePaso2 extends javax.swing.JFrame {
 
@@ -262,7 +270,7 @@ public class RegistrarsePaso2 extends javax.swing.JFrame {
             }
 
             this.guardarUsuario();
-            
+
             JOptionPane.showMessageDialog(this, "Exito!, se ha creado tu usuario correctamente.");
 
             this.regresarALogin();
@@ -276,7 +284,7 @@ public class RegistrarsePaso2 extends javax.swing.JFrame {
         try {
             this.usuariobo.agregar(usuarioRegistrando);
         } catch (NegocioException ex) {
-            JOptionPane.showMessageDialog(this, "El usuairo no ha podido registrarse correctamente.","Error!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "El usuairo no ha podido registrarse correctamente.", "Error!", JOptionPane.ERROR_MESSAGE);
         }
     }
 

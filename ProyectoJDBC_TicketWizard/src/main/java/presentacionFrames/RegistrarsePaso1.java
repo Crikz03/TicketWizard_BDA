@@ -8,8 +8,14 @@ import dtos.UsuarioDTO;
 import utilidades.Forms;
 
 /**
+ * Clase que representa la primera etapa del proceso de registro de un nuevo
+ * usuario en la aplicación. Esta interfaz permite a los usuarios ingresar
+ * información básica, como nombres, apellidos, y datos de contacto, que son
+ * necesarios para crear una nueva cuenta. También incluye la validación de los
+ * datos ingresados antes de proceder al siguiente paso del registro.
  *
- * @author Chris
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class RegistrarsePaso1 extends javax.swing.JFrame {
 

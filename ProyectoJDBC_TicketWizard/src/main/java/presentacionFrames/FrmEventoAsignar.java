@@ -27,10 +27,15 @@ import negocio.UsuarioBO;
 import utilidades.Forms;
 
 /**
- *
- * @author pauli
+ * Clase que representa la interfaz gráfica para la asignación de eventos. 
+ * Permite a los administradores gestionar y asignar eventos a los usuarios, 
+ * incluyendo la configuración de detalles como fecha, hora y ubicación.
+ * 
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmEventoAsignar extends javax.swing.JFrame {
+
 
     private UsuarioDTO usuarioLoggeado;
     private IEventoBO eventobo;

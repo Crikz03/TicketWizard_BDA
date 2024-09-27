@@ -16,37 +16,65 @@ import java.util.List;
 import objetos.Evento;
 
 /**
+ * Clase que implementa la interfaz IEventoDAO para realizar operaciones CRUD
+ * relacionadas con los eventos en la base de datos. Se encarga de gestionar las
+ * operaciones necesarias para la creación, lectura, actualización y eliminación
+ * de eventos, así como la consulta de información relacionada con ellos.
  *
- * @author pauli
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class EventoDAO implements IEventoDAO {
-    
-    private IConexion conexion;
-    
+
+    private IConexion conexion; //La variable que contendra la conexion de la base de datos.
+
+    /**
+     * Constructor de la clase EventoDAO que inicializa la conexión a la base de
+     * datos.
+     *
+     * @param conexion Objeto que implementa la interfaz IConexion para
+     * gestionar la conexión.
+     */
     public EventoDAO(IConexion conexion) {
         this.conexion = conexion;
     }
-    
+
+    /**
+     * Agrega un nuevo evento a la base de datos.
+     *
+     * @param evento El objeto Evento que se desea agregar.
+     * @return true si el evento fue agregado exitosamente.
+     * @throws PersistenciaException Si ocurre un error al intentar agregar el
+     * evento.
+     */
     public boolean agregar(Evento evento) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
             String insertar = "INSERT INTO Eventos(nombre, fecha, localidad, capacidad, venue, descripcion) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement agregar = bd.prepareStatement(insertar);
-            
+
             agregar.setString(1, evento.getNombre());
             agregar.setDate(2, evento.getFecha());
             agregar.setString(3, evento.getLocalidad());
             agregar.setInt(4, evento.getCapacidad());
             agregar.setString(5, evento.getVenue());
             agregar.setString(6, evento.getDescripcion());
-            
+
             agregar.executeUpdate();
         } catch (SQLException e) {
             throw new PersistenciaException("No se pudo agregar el boleto con id: " + evento.getIdEvento());
         }
         return true;
     }
-    
+
+    /**
+     * Elimina un evento de la base de datos utilizando su ID.
+     *
+     * @param id El ID del evento a eliminar.
+     * @return true si el evento fue eliminado exitosamente.
+     * @throws PersistenciaException Si ocurre un error al intentar eliminar el
+     * evento.
+     */
     public boolean eliminar(int id) throws PersistenciaException {
         String eliminarEvento = "DELETE FROM Eventos WHERE id_evento = ?";
         try (Connection bd = conexion.crearConexion(); PreparedStatement eliminar = bd.prepareStatement(eliminarEvento)) {
@@ -57,7 +85,15 @@ public class EventoDAO implements IEventoDAO {
         }
         return true;
     }
-    
+
+    /**
+     * Actualiza la información de un evento existente en la base de datos.
+     *
+     * @param evento El objeto Evento que contiene la nueva información.
+     * @return true si el evento fue actualizado exitosamente.
+     * @throws PersistenciaException Si ocurre un error al intentar actualizar
+     * el evento.
+     */
     public boolean actualizar(Evento evento) throws PersistenciaException {
         String actualizarEvento = "UPDATE Eventos SET nombre = ?, fecha = ?, localidad = ?, capacidad = ?, venue = ?, descripcion = ? WHERE id_evento = ?";
         try (Connection bd = conexion.crearConexion(); PreparedStatement actualizar = bd.prepareStatement(actualizarEvento)) {
@@ -68,14 +104,22 @@ public class EventoDAO implements IEventoDAO {
             actualizar.setString(5, evento.getVenue());
             actualizar.setString(6, evento.getDescripcion());
             actualizar.setInt(7, evento.getIdEvento());
-            
+
             actualizar.executeUpdate();
         } catch (SQLException e) {
             throw new PersistenciaException("No se pudo actualizar el boleto con id: " + evento.getIdEvento());
         }
         return true;
     }
-    
+
+    /**
+     * Consulta un evento específico de la base de datos utilizando su ID.
+     *
+     * @param id El ID del evento a consultar.
+     * @return Un objeto Evento que representa el evento encontrado.
+     * @throws PersistenciaException Si ocurre un error al intentar consultar el
+     * evento.
+     */
     public Evento consultar(int id) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
@@ -83,7 +127,7 @@ public class EventoDAO implements IEventoDAO {
             PreparedStatement busqueda = bd.prepareStatement(buscarEvento);
             busqueda.setInt(1, id);
             ResultSet resultado = busqueda.executeQuery();
-            
+
             if (resultado.next()) {
                 Evento e = new Evento();
                 e.setIdEvento(resultado.getInt("id_evento"));
@@ -100,7 +144,14 @@ public class EventoDAO implements IEventoDAO {
         }
         return null;
     }
-    
+
+    /**
+     * Consulta todos los eventos disponibles en la base de datos.
+     *
+     * @return Una lista de objetos Evento que representan todos los eventos.
+     * @throws PersistenciaException Si ocurre un error al intentar consultar
+     * los eventos.
+     */
     public List<Evento> consultar() throws PersistenciaException {
         List<Evento> listaEventos = new ArrayList<>();
         String consultarEventos = "SELECT * FROM Eventos";
@@ -121,14 +172,23 @@ public class EventoDAO implements IEventoDAO {
         }
         return listaEventos;
     }
-    
+
+    /**
+     * Verifica si un evento con el nombre especificado existe en la base de
+     * datos.
+     *
+     * @param nombre El nombre del evento a verificar.
+     * @return true si el evento existe, false en caso contrario.
+     * @throws PersistenciaException Si ocurre un error al intentar verificar la
+     * existencia del evento.
+     */
     public boolean existeEvento(String nombre) throws PersistenciaException {
         try {
             Connection bd = conexion.crearConexion();
             String query = "SELECT COUNT(*) FROM Eventos WHERE nombre = ?";
             PreparedStatement consulta = bd.prepareStatement(query);
             consulta.setString(1, nombre);
-            
+
             ResultSet resultado = consulta.executeQuery();
             if (resultado.next()) {
                 return resultado.getInt(1) > 0;
@@ -138,14 +198,22 @@ public class EventoDAO implements IEventoDAO {
         }
         return false;
     }
-    
+
+    /**
+     * Consulta un evento específico de la base de datos utilizando su nombre.
+     *
+     * @param nombre El nombre del evento a consultar.
+     * @return Un objeto Evento que representa el evento encontrado.
+     * @throws PersistenciaException Si ocurre un error al intentar consultar el
+     * evento.
+     */
     public Evento consultarPorNombre(String nombre) throws PersistenciaException {
         String buscarEvento = "SELECT * FROM Eventos WHERE nombre = ?";
         try (Connection bd = conexion.crearConexion(); PreparedStatement busqueda = bd.prepareStatement(buscarEvento)) {
-            
+
             busqueda.setString(1, nombre);
             ResultSet resultado = busqueda.executeQuery();
-            
+
             if (resultado.next()) {
                 Evento evento = new Evento();
                 evento.setIdEvento(resultado.getInt("id_evento"));
@@ -163,4 +231,5 @@ public class EventoDAO implements IEventoDAO {
             throw new PersistenciaException("Error al consultar el evento con nombre: " + nombre, e);
         }
     }
+
 }

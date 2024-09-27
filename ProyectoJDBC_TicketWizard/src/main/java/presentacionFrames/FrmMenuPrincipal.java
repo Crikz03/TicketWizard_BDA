@@ -16,8 +16,13 @@ import negocio.EventoBO;
 import utilidades.Forms;
 
 /**
+ * Clase que representa el menú principal de la aplicación, donde los usuarios
+ * pueden navegar a diferentes secciones, como la compra de boletos, gestión de
+ * eventos y administración de usuarios. Facilita la interacción del usuario con
+ * las diversas funcionalidades del sistema.
  *
- * @author Chris
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmMenuPrincipal extends javax.swing.JFrame {
 

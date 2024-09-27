@@ -14,8 +14,14 @@ import utilidades.Encriptacion;
 import utilidades.Forms;
 
 /**
+ * Clase que representa la interfaz de usuario para el inicio de sesión en la
+ * aplicación. Permite a los usuarios ingresar sus credenciales (nombre de
+ * usuario y contraseña) para acceder a su cuenta. Incluye funcionalidades para
+ * la validación de credenciales y el manejo de errores en caso de fallos en el
+ * inicio de sesión.
  *
- * @author Chris
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class IniciarSesion extends javax.swing.JFrame {
 
@@ -213,7 +219,7 @@ public class IniciarSesion extends javax.swing.JFrame {
 
             Forms.cargarForm(new FrmMenuPrincipal(usuario), this);
         }
-        
+
     }
 
     /**

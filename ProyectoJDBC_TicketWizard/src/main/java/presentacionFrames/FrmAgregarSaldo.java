@@ -24,8 +24,12 @@ import utilidades.Forms;
 import utilidades.TipoTransaccion;
 
 /**
+ * Clase que representa la interfaz gráfica del formulario para agregar saldo a
+ * la cuenta de un usuario. Permite a los usuarios ingresar una cantidad de
+ * saldo que desean añadir a su cuenta.
  *
- * @author Chris
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmAgregarSaldo extends javax.swing.JFrame {
 
@@ -71,7 +75,7 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
         jlabelsaldo.setFont(new java.awt.Font("Arial", 0, 36)); // NOI18N
         jlabelsaldo.setText("$ ");
 
-        bAgrega.setBackground(new java.awt.Color(0, 0, 0));
+        bAgrega.setBackground(new java.awt.Color(255, 255, 255));
         bAgrega.setFont(new java.awt.Font("Arial", 0, 24)); // NOI18N
         bAgrega.setText("Agregar saldo");
         bAgrega.addActionListener(new java.awt.event.ActionListener() {
@@ -174,7 +178,7 @@ public class FrmAgregarSaldo extends javax.swing.JFrame {
 
                                 try {
                                     boolean exito = boletobo.comprarBoleto(boleto.getIdBoleto(), precio, estadoAdquisicion(boleto.getIdUsuario()), TipoTransaccion.compra, idUsuario, boleto.getIdUsuario());
-                                    boletobo.liberarBoleto(boleto.getIdBoleto()); 
+                                    boletobo.liberarBoleto(boleto.getIdBoleto());
                                     if (exito) {
                                         JOptionPane.showMessageDialog(this, "Boletos Apartado comprados exitosamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
                                     } else {

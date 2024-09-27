@@ -13,8 +13,13 @@ import negocio.BoletoBO;
 import utilidades.Forms;
 
 /**
+ * Clase que representa la interfaz de usuario para la venta de boletos en la
+ * aplicación. Permite a los usuarios seleccionar y gestionar la venta de
+ * boletos, proporcionando funcionalidades para establecer precios, verificar
+ * disponibilidad y completar la transacción de venta.
  *
- * @author pauli
+ * @author Cristopher Alberto Elizalde Andrade - 240005
+ * @author Paulina Rodríguez Rodríguez Rayos - 117262
  */
 public class FrmVenderBoleto extends javax.swing.JFrame {
 
