@@ -120,6 +120,16 @@ CREATE PROCEDURE ComprarBoleto (
 BEGIN
     DECLARE v_num_transaccion INT;
     
+    -- Manejo de errores
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Si hay un error, deshacer todos los cambios
+        ROLLBACK;
+    END;
+
+    -- Iniciar la transacción
+    START TRANSACTION;
+
     -- Construir el número de transacción usando id_boleto, id_usuario y la fecha actual (solo año, mes y día)
     SET v_num_transaccion = (SELECT COALESCE(MAX(num_transaccion), 0) + 1 FROM Transacciones);
 
@@ -128,7 +138,7 @@ BEGIN
     SET num_serie = p_num_serie,
         estado_adquisicion = p_estado_adquisicion,
         id_usuario = p_id_usuario,
-        en_venta=FALSE
+        en_venta = FALSE
     WHERE id_boleto = p_id_boleto;
 
     -- Insertar la transacción en la tabla Transacciones
@@ -138,8 +148,10 @@ BEGIN
     -- Insertar el detalle de la transacción en Detalles_BoletoTransaccion
     INSERT INTO Detalles_BoletoTransaccion (id_boleto, num_transaccion, estado)
     VALUES (p_id_boleto, v_num_transaccion, 'Completado');
-END//
 
+    -- Si todo ha salido bien, confirmar la transacción
+    COMMIT;
+END//
 
 DELIMITER ;
 

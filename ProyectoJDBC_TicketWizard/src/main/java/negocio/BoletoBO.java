@@ -200,5 +200,13 @@ public class BoletoBO implements IBoletoBO {
             throw new NegocioException("No se pudo obtener los boletos en venta", e);
         }
     }
+    public boolean actualizarBoletoParaReventa(int idBoleto) throws NegocioException {
+        try {
+            boletodao.actualizarBoletoParaReventa(idBoleto);
+            return true;
+        } catch (PersistenciaException e) {
+            throw new NegocioException("No se pudo actualizar el boleto con id:" + idBoleto);
+        }
+    }
 
 }

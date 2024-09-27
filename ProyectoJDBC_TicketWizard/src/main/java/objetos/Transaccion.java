@@ -6,6 +6,7 @@ package objetos;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import utilidades.TipoTransaccion;
 
 /**
@@ -23,7 +24,7 @@ public class Transaccion {
     private double comision; // Comisión aplicada a la transacción
     private Time tiempoLimite; // Tiempo límite para realizar la transacción
     private TipoTransaccion tipo; // Tipo de transacción 
-    private Date fecha; // Fecha en que se realiza la transacción
+    private Timestamp  fecha; // Fecha en que se realiza la transacción
     private int idUsuario; // Identificador del usuario que realiza la transacción
 
     // Constructor vacío
@@ -41,7 +42,7 @@ public class Transaccion {
      * @param fecha Fecha en que se realiza la transacción.
      * @param idUsuario Identificador del usuario que realiza la transacción.
      */
-    public Transaccion(int numTransaccion, double monto, double comision, Time tiempoLimite, TipoTransaccion tipo, Date fecha, int idUsuario) {
+    public Transaccion(int numTransaccion, double monto, double comision, Time tiempoLimite, TipoTransaccion tipo, Timestamp fecha, int idUsuario) {
         this.numTransaccion = numTransaccion;
         this.monto = monto;
         this.comision = comision;
@@ -60,7 +61,7 @@ public class Transaccion {
      * @param fecha Fecha en que se realiza la transacción.
      * @param idUsuario Identificador del usuario que realiza la transacción.
      */
-    public Transaccion(double monto, double comision, Time tiempoLimite, TipoTransaccion tipo, Date fecha, int idUsuario) {
+    public Transaccion(double monto, double comision, Time tiempoLimite, TipoTransaccion tipo, Timestamp fecha, int idUsuario) {
         this.monto = monto;
         this.comision = comision;
         this.tiempoLimite = tiempoLimite;
@@ -155,7 +156,7 @@ public class Transaccion {
      * 
      * @return fecha La fecha de la transacción.
      */
-    public Date getFecha() {
+    public Timestamp getFecha() {
         return fecha;
     }
     /**
@@ -163,7 +164,7 @@ public class Transaccion {
      * 
      * @param fecha La nueva fecha de la transacción.
      */
-    public void setFecha(Date fecha) {
+    public void setFecha(Timestamp fecha) {
         this.fecha = fecha;
     }
     /**

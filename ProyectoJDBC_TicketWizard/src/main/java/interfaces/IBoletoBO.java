@@ -107,4 +107,6 @@ public interface IBoletoBO {
     boolean revenderBoleto(int idBoleto, double precioReventa, Date fechaLimite, int idUsuario) throws NegocioException;
     
     public List<BoletoDTO> consultarBoletosEnVenta(int idUsuario) throws NegocioException;
+
+    boolean actualizarBoletoParaReventa(int idBoleto) throws NegocioException;
 }

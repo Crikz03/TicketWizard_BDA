@@ -140,8 +140,7 @@ public class BoletoDAO implements IBoletoDAO {
         List<Boleto> listaBoletos = new ArrayList<>();
         String consultarBoletos = "SELECT * FROM Boletos WHERE id_usuario = ?";
 
-        try (Connection bd = conexion.crearConexion();
-                PreparedStatement consulta = bd.prepareStatement(consultarBoletos)) {
+        try (Connection bd = conexion.crearConexion(); PreparedStatement consulta = bd.prepareStatement(consultarBoletos)) {
 
             // Establecer el valor de idUsuario en el PreparedStatement
             consulta.setInt(1, idUsuario);
@@ -508,4 +507,28 @@ public class BoletoDAO implements IBoletoDAO {
         }
         return boletosEnVenta;
     }
+
+    public boolean actualizarBoletoParaReventa(int idBoleto) throws PersistenciaException {
+        String updateQuery = "UPDATE Boletos SET precioReventa = 0, en_venta = FALSE WHERE id_boleto = ?";
+
+        try (Connection bd = conexion.crearConexion(); PreparedStatement updateStmt = bd.prepareStatement(updateQuery)) {
+
+            // Establecer el ID del boleto en la consulta
+            updateStmt.setInt(1, idBoleto);
+
+            // Ejecutar la actualización
+            int rowsAffected = updateStmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Boleto con ID " + idBoleto + " actualizado correctamente.");
+                return true; // Indica que la actualización fue exitosa
+            } else {
+                System.out.println("No se encontró un boleto con ID " + idBoleto);
+                return false; // Indica que no se encontró el boleto
+            }
+
+        } catch (SQLException e) {
+            throw new PersistenciaException("Error al actualizar el boleto: " + e.getMessage());
+        }
+    }
+
 }

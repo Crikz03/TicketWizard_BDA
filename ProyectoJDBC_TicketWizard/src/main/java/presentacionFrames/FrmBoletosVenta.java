@@ -63,7 +63,7 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
     }
 
     private void llenarTablaBoletosEnVenta(List<BoletoDTO> boletosEnVenta) {
-        DefaultTableModel modeloTabla = (DefaultTableModel) this.jTable1.getModel();
+        DefaultTableModel modeloTabla = (DefaultTableModel) this.tblBoletos.getModel();
 
         if (modeloTabla.getRowCount() > 0) {
             for (int i = modeloTabla.getRowCount() - 1; i > -1; i--) {
@@ -73,17 +73,19 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
 
         if (boletosEnVenta != null) {
             boletosEnVenta.forEach(row -> {
-                Object[] fila = new Object[7];
+                Object[] fila = new Object[9];
                 fila[0] = row.getNumSerie();
                 fila[1] = row.getFila();
+                fila[2] = row.getAsiento();
                 Object[] detallesEvento = consultarDetallesEventoPorId(row.getIdEvento());
                 if (detallesEvento != null) {
-                    fila[2] = detallesEvento[0];
-                    fila[3] = detallesEvento[1];
-                    fila[4] = detallesEvento[2];
-                    fila[5] = detallesEvento[3];
+                    fila[3] = detallesEvento[0];
+                    fila[4] = detallesEvento[1];
+                    fila[5] = detallesEvento[2];
+                    fila[6] = detallesEvento[3];
                 }
-                fila[6] = row.getPrecioReventa();
+                fila[7] = row.getPrecioReventa();
+                fila[8] = row.getIdBoleto();
                 modeloTabla.addRow(fila);
             });
         }
@@ -115,25 +117,40 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblBoletos = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         btnRegresar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblBoletos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Serie", "Fila", "Evento", "Localidad", "Venue", "Fecha", "Precio de venta"
+                "Serie", "Fila", "Asiento", "Evento", "Localidad", "Venue", "Fecha", "Precio de venta", "idBoleto"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.Object.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tblBoletos);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Boletos en venta");
@@ -191,6 +208,20 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        try {
+            int selectedRow = tblBoletos.getSelectedRow();
+            if (selectedRow != -1) {
+                int idBoleto = (int) tblBoletos.getValueAt(selectedRow, 8);
+                boletobo.actualizarBoletoParaReventa(idBoleto);
+                JOptionPane.showMessageDialog(this, "El boleto ya no esta a la venta.");
+                cargarBoletosEnVenta();
+            }
+            
+        } catch (NegocioException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace(); // Para depuración
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
@@ -203,6 +234,6 @@ public class FrmBoletosVenta extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tblBoletos;
     // End of variables declaration//GEN-END:variables
 }

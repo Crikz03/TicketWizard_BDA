@@ -44,18 +44,13 @@ public class RegistrarsePaso1 extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        panel2.setBackground(new java.awt.Color(102, 102, 255));
-
         jLabel1.setFont(new java.awt.Font("Arial", 0, 26)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("TicketWizard");
         jLabel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jLabel2.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Nombres:");
 
-        txtNombres.setBackground(new java.awt.Color(255, 255, 255));
         txtNombres.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         txtNombres.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -64,7 +59,6 @@ public class RegistrarsePaso1 extends javax.swing.JFrame {
         });
 
         jLabel3.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
         jLabel3.setText("Apellido Paterno:");
 
         bRegistrarse.setText("Continuar");
@@ -76,10 +70,8 @@ public class RegistrarsePaso1 extends javax.swing.JFrame {
         });
 
         jLReptir.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jLReptir.setForeground(new java.awt.Color(0, 0, 0));
         jLReptir.setText("Apellido Materno:");
 
-        txtApellidoP.setBackground(new java.awt.Color(255, 255, 255));
         txtApellidoP.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         txtApellidoP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -87,7 +79,6 @@ public class RegistrarsePaso1 extends javax.swing.JFrame {
             }
         });
 
-        txtApellidoM.setBackground(new java.awt.Color(255, 255, 255));
         txtApellidoM.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         txtApellidoM.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

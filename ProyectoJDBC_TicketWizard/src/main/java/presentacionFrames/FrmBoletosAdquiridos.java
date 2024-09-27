@@ -118,7 +118,7 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblBoletos = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        btnVender = new javax.swing.JButton();
         btnRegresar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -139,10 +139,10 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tblBoletos);
 
-        jButton1.setText("Vender Boleto");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnVender.setText("Vender Boleto");
+        btnVender.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnVenderActionPerformed(evt);
             }
         });
 
@@ -166,7 +166,7 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btnRegresar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1)
+                        .addComponent(btnVender)
                         .addGap(31, 31, 31))))
             .addGroup(layout.createSequentialGroup()
                 .addGap(98, 98, 98)
@@ -183,31 +183,60 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 88, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRegresar)
-                    .addComponent(jButton1))
+                    .addComponent(btnVender))
                 .addGap(16, 16, 16))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
         int selectedRow = tblBoletos.getSelectedRow();
         if (selectedRow != -1) {
-            // Obtener el id_boleto de la columna oculta
-            int idBoleto = (int) tblBoletos.getValueAt(selectedRow, 9); // Suponiendo que la columna 9 es el id_boleto
-            String numSerie = (String) tblBoletos.getValueAt(selectedRow, 0);
-            String fila = (String) tblBoletos.getValueAt(selectedRow, 1);
-            String asiento = (String) tblBoletos.getValueAt(selectedRow, 2);
-            String nombreEvento = (String) tblBoletos.getValueAt(selectedRow, 4);
+            int boletosVendidos = 0;
+            int boletosNoVendidos = 0;
+            try {
+                List<BoletoDTO> boletos = boletobo.consultarIdUsuario(usuarioLoggeado.getIdUsuario());
+                int totalBoletos = boletos.size();
+                int maxBoletosVendidos = totalBoletos / 2;
+                for (BoletoDTO boleto : boletos) {
+                    if (boleto.getEn_venta()) {
+                        boletosVendidos += 1;
+                    } else {
+                        boletosNoVendidos += 1;
+                    }
 
-            // Abrir el nuevo frame con los datos del boleto
-            FrmVenderBoleto venderBoletoFrame = new FrmVenderBoleto(usuarioLoggeado, idBoleto, numSerie, fila, asiento, nombreEvento);
-            venderBoletoFrame.setVisible(true);
+                }
+                boletosVendidos += 1;
+                if (boletosVendidos > maxBoletosVendidos) {
+                    JOptionPane.showMessageDialog(this, "No se pueden vender más boletos, has alcanzado el límite permitido.");
+                    return;
+                }
+
+                // Obtener el id_boleto de la columna oculta
+                int idBoleto = (int) tblBoletos.getValueAt(selectedRow, 9); // Suponiendo que la columna 9 es el id_boleto
+                BoletoDTO boleboAvender = boletobo.consultar(idBoleto);
+                if (boleboAvender.getEn_venta()) {
+                    JOptionPane.showMessageDialog(this, "El boleto ya se encuentra en venta.");
+                    return;
+                }
+                String numSerie = (String) tblBoletos.getValueAt(selectedRow, 0);
+                String fila = (String) tblBoletos.getValueAt(selectedRow, 1);
+                String asiento = (String) tblBoletos.getValueAt(selectedRow, 2);
+                String nombreEvento = (String) tblBoletos.getValueAt(selectedRow, 4);
+
+                // Abrir el nuevo frame con los datos del boleto
+                FrmVenderBoleto venderBoletoFrame = new FrmVenderBoleto(usuarioLoggeado, idBoleto, numSerie, fila, asiento, nombreEvento);
+
+                venderBoletoFrame.setVisible(true);
+            } catch (NegocioException ex) {
+                Logger.getLogger(FrmBoletosAdquiridos.class.getName()).log(Level.SEVERE, null, ex);
+            }
             this.dispose(); // Opcional, para cerrar el frame actual si se desea
         } else {
             JOptionPane.showMessageDialog(this, "Selecciona un boleto para vender.");
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
         // TODO add your handling code here:
@@ -217,7 +246,7 @@ public class FrmBoletosAdquiridos extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnRegresar;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton btnVender;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblBoletos;

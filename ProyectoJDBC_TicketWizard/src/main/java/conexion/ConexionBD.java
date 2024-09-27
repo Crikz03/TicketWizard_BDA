@@ -16,8 +16,8 @@ import java.sql.SQLException;
 public class ConexionBD implements IConexion {
 
     private String cadenaConex = "jdbc:mysql://127.0.0.1:3306/ticketwizard";
-    private String usuario = "emonreal";
-    private String pass = "lalo123";
+    private String usuario = "Paulina";
+    private String pass = "leydemurphy";
 
     @Override
     public Connection crearConexion() throws SQLException{

@@ -97,4 +97,6 @@ public interface IBoletoDAO {
     
     public List<Boleto> consultarBoletosEnVenta(int idUsuario) throws PersistenciaException;
 
+    boolean actualizarBoletoParaReventa(int idBoleto) throws PersistenciaException;
+
 }

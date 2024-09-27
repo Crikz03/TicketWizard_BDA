@@ -6,6 +6,7 @@ package dtos;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import utilidades.TipoTransaccion;
 
 /**
@@ -18,13 +19,13 @@ public class TransaccionDTO {
     private double comision;
     private Time tiempoLimite;
     private TipoTransaccion tipo;
-    private Date fecha;
+    private Timestamp  fecha;
     private int idUsuario;
 
     public TransaccionDTO() {
     }
 
-    public TransaccionDTO(double monto, double comision, Time tiempoLimite, TipoTransaccion tipo, Date fecha, int idUsuario) {
+    public TransaccionDTO(double monto, double comision, Time tiempoLimite, TipoTransaccion tipo, Timestamp fecha, int idUsuario) {
         this.monto = monto;
         this.comision = comision;
         this.tiempoLimite = tiempoLimite;
@@ -73,11 +74,11 @@ public class TransaccionDTO {
         this.tipo = tipo;
     }
 
-    public Date getFecha() {
+    public Timestamp getFecha() {
         return fecha;
     }
 
-    public void setFecha(Date fecha) {
+    public void setFecha(Timestamp fecha) {
         this.fecha = fecha;
     }
 

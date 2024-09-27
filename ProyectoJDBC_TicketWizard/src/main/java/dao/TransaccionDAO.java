@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import objetos.Transaccion;
@@ -37,7 +38,7 @@ public class TransaccionDAO implements ITransaccionDAO {
             agregar.setDouble(2, transaccion.getComision());
             agregar.setTime(3, transaccion.getTiempoLimite());
             agregar.setObject(4, transaccion.getTipo());
-            agregar.setDate(5, transaccion.getFecha());
+            agregar.setTimestamp(5, transaccion.getFecha());
             agregar.setInt(6, transaccion.getIdUsuario());
 
             agregar.executeUpdate();
@@ -67,7 +68,7 @@ public class TransaccionDAO implements ITransaccionDAO {
             actualizar.setDouble(2, transaccion.getComision());
             actualizar.setTime(3, transaccion.getTiempoLimite());
             actualizar.setObject(4, transaccion.getTipo());
-            actualizar.setDate(5, transaccion.getFecha());
+            actualizar.setTimestamp(5, transaccion.getFecha());
             actualizar.setInt(6, transaccion.getIdUsuario());
             actualizar.setInt(7, transaccion.getNumTransaccion());
 
@@ -93,7 +94,7 @@ public class TransaccionDAO implements ITransaccionDAO {
                 t.setTiempoLimite(resultado.getTime("tiempo_limite"));
                 String tipoTransaccionStr = resultado.getString("tipo");
                 t.setTipo(TipoTransaccion.valueOf(tipoTransaccionStr));
-                t.setFecha(resultado.getDate("fecha_hora"));
+                t.setFecha(resultado.getTimestamp("fecha_hora"));
                 t.setIdUsuario(resultado.getInt("id_usuario"));
                 return t;
             }
@@ -116,7 +117,7 @@ public class TransaccionDAO implements ITransaccionDAO {
                 t.setTiempoLimite(resultados.getTime("tiempo_limite"));
                 String tipoTransaccionStr = resultados.getString("tipo");
                 t.setTipo(TipoTransaccion.valueOf(tipoTransaccionStr));
-                t.setFecha(resultados.getDate("fecha_hora"));
+                t.setFecha(resultados.getTimestamp("fecha_hora"));
                 t.setIdUsuario(resultados.getInt("id_usuario"));
                 listaTransacciones.add(t);
             }
@@ -142,7 +143,7 @@ public class TransaccionDAO implements ITransaccionDAO {
                 t.setTiempoLimite(resultados.getTime("tiempo_limite"));
                 String tipoTransaccionStr = resultados.getString("tipo");
                 t.setTipo(TipoTransaccion.valueOf(tipoTransaccionStr));
-                t.setFecha(resultados.getDate("fecha_hora"));
+                t.setFecha(resultados.getTimestamp("fecha_hora"));
                 t.setIdUsuario(resultados.getInt("id_usuario"));
                 listaTransacciones.add(t);
             }
